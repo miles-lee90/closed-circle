@@ -37,7 +37,7 @@ def parse_aladin_item(item: dict, nationality: str = None) -> dict:
         "nationality": nationality,
         "publisher": item.get("publisher", ""),
         "pub_date": item.get("pubDate", ""),
-        "cover_url": item.get("cover", ""),
+        "cover_url": item.get("cover", "").replace("cover200", "cover500").replace("coversum", "cover500"),
         "link": item.get("link", ""),
         "price": item.get("priceSales", 0),
         "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
