@@ -86,7 +86,7 @@ def build():
         else:
             b["tilt"] = 0
         # Random gap: 2~10px for natural spacing
-        b["gap"] = random.randint(2, 10)
+        b["gap"] = random.randint(5, 12)
     news = sorted(news, key=lambda n: n.get("pub_date", ""), reverse=True)
 
     publishers = sorted(set(n.get("publisher", "") for n in news))
