@@ -18,6 +18,25 @@ NEWS_PATH = PROJECT_ROOT / "data" / "publisher_news.json"
 USER_AGENT = "ClosedCircle/1.0 (Mystery Novel Tracker; GitHub Pages)"
 CRAWL_DELAY = 1.5
 
+# 미스터리 관련 키워드 필터 — 제목이나 본문에 하나라도 포함되면 수집
+MYSTERY_KEYWORDS = [
+    "미스터리", "미스테리", "추리", "스릴러", "살인", "탐정", "범인",
+    "사건", "수사", "형사", "범죄", "트릭", "밀실", "암호", "실종",
+    "용의자", "피해자", "목격", "증거", "알리바이", "누아르",
+    "서스펜스", "호러", "공포", "괴담",
+    # 주요 미스터리 작가명
+    "히가시노", "미야베", "아가사", "크리스티", "코난 도일",
+    "에도가와", "아야츠지", "시마다", "요코야마",
+    # 미스터리 출판 브랜드/시리즈
+    "엘릭시르", "미스테리아", "클로즈드",
+]
+
+
+def is_mystery_related(title: str, summary: str) -> bool:
+    """Check if a news entry is related to mystery/thriller genre."""
+    text = (title + " " + summary).lower()
+    return any(kw in text for kw in MYSTERY_KEYWORDS)
+
 
 def make_news_id(publisher: str, link: str) -> str:
     raw = f"{publisher}_{link}"
@@ -87,8 +106,9 @@ def main():
         try:
             entries = fetch_rss(feed_url)
             parsed = [parse_rss_entry(e, name) for e in entries]
-            all_new.extend(parsed)
-            print(f"  Found {len(parsed)} entries")
+            filtered = [p for p in parsed if is_mystery_related(p["title"], p["summary"])]
+            all_new.extend(filtered)
+            print(f"  Found {len(parsed)} entries, {len(filtered)} mystery-related")
         except Exception as e:
             print(f"  ERROR fetching {name}: {e}", file=sys.stderr)
         time.sleep(CRAWL_DELAY)

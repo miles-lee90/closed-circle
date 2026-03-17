@@ -1,5 +1,5 @@
 import hashlib
-from scripts.fetch_news import parse_rss_entry, make_news_id, merge_news, load_news, save_news
+from scripts.fetch_news import parse_rss_entry, make_news_id, merge_news, load_news, save_news, is_mystery_related
 
 SAMPLE_ENTRY = {
     "title": "2026년 3월 미스터리 신간 안내",
@@ -63,3 +63,14 @@ def test_save_and_load_news(tmp_path):
     path = tmp_path / "news.json"
     save_news(news, path)
     assert load_news(path) == news
+
+
+def test_is_mystery_related_matches_keyword():
+    assert is_mystery_related("미스터리 신간 안내", "") is True
+    assert is_mystery_related("추리소설 추천", "") is True
+    assert is_mystery_related("", "히가시노 게이고 신작") is True
+
+
+def test_is_mystery_related_rejects_unrelated():
+    assert is_mystery_related("에세이 추천", "좋은 책입니다") is False
+    assert is_mystery_related("강연 안내", "작가와의 만남") is False
