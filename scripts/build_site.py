@@ -74,6 +74,18 @@ def build():
     books = verified
     print(f"Verified spine images: {len(books)} books")
     books = sort_books_jp_first(books)
+
+    # Randomly assign tilt to ~12% of books
+    import random
+    random.seed(42)  # deterministic per build
+    tilt_count = max(2, len(books) // 8)
+    tilt_indices = set(random.sample(range(len(books)), min(tilt_count, len(books))))
+    for i, b in enumerate(books):
+        if i in tilt_indices:
+            angle = random.choice([-3, -2, 2, 3])
+            b["tilt"] = angle
+        else:
+            b["tilt"] = 0
     news = sorted(news, key=lambda n: n.get("pub_date", ""), reverse=True)
 
     publishers = sorted(set(n.get("publisher", "") for n in news))

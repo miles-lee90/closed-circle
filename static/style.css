@@ -184,6 +184,14 @@ main {
 
 .spine-wrapper {
     position: relative;
+}
+
+.spine-wrapper.tilted {
+    padding: 0 10px;
+}
+
+.spine-wrapper.tilted .spine-book {
+    transform: rotate(var(--tilt));
     transform-origin: bottom center;
 }
 
