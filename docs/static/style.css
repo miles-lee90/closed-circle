@@ -76,30 +76,9 @@ nav {
     opacity: 0.85;
 }
 
-.logo-icon {
-    width: 32px;
-    height: 32px;
-}
-
-.logo-text {
-    font-size: 1.0625rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    letter-spacing: 0.08em;
-}
-
-/* Red dot fade + scale animation */
-.red-pos {
-    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                r 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.red-pos.active {
-    opacity: 1;
-}
-
-.red-pos.shrunk {
-    r: 1.2;
+.logo-img {
+    height: 36px;
+    width: auto;
 }
 
 .nav-links {
