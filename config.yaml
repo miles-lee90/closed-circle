@@ -12,19 +12,20 @@ aladin:
   max_results: 50
 
 publishers:
-  # 동작 확인된 RSS 피드
-  - name: 엘릭시르
-    feed_url: "https://rss.blog.naver.com/elixirbooks.xml"
-    type: naver_rss
-  - name: 북스피어
-    feed_url: "https://rss.blog.naver.com/booksfear.xml"
-    type: naver_rss
-  - name: 황금가지
-    feed_url: "https://goldenbough.minumsa.com/feed"
-    type: website_rss
+  # 네이버 블로그 RSS
   - name: 문학동네
     feed_url: "https://rss.blog.naver.com/munhakdongne.xml"
     type: naver_rss
+  # X(트위터) via nitter RSS
+  - name: 엘릭시르
+    feed_url: "https://nitter.net/elixir_mystery/rss"
+    type: x_rss
+  - name: 북스피어
+    feed_url: "https://nitter.net/Booksfear/rss"
+    type: x_rss
+  - name: 황금가지
+    feed_url: "https://nitter.net/goldenboughbook/rss"
+    type: x_rss
   # RSS 미확인 — 추후 조사
   - name: 은행나무
     feed_url: "TBD"
