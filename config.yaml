@@ -43,8 +43,8 @@ publishers:
     feed_url: "https://nitter.net/Nabiclub17/rss"
     type: x_rss
   - name: 블루홀식스
-    feed_url: "TBD"
-    type: TBD
+    feed_url: "https://nitter.net/_blueholesix/rss"
+    type: x_rss
   - name: 반타
     feed_url: "TBD"
     type: TBD
