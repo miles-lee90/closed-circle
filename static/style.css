@@ -83,25 +83,25 @@ nav {
 
 .logo-text {
     display: flex;
-    flex-direction: column;
-    line-height: 1.05;
+    align-items: baseline;
+    gap: 0;
 }
 
 .logo-serif {
     font-family: 'Playfair Display', Georgia, serif;
     font-style: italic;
-    font-weight: 800;
-    font-size: 1.1875rem;
+    font-weight: 400;
+    font-size: 1.375rem;
     color: var(--text-primary);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
 }
 
 .logo-sans {
     font-family: 'Pretendard', -apple-system, sans-serif;
     font-weight: 800;
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     color: var(--text-primary);
-    letter-spacing: -0.03em;
+    letter-spacing: -0.04em;
 }
 
 .nav-links {
