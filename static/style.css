@@ -175,10 +175,11 @@ main {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
-    gap: 3px;
-    padding-bottom: 1rem;
-    border-bottom: 3px solid rgba(255,255,255,0.06);
-    min-height: 320px;
+    gap: 4px 4px;
+    row-gap: 3rem;
+    padding-bottom: 2rem;
+    min-height: 400px;
+    max-width: 1280px;
 }
 
 .spine-wrapper {
@@ -199,47 +200,19 @@ main {
     box-shadow: 1px 0 3px rgba(0,0,0,0.4), -1px 0 2px rgba(0,0,0,0.2);
 }
 
-.spine-face img {
+.spine-face .spine-img {
     height: 100%;
     width: auto;
     display: block;
 }
 
-/* Cover crop fallback — shown when spine image is missing */
-.spine-cover-crop {
-    display: none;
+.spine-face .spine-cover {
     height: 100%;
-    background-size: cover;
-    background-position: left center;
-    position: relative;
-    overflow: hidden;
-}
-
-/* Show cover crop when spine image fails or doesn't exist */
-.spine-face.no-spine-img img { display: none; }
-.spine-face.no-spine-img .spine-cover-crop,
-.spine-face:not(:has(img)) .spine-cover-crop {
+    width: auto;
     display: block;
+    border-radius: 2px;
 }
 
-.spine-cover-crop .spine-title {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    font-size: 0.625rem;
-    font-weight: 600;
-    color: #fff;
-    letter-spacing: 0.02em;
-    padding: 0.5rem 0;
-    background: rgba(0,0,0,0.45);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
 
 .spine-badge {
     position: absolute;

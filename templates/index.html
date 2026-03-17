@@ -18,7 +18,7 @@
     {% for book in books %}
     {% set h = book.size_height if book.size_height else 188 %}
     {% set d = book.size_depth if book.size_depth else 15 %}
-    {% set spine_h = (h * 1.6)|int %}
+    {% set spine_h = (h * 2.2)|int %}
     {% set spine_w = (d * 2.8)|int %}
     {% set spine_w = [spine_w, 20]|max %}
     <div class="spine-wrapper" data-nationality="{{ book.nationality }}" style="height:{{ spine_h }}px">
@@ -26,12 +26,12 @@
             <!-- Spine (default) -->
             <div class="spine-face">
                 {% if book.spine_url %}
-                <img src="{{ book.spine_url }}" alt="{{ book.title }}" loading="lazy"
-                     onerror="this.parentElement.classList.add('no-spine-img')">
+                <img class="spine-img" src="{{ book.spine_url }}" alt="{{ book.title }}" loading="lazy"
+                     onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                <img class="spine-cover" src="{{ book.cover_url }}" alt="{{ book.title }}" loading="lazy" style="display:none">
+                {% else %}
+                <img class="spine-cover" src="{{ book.cover_url }}" alt="{{ book.title }}" loading="lazy">
                 {% endif %}
-                <div class="spine-cover-crop" style="width:{{ spine_w }}px;background-image:url('{{ book.cover_url }}')">
-                    <span class="spine-title">{{ book.title }}</span>
-                </div>
                 {% if book.nationality == 'JP' %}
                 <span class="spine-badge badge-jp"></span>
                 {% elif book.nationality == 'KR' %}
