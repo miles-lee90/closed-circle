@@ -31,11 +31,11 @@ publishers:
     feed_url: "TBD"
     type: TBD
   - name: 비채
-    feed_url: "TBD"
-    type: TBD
+    feed_url: "https://nitter.net/vichebook/rss"
+    type: x_rss
   - name: 내 친구의 서재
-    feed_url: "TBD"
-    type: TBD
+    feed_url: "https://nitter.net/mytomobook/rss"
+    type: x_rss
   - name: 현대문학
     feed_url: "TBD"
     type: TBD
