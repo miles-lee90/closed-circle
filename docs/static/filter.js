@@ -66,7 +66,16 @@
     }
 
     document.addEventListener("click", closePopup);
-    window.addEventListener("scroll", closePopup);
+
+    var scrollStart = null;
+    window.addEventListener("scroll", function () {
+        if (!openReveal) { scrollStart = null; return; }
+        if (scrollStart === null) scrollStart = window.scrollY;
+        if (Math.abs(window.scrollY - scrollStart) > 80) {
+            closePopup();
+            scrollStart = null;
+        }
+    });
 })();
 
 document.addEventListener("DOMContentLoaded", function () {
