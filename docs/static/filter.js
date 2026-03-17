@@ -7,6 +7,9 @@
         var reveal = spine.querySelector(".cover-reveal");
         if (!reveal) return;
 
+        // Move popup to body so position:fixed is always viewport-relative
+        document.body.appendChild(reveal);
+
         spine.addEventListener("click", function (e) {
             e.stopPropagation();
 
@@ -43,8 +46,10 @@
                 if (x < 12) x = 12;
 
                 // Center vertically on click, clamp to viewport
+                var header = document.querySelector("header");
+                var minY = header ? header.getBoundingClientRect().bottom + 8 : 12;
                 var y = e.clientY - ph / 2;
-                if (y < 12) y = 12;
+                if (y < minY) y = minY;
                 if (y + ph > vh - 12) y = vh - ph - 12;
 
                 reveal.style.left = x + "px";
