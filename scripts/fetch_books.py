@@ -60,8 +60,16 @@ def fetch_from_aladin(ttb_key: str, category_id: int, max_results: int = 50) -> 
             "Version": "20131101",
             "Cover": "Big",
         }
-        resp = requests.get(ALADIN_API_URL, params=params, timeout=30)
-        resp.raise_for_status()
+        for attempt in range(3):
+            try:
+                resp = requests.get(ALADIN_API_URL, params=params, timeout=30)
+                resp.raise_for_status()
+                break
+            except requests.exceptions.RequestException as e:
+                if attempt == 2:
+                    print(f"  WARNING: Failed after 3 attempts: {e}", file=sys.stderr)
+                    return all_items
+                import time; time.sleep(5)
         data = resp.json()
         items = data.get("item", [])
         if not items:
