@@ -23,28 +23,32 @@
                 openSpine.classList.remove("active");
             }
 
-            // Position popup next to the spine
-            var rect = spine.getBoundingClientRect();
-            var vw = window.innerWidth;
-            var vh = window.innerHeight;
-            var pw = 220;
-
-            var x = rect.right + 8;
-            if (x + pw > vw) x = rect.left - pw - 8;
-
-            var y = rect.top;
-            // Don't go below viewport
-            reveal.style.left = x + "px";
-            reveal.style.top = y + "px";
+            // Show popup first (invisible) to measure its size
+            reveal.style.left = "0px";
+            reveal.style.top = "0px";
             reveal.classList.add("visible");
             spine.classList.add("active");
 
-            // Adjust if popup goes below viewport
+            // Position based on click location + popup size
             requestAnimationFrame(function () {
+                var vw = window.innerWidth;
+                var vh = window.innerHeight;
                 var rr = reveal.getBoundingClientRect();
-                if (rr.bottom > vh - 8) {
-                    reveal.style.top = (vh - rr.height - 8) + "px";
-                }
+                var pw = rr.width;
+                var ph = rr.height;
+
+                // Prefer right of click, fallback left
+                var x = e.clientX + 16;
+                if (x + pw > vw - 12) x = e.clientX - pw - 16;
+                if (x < 12) x = 12;
+
+                // Center vertically on click, clamp to viewport
+                var y = e.clientY - ph / 2;
+                if (y < 12) y = 12;
+                if (y + ph > vh - 12) y = vh - ph - 12;
+
+                reveal.style.left = x + "px";
+                reveal.style.top = y + "px";
             });
 
             openSpine = spine;
