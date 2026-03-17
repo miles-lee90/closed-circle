@@ -200,17 +200,10 @@ main {
     box-shadow: 1px 0 3px rgba(0,0,0,0.4), -1px 0 2px rgba(0,0,0,0.2);
 }
 
-.spine-face .spine-img {
+.spine-face img {
     height: 100%;
     width: auto;
     display: block;
-}
-
-.spine-face .spine-cover {
-    height: 100%;
-    width: auto;
-    display: block;
-    border-radius: 2px;
 }
 
 

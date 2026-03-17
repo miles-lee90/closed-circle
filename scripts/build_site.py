@@ -60,6 +60,8 @@ def build():
     save_json(books, DATA_DIR / "books.json")
     save_json(news, DATA_DIR / "publisher_news.json")
 
+    # Only show books that have a spine image
+    books = [b for b in books if b.get("spine_url")]
     books = sort_books_jp_first(books)
     news = sorted(news, key=lambda n: n.get("pub_date", ""), reverse=True)
 

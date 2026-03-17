@@ -25,13 +25,7 @@
         <div class="spine-book" style="height:100%">
             <!-- Spine (default) -->
             <div class="spine-face">
-                {% if book.spine_url %}
-                <img class="spine-img" src="{{ book.spine_url }}" alt="{{ book.title }}" loading="lazy"
-                     onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-                <img class="spine-cover" src="{{ book.cover_url }}" alt="{{ book.title }}" loading="lazy" style="display:none">
-                {% else %}
-                <img class="spine-cover" src="{{ book.cover_url }}" alt="{{ book.title }}" loading="lazy">
-                {% endif %}
+                <img class="spine-img" src="{{ book.spine_url }}" alt="{{ book.title }}" loading="lazy">
                 {% if book.nationality == 'JP' %}
                 <span class="spine-badge badge-jp"></span>
                 {% elif book.nationality == 'KR' %}
