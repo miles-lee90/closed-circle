@@ -39,14 +39,13 @@ document.addEventListener("DOMContentLoaded", function () {
         face.style.transform = "rotate(" + angle + "deg)";
         face.style.transformOrigin = "bottom center";
 
-        // Margin on the side the book leans toward
+        // Margin scales with angle: 35px at 3deg, ~12px per extra degree
+        var margin = Math.round(35 + (Math.abs(angle) - 3) * 12);
         if (angle > 0) {
-            // Leaning right → space on right
             spine.style.marginLeft = "4px";
-            spine.style.marginRight = "35px";
+            spine.style.marginRight = margin + "px";
         } else {
-            // Leaning left → space on left
-            spine.style.marginLeft = "35px";
+            spine.style.marginLeft = margin + "px";
             spine.style.marginRight = "4px";
         }
     });
