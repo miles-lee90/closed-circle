@@ -1,5 +1,4 @@
 // Tilt random books on the bookshelf
-// Runs after images load so layout is finalized
 window.addEventListener("load", function () {
     var spines = document.querySelectorAll(".spine-wrapper");
     if (!spines.length) return;
@@ -10,29 +9,39 @@ window.addEventListener("load", function () {
     var avg = heights.reduce(function (a, b) { return a + b; }, 0) / heights.length;
     var threshold = avg * 0.2;
 
-    // Detect row boundaries by offsetTop
-    var rowFirsts = new Set();
-    var rowLasts = new Set();
-    var lastTop = -1;
-    for (var i = 0; i < spines.length; i++) {
-        var top = spines[i].getBoundingClientRect().top;
-        if (Math.abs(top - lastTop) > 10) {
-            rowFirsts.add(i);
-            if (i > 0) rowLasts.add(i - 1);
-            lastTop = top;
+    // Detect rows by bottom position (flex-end aligned, so bottom is consistent per row)
+    var rows = [];  // array of arrays of indices
+    var currentRow = [0];
+    var lastBottom = spines[0].getBoundingClientRect().bottom;
+    for (var i = 1; i < spines.length; i++) {
+        var bottom = spines[i].getBoundingClientRect().bottom;
+        if (Math.abs(bottom - lastBottom) > 30) {
+            // New row
+            rows.push(currentRow);
+            currentRow = [i];
+            lastBottom = bottom;
+        } else {
+            currentRow.push(i);
         }
     }
-    rowLasts.add(spines.length - 1);
+    rows.push(currentRow);
 
-    // Build candidate list: exclude outliers and row first/last
+    // Collect first/last of each row
+    var rowEdges = new Set();
+    rows.forEach(function (row) {
+        if (row.length > 0) rowEdges.add(row[0]);
+        if (row.length > 1) rowEdges.add(row[row.length - 1]);
+    });
+
+    // Build candidate list: exclude edges and height outliers
     var candidates = [];
     for (var i = 0; i < spines.length; i++) {
-        if (rowFirsts.has(i) || rowLasts.has(i)) continue;
+        if (rowEdges.has(i)) continue;
         if (Math.abs(heights[i] - avg) > threshold) continue;
         candidates.push(i);
     }
 
-    // Shuffle candidates
+    // Shuffle
     for (var i = candidates.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
         var tmp = candidates[i]; candidates[i] = candidates[j]; candidates[j] = tmp;
@@ -57,8 +66,8 @@ window.addEventListener("load", function () {
 
         // 2~5 degrees
         var angle = (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 3);
-        // Margin: 35px at 2deg, +12px per extra degree
-        var margin = Math.round(35 + (Math.abs(angle) - 2) * 12);
+        // Margin: 32px at 2deg, +12px per extra degree
+        var margin = Math.round(32 + (Math.abs(angle) - 2) * 12);
 
         face.style.transform = "rotate(" + angle + "deg)";
         face.style.transformOrigin = "bottom center";
