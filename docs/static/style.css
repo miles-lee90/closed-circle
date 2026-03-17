@@ -195,19 +195,19 @@ main {
 
 .spine-wrapper {
     position: relative;
-    perspective: 900px;
+    perspective: 1200px;
     cursor: pointer;
 }
 
 .spine-book {
     position: relative;
     transform-style: preserve-3d;
-    transition: transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
-    transform-origin: left center;
+    transition: transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transform-origin: center center;
 }
 
 .spine-wrapper.open .spine-book {
-    transform: rotateY(-65deg);
+    transform: translateZ(120px) rotateY(-90deg);
 }
 
 /* ─── Spine Face ─── */
@@ -221,7 +221,8 @@ main {
 }
 
 .spine-wrapper:hover .spine-face {
-    box-shadow: 0 4px 20px rgba(255,255,255,0.08), 1px 0 3px rgba(0,0,0,0.4);
+    brightness: 0.7;
+    filter: brightness(0.7);
 }
 
 .spine-face img {
@@ -244,7 +245,7 @@ main {
 .spine-badge.badge-jp { background: var(--badge-jp); }
 .spine-badge.badge-kr { background: var(--badge-kr); }
 
-/* ─── Cover Reveal (back face of 3D book) ─── */
+/* ─── Cover Reveal (right face of 3D book, visible after 90deg rotation) ─── */
 .cover-reveal {
     position: absolute;
     top: 0;
@@ -252,8 +253,10 @@ main {
     height: 100%;
     width: auto;
     backface-visibility: hidden;
-    transform: rotateY(180deg);
+    transform: rotateY(90deg);
+    transform-origin: left center;
     pointer-events: none;
+    display: block;
 }
 
 .spine-wrapper.open .cover-reveal {
