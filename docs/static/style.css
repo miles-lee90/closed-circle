@@ -77,8 +77,15 @@ nav {
 }
 
 .logo-img {
-    height: 36px;
+    height: 32px;
     width: auto;
+}
+
+.logo-text {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 0.08em;
 }
 
 .nav-links {
