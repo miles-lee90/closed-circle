@@ -8,8 +8,8 @@
     var total = 8;
 
     // Step order: from home, visit all other 7 positions, then return home
-    // delays: slow start → accelerate → decelerate → long pause at home
-    var delays = [500, 400, 300, 250, 300, 400, 500, 8000];
+    // delays: dramatic accel/decel — very slow start, snap through middle, slow landing
+    var delays = [800, 500, 250, 120, 120, 250, 700, 8000];
 
     function setActive(idx) {
         for (var i = 0; i < dots.length; i++) {
