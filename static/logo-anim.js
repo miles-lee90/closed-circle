@@ -9,10 +9,25 @@ document.addEventListener("DOMContentLoaded", function () {
     var avg = heights.reduce(function (a, b) { return a + b; }, 0) / heights.length;
     var threshold = avg * 0.2; // skip books that deviate >20% from average
 
-    // Pick ~10%, skip neighbors within 3 positions and outlier heights
+    // Detect row boundaries by comparing offsetTop
+    var rowFirsts = new Set();
+    var rowLasts = new Set();
+    var lastTop = -1;
+    for (var i = 0; i < spines.length; i++) {
+        var top = spines[i].offsetTop;
+        if (top !== lastTop) {
+            rowFirsts.add(i);
+            if (i > 0) rowLasts.add(i - 1);
+            lastTop = top;
+        }
+    }
+    rowLasts.add(spines.length - 1);
+
+    // Pick ~10%, skip neighbors within 3, outlier heights, and row first/last
     var indices = [];
     for (var i = 0; i < spines.length; i++) {
-        if (Math.abs(heights[i] - avg) > threshold) continue; // skip outliers
+        if (Math.abs(heights[i] - avg) > threshold) continue;
+        if (rowFirsts.has(i) || rowLasts.has(i)) continue;
         indices.push(i);
     }
     for (var i = indices.length - 1; i > 0; i--) {
