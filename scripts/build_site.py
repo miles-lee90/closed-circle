@@ -60,8 +60,19 @@ def build():
     save_json(books, DATA_DIR / "books.json")
     save_json(news, DATA_DIR / "publisher_news.json")
 
-    # Only show books that have a spine image
-    books = [b for b in books if b.get("spine_url")]
+    # Only JP and KR, only books with spine images, verify spine exists
+    import requests
+    books = [b for b in books if b.get("nationality") in ("JP", "KR") and b.get("spine_url")]
+    verified = []
+    for b in books:
+        try:
+            r = requests.head(b["spine_url"], timeout=5)
+            if r.status_code == 200:
+                verified.append(b)
+        except Exception:
+            pass
+    books = verified
+    print(f"Verified spine images: {len(books)} books")
     books = sort_books_jp_first(books)
     news = sorted(news, key=lambda n: n.get("pub_date", ""), reverse=True)
 
