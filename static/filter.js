@@ -1,3 +1,42 @@
+// Cover reveal follows mouse position
+(function () {
+    var activeReveal = null;
+
+    document.addEventListener("mousemove", function (e) {
+        if (!activeReveal) return;
+        var vw = window.innerWidth;
+        var vh = window.innerHeight;
+        var rw = activeReveal.offsetWidth;
+        var rh = activeReveal.offsetHeight;
+
+        var x = e.clientX + 20;
+        var y = e.clientY - rh / 2;
+
+        // Keep within viewport
+        if (x + rw > vw) x = e.clientX - rw - 20;
+        if (y < 8) y = 8;
+        if (y + rh > vh - 8) y = vh - rh - 8;
+
+        activeReveal.style.left = x + "px";
+        activeReveal.style.top = y + "px";
+    });
+
+    document.querySelectorAll(".spine-wrapper").forEach(function (spine) {
+        var reveal = spine.querySelector(".cover-reveal");
+        if (!reveal) return;
+
+        spine.addEventListener("mouseenter", function () {
+            activeReveal = reveal;
+            reveal.classList.add("visible");
+        });
+
+        spine.addEventListener("mouseleave", function () {
+            reveal.classList.remove("visible");
+            activeReveal = null;
+        });
+    });
+})();
+
 document.addEventListener("DOMContentLoaded", function () {
     var buttons = document.querySelectorAll(".filter-btn");
     var grid = document.getElementById("book-grid");
