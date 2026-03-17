@@ -170,6 +170,16 @@ main {
     font-weight: 600;
 }
 
+.filter-btn[data-filter="JP"].active {
+    background: var(--badge-jp);
+    color: #fff;
+}
+
+.filter-btn[data-filter="KR"].active {
+    background: var(--badge-kr);
+    color: #fff;
+}
+
 /* ─── Bookshelf ─── */
 .bookshelf {
     display: flex;
