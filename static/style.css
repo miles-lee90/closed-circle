@@ -88,9 +88,18 @@ nav {
     letter-spacing: 0.08em;
 }
 
-/* Red dot fade animation */
+/* Red dot fade + scale animation */
 .red-pos {
-    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                r 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.red-pos.active {
+    opacity: 1;
+}
+
+.red-pos.shrunk {
+    r: 1.2;
 }
 
 .nav-links {
