@@ -170,84 +170,152 @@ main {
     font-weight: 600;
 }
 
-/* ─── Book Grid ─── */
-.book-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 2rem;
+/* ─── Bookshelf ─── */
+.bookshelf {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 3px;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid rgba(255,255,255,0.06);
+    min-height: 320px;
 }
 
-.book-card {
-    border-radius: var(--radius);
-    overflow: hidden;
-    transition: transform var(--transition), box-shadow var(--transition);
+.spine-wrapper {
+    height: 300px;
     position: relative;
 }
 
-.book-card:hover {
-    transform: scale(1.04);
-    z-index: 2;
+.spine-book {
+    height: 100%;
+    position: relative;
+    cursor: pointer;
 }
 
-.book-card a img,
-.book-card > a {
+/* ─── Spine Face ─── */
+.spine-face {
+    width: 44px;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    border-radius: 2px;
+    transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+    box-shadow: 1px 0 3px rgba(0,0,0,0.4), -1px 0 2px rgba(0,0,0,0.2);
+}
+
+.spine-face img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     display: block;
 }
 
-.book-card img {
+.spine-fallback {
     width: 100%;
-    aspect-ratio: 2 / 3;
-    object-fit: cover;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    transition: box-shadow var(--transition);
+    height: 100%;
+    background: var(--bg-elevated);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0;
 }
 
-.book-card:hover img {
-    box-shadow: var(--shadow-hover);
-}
-
-.book-info {
-    padding: 0.875rem 0.25rem;
-}
-
-.book-info h3 {
-    font-size: 0.9375rem;
+.spine-title {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-size: 0.6875rem;
     font-weight: 600;
-    letter-spacing: -0.01em;
-    line-height: 1.35;
-    margin-bottom: 0.25rem;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-height: 90%;
+}
+
+.spine-badge {
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.spine-badge.badge-jp { background: var(--badge-jp); }
+.spine-badge.badge-kr { background: var(--badge-kr); }
+
+/* ─── Cover Reveal ─── */
+.cover-reveal {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    width: 180px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+    z-index: 50;
+    filter: drop-shadow(0 16px 40px rgba(0,0,0,0.7));
+}
+
+.spine-wrapper:hover .cover-reveal,
+.spine-wrapper.active .cover-reveal {
+    opacity: 1;
+    transform: translateX(-50%) scale(1) translateY(-20px);
+    pointer-events: auto;
+}
+
+.spine-wrapper:hover .spine-face,
+.spine-wrapper.active .spine-face {
+    opacity: 0.3;
+}
+
+.spine-wrapper:hover,
+.spine-wrapper.active {
+    z-index: 60;
+}
+
+.cover-reveal img {
+    width: 100%;
+    border-radius: 6px;
+    display: block;
+}
+
+.cover-info {
+    padding: 0.625rem 0.125rem;
+    text-align: center;
+}
+
+.cover-info h3 {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.2rem;
+    line-height: 1.3;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-.book-info h3 a {
-    color: var(--text-primary);
-}
-
-.book-info h3 a:hover {
-    color: var(--accent);
-}
-
-.author {
-    font-size: 0.8125rem;
-    color: var(--text-secondary);
-    font-weight: 400;
-}
-
-.meta {
+.cover-info .author {
     font-size: 0.75rem;
-    color: var(--text-tertiary);
-    margin-top: 0.2rem;
+    color: var(--text-secondary);
 }
 
-.price {
-    font-size: 0.875rem;
+.cover-info .meta {
+    font-size: 0.6875rem;
+    color: var(--text-tertiary);
+    margin-top: 0.15rem;
+}
+
+.cover-info .price {
+    font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-primary);
-    margin-top: 0.35rem;
+    margin-top: 0.2rem;
 }
 
 /* ─── Badges ─── */
@@ -410,9 +478,21 @@ footer a:hover {
         padding: 3rem 0 2rem;
     }
 
-    .book-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 1.25rem;
+    .bookshelf {
+        gap: 2px;
+        min-height: 240px;
+    }
+
+    .spine-wrapper {
+        height: 240px;
+    }
+
+    .spine-face {
+        width: 36px;
+    }
+
+    .cover-reveal {
+        width: 150px;
     }
 
     .filters {
@@ -445,17 +525,12 @@ footer a:hover {
         font-size: 1rem;
     }
 
-    .book-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+    .spine-wrapper {
+        height: 200px;
     }
 
-    .book-info {
-        padding: 0.625rem 0.125rem;
-    }
-
-    .book-info h3 {
-        font-size: 0.8125rem;
+    .spine-face {
+        width: 30px;
     }
 
     .news-card {

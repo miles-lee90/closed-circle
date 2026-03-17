@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const buttons = document.querySelectorAll(".filter-btn");
-    const grid = document.getElementById("book-grid");
-    const newsList = document.getElementById("news-list");
+    var buttons = document.querySelectorAll(".filter-btn");
+    var grid = document.getElementById("book-grid");
+    var newsList = document.getElementById("news-list");
 
     buttons.forEach(function (btn) {
         btn.addEventListener("click", function () {
@@ -11,12 +11,13 @@ document.addEventListener("DOMContentLoaded", function () {
             var filter = btn.getAttribute("data-filter");
 
             if (grid) {
-                var cards = grid.querySelectorAll(".book-card");
-                cards.forEach(function (card) {
-                    if (filter === "all" || card.getAttribute("data-nationality") === filter) {
-                        card.style.display = "";
+                // Bookshelf: filter spine-wrappers
+                var spines = grid.querySelectorAll(".spine-wrapper");
+                spines.forEach(function (spine) {
+                    if (filter === "all" || spine.getAttribute("data-nationality") === filter) {
+                        spine.style.display = "";
                     } else {
-                        card.style.display = "none";
+                        spine.style.display = "none";
                     }
                 });
             }

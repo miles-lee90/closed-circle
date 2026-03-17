@@ -29,6 +29,19 @@ def parse_aladin_item(item: dict, nationality: str = None) -> dict:
     author = re.split(r"\s*\(", author_raw)[0].strip()
     author = re.split(r",", author)[0].strip()
 
+    cover_url = item.get("cover", "").replace("cover200", "cover500").replace("coversum", "cover500")
+
+    # Spine URL: cover500 → Spine, _1.jpg → _d.jpg, first letter of code uppercase
+    spine_url = ""
+    if "/cover500/" in cover_url or "/cover/" in cover_url:
+        spine_url = cover_url.replace("/cover500/", "/Spine/").replace("/cover/", "/Spine/")
+        spine_url = re.sub(r'_\d+\.jpg$', '_d.jpg', spine_url)
+        # Uppercase the first letter of the filename
+        parts = spine_url.rsplit('/', 1)
+        if len(parts) == 2 and parts[1]:
+            parts[1] = parts[1][0].upper() + parts[1][1:]
+            spine_url = '/'.join(parts)
+
     return {
         "isbn13": item.get("isbn13", ""),
         "title": item.get("title", ""),
@@ -37,7 +50,8 @@ def parse_aladin_item(item: dict, nationality: str = None) -> dict:
         "nationality": nationality,
         "publisher": item.get("publisher", ""),
         "pub_date": item.get("pubDate", ""),
-        "cover_url": item.get("cover", "").replace("cover200", "cover500").replace("coversum", "cover500"),
+        "cover_url": cover_url,
+        "spine_url": spine_url,
         "link": item.get("link", ""),
         "price": item.get("priceSales", 0),
         "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),

@@ -14,24 +14,42 @@
     <button class="filter-btn" data-filter="OTHER">기타 해외</button>
 </div>
 
-<div class="book-grid" id="book-grid">
+<!-- Bookshelf View -->
+<div class="bookshelf" id="book-grid">
     {% for book in books %}
-    <div class="book-card" data-nationality="{{ book.nationality }}">
-        <a href="{{ book.link }}" target="_blank" rel="noopener">
-            <img src="{{ book.cover_url }}" alt="{{ book.title }}" loading="lazy">
-        </a>
-        <div class="book-info">
-            <h3>
-                <a href="{{ book.link }}" target="_blank" rel="noopener">{{ book.title }}</a>
-                {% if book.nationality == 'JP' %}
-                <span class="badge badge-jp">JP</span>
-                {% elif book.nationality == 'KR' %}
-                <span class="badge badge-kr">KR</span>
+    <div class="spine-wrapper" data-nationality="{{ book.nationality }}">
+        <div class="spine-book">
+            <!-- Spine (default) -->
+            <div class="spine-face">
+                {% if book.spine_url %}
+                <img src="{{ book.spine_url }}" alt="{{ book.title }}" loading="lazy"
+                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="spine-fallback" style="display:none">
+                    <span class="spine-title">{{ book.title }}</span>
+                </div>
+                {% else %}
+                <div class="spine-fallback">
+                    <span class="spine-title">{{ book.title }}</span>
+                </div>
                 {% endif %}
-            </h3>
-            <p class="author">{{ book.author }}</p>
-            <p class="meta">{{ book.publisher }} · {{ book.pub_date }}</p>
-            <p class="price">{{ "{:,}".format(book.price) }}원</p>
+                {% if book.nationality == 'JP' %}
+                <span class="spine-badge badge-jp"></span>
+                {% elif book.nationality == 'KR' %}
+                <span class="spine-badge badge-kr"></span>
+                {% endif %}
+            </div>
+            <!-- Cover (revealed on hover) -->
+            <div class="cover-reveal">
+                <a href="{{ book.link }}" target="_blank" rel="noopener">
+                    <img src="{{ book.cover_url }}" alt="{{ book.title }}" loading="lazy">
+                </a>
+                <div class="cover-info">
+                    <h3>{{ book.title }}</h3>
+                    <p class="author">{{ book.author }}</p>
+                    <p class="meta">{{ book.publisher }}</p>
+                    <p class="price">{{ "{:,}".format(book.price) }}원</p>
+                </div>
+            </div>
         </div>
     </div>
     {% endfor %}
