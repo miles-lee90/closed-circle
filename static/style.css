@@ -182,19 +182,16 @@ main {
 }
 
 .spine-wrapper {
-    height: 300px;
     position: relative;
 }
 
 .spine-book {
-    height: 100%;
     position: relative;
     cursor: pointer;
 }
 
 /* ─── Spine Face ─── */
 .spine-face {
-    height: 100%;
     position: relative;
     overflow: hidden;
     border-radius: 2px;
@@ -203,14 +200,16 @@ main {
 }
 
 .spine-face img {
-    height: 100%;
+    height: auto;
     width: auto;
+    max-height: 320px;
+    min-height: 200px;
     display: block;
 }
 
 .spine-fallback {
     width: 40px;
-    height: 100%;
+    height: 260px;
     background: var(--bg-elevated);
     display: flex;
     align-items: center;
@@ -485,12 +484,17 @@ footer a:hover {
         height: 240px;
     }
 
-    .spine-wrapper {
-        height: 240px;
+    .spine-face img {
+        max-height: 250px;
+        min-height: 160px;
     }
 
     .cover-reveal {
         width: 150px;
+    }
+
+    .spine-fallback {
+        height: 200px;
     }
 
     .filters {
@@ -523,12 +527,13 @@ footer a:hover {
         font-size: 1rem;
     }
 
-    .spine-wrapper {
-        height: 200px;
+    .spine-face img {
+        max-height: 200px;
+        min-height: 130px;
     }
 
-    .spine-wrapper {
-        height: 200px;
+    .spine-fallback {
+        height: 160px;
     }
 
     .news-card {
