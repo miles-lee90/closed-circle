@@ -21,12 +21,14 @@
             <img src="{{ book.cover_url }}" alt="{{ book.title }}" loading="lazy">
         </a>
         <div class="book-info">
-            {% if book.nationality == 'JP' %}
-            <span class="badge badge-jp">JP</span>
-            {% elif book.nationality == 'KR' %}
-            <span class="badge badge-kr">KR</span>
-            {% endif %}
-            <h3><a href="{{ book.link }}" target="_blank" rel="noopener">{{ book.title }}</a></h3>
+            <h3>
+                <a href="{{ book.link }}" target="_blank" rel="noopener">{{ book.title }}</a>
+                {% if book.nationality == 'JP' %}
+                <span class="badge badge-jp">JP</span>
+                {% elif book.nationality == 'KR' %}
+                <span class="badge badge-kr">KR</span>
+                {% endif %}
+            </h3>
             <p class="author">{{ book.author }}</p>
             <p class="meta">{{ book.publisher }} · {{ book.pub_date }}</p>
             <p class="price">{{ "{:,}".format(book.price) }}원</p>
