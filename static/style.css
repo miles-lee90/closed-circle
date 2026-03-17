@@ -184,6 +184,7 @@ main {
 
 .spine-wrapper {
     position: relative;
+    transform-origin: bottom center;
 }
 
 .spine-book {
