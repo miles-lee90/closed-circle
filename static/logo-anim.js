@@ -25,12 +25,11 @@ document.addEventListener("DOMContentLoaded", function () {
         var face = spine.querySelector(".spine-face");
         if (!face) return;
 
-        var angle = (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 2);
+        var angle = (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 4);
 
-        // Just rotate the face and add generous fixed margin
         face.style.transform = "rotate(" + angle + "deg)";
         face.style.transformOrigin = "bottom center";
-        spine.style.marginLeft = "30px";
+        spine.style.marginLeft = "4px";
         spine.style.marginRight = "30px";
     });
 });
