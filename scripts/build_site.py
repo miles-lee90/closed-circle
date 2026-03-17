@@ -98,7 +98,7 @@ def build():
 
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
 
-    for template_name in ["index.html", "news.html", "about.html"]:
+    for template_name in ["index.html", "books.html", "news.html", "about.html"]:
         template = env.get_template(template_name)
         html = template.render(**context)
         (DOCS_DIR / template_name).write_text(html, encoding="utf-8")

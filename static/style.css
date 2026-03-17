@@ -114,6 +114,85 @@ main {
     padding-bottom: 6rem;
 }
 
+/* ─── Landing Page ─── */
+.landing-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    padding: 6rem 2rem 2rem;
+    text-align: center;
+}
+
+.landing-logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 1.5rem;
+}
+
+.landing-title {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    background: linear-gradient(180deg, #fff 0%, #86868b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.75rem;
+}
+
+.landing-tagline {
+    color: var(--text-secondary);
+    font-size: 1.25rem;
+    font-weight: 400;
+}
+
+.landing-cards {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    padding: 0 2rem 6rem;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.landing-card {
+    flex: 1;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all var(--transition);
+}
+
+.landing-card:hover {
+    background: var(--bg-glass-hover);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-4px);
+    color: var(--text-primary);
+}
+
+.landing-card-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.landing-card h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.landing-card p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
 /* ─── Hero ─── */
 .hero {
     text-align: center;

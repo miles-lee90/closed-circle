@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}신간 - Closed Circle{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>미스터리 신간</h1>
+    <p>국내 출간 미스터리 소설 신작 목록</p>
+</section>
+
+<div class="filters">
+    <button class="filter-btn active" data-filter="all">전체</button>
+    <button class="filter-btn" data-filter="JP">일본</button>
+    <button class="filter-btn" data-filter="KR">한국</button>
+</div>
+
+<!-- Bookshelf View -->
+<div class="bookshelf" id="book-grid">
+    {% for book in books %}
+    {% set h = book.size_height if book.size_height else 188 %}
+    {% set d = book.size_depth if book.size_depth else 15 %}
+    {% set spine_h = (h * 3.0)|int %}
+    {% set spine_w = (d * 2.8)|int %}
+    {% set spine_w = [spine_w, 20]|max %}
+    <div class="spine-wrapper" data-nationality="{{ book.nationality }}" style="height:{{ spine_h }}px;margin-right:{{ book.gap }}px">
+        <div class="spine-book" style="height:100%">
+            <!-- Spine (default) -->
+            <div class="spine-face">
+                <img class="spine-img" src="{{ book.spine_url }}" alt="{{ book.title }}" loading="lazy">
+                {% if book.nationality == 'JP' %}
+                <span class="spine-badge badge-jp"></span>
+                {% elif book.nationality == 'KR' %}
+                <span class="spine-badge badge-kr"></span>
+                {% endif %}
+            </div>
+            <!-- Info popup -->
+            <div class="cover-reveal">
+                <a href="{{ book.link }}" target="_blank" rel="noopener">
+                    <img src="{{ book.cover_url }}" alt="{{ book.title }}" loading="lazy">
+                </a>
+                <h3 class="cover-title"><a href="{{ book.link }}" target="_blank" rel="noopener">{{ book.title }}</a></h3>
+                <p class="cover-author">{{ book.author }}</p>
+                <p class="cover-meta">{{ book.publisher }} · {{ book.pub_date }}</p>
+                <p class="cover-price">{{ "{:,}".format(book.price) }}원</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not books %}
+<p class="empty">아직 수집된 신간이 없습니다.</p>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="static/filter.js"></script>
+{% endblock %}
