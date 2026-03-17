@@ -1,9 +1,9 @@
-// Tilt random books — wrapper width set to rotated bounding box
+// Tilt random books — use getBoundingClientRect after rotation
+// to set wrapper width to actual visual size
 document.addEventListener("DOMContentLoaded", function () {
     var spines = document.querySelectorAll(".spine-wrapper");
     if (!spines.length) return;
 
-    // Pick ~12%, never adjacent
     var indices = [];
     for (var i = 0; i < spines.length; i++) indices.push(i);
     for (var i = indices.length - 1; i > 0; i--) {
@@ -14,32 +14,36 @@ document.addEventListener("DOMContentLoaded", function () {
     var tilted = new Set();
     for (var k = 0; k < indices.length && tilted.size < count; k++) {
         var idx = indices[k];
-        if (tilted.has(idx - 1) || tilted.has(idx + 1)) continue;
+        if (tilted.has(idx - 1) || tilted.has(idx + 1) || tilted.has(idx - 2) || tilted.has(idx + 2)) continue;
         tilted.add(idx);
     }
 
+    // First pass: apply rotation
+    var tiltData = [];
     tilted.forEach(function (idx) {
         var spine = spines[idx];
         var face = spine.querySelector(".spine-face");
         if (!face) return;
 
         var angle = (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 1.5);
-        var rad = Math.abs(angle) * Math.PI / 180;
-
-        // Measure original size
-        var h = face.offsetHeight;
-        var w = face.offsetWidth;
-
-        // Rotated bounding box width
-        var rotatedW = Math.ceil(Math.sin(rad) * h + Math.cos(rad) * w);
-
-        // Set wrapper to exact rotated width so layout doesn't overlap
-        spine.style.width = (rotatedW + 12) + "px";
-        spine.style.display = "flex";
-        spine.style.justifyContent = "center";
-
-        // Rotate the face
         face.style.transform = "rotate(" + angle + "deg)";
         face.style.transformOrigin = "bottom center";
+        tiltData.push({ spine: spine, face: face, angle: angle });
+    });
+
+    // Second pass: measure actual bounding rect AFTER rotation and fix wrapper
+    requestAnimationFrame(function () {
+        tiltData.forEach(function (d) {
+            var rect = d.face.getBoundingClientRect();
+            var wrapperRect = d.spine.getBoundingClientRect();
+            var neededWidth = Math.ceil(rect.width) + 16;
+
+            d.spine.style.width = neededWidth + "px";
+            d.spine.style.position = "relative";
+            d.face.style.position = "absolute";
+            d.face.style.bottom = "0";
+            d.face.style.left = "50%";
+            d.face.style.transform = "translateX(-50%) rotate(" + d.angle + "deg)";
+        });
     });
 });
