@@ -82,7 +82,7 @@ def build():
     tilt_indices = set(random.sample(range(len(books)), min(tilt_count, len(books))))
     for i, b in enumerate(books):
         if i in tilt_indices:
-            b["tilt"] = random.choice([-2, -1.5, 1.5, 2])
+            b["tilt"] = random.choice([-3, -2.5, 2.5, 3])
         else:
             b["tilt"] = 0
         # Random gap: 2~10px for natural spacing

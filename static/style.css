@@ -187,19 +187,15 @@ main {
     position: relative;
 }
 
-.spine-wrapper.tilted {
-    padding: 0 36px;
-}
-
 .spine-wrapper.tilted .spine-book {
     transform: rotate(var(--tilt));
     transform-origin: bottom center;
 }
 
-/* Prevent any overlap from rotation */
-.spine-wrapper.tilted .spine-face {
-    position: relative;
-    z-index: 2;
+/* Clip the tilted book so it doesn't visually overlap neighbors */
+.spine-wrapper.tilted {
+    overflow: hidden;
+    padding-top: 20px;
 }
 
 .spine-book {
