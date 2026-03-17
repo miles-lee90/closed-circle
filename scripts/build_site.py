@@ -61,17 +61,7 @@ def build():
     save_json(news, DATA_DIR / "publisher_news.json")
 
     # Only JP and KR, only books with spine images, verify spine exists
-    # Re-classify to catch miscategorized books (e.g. English authors in JP category)
     import requests
-    from scripts.classify import classify_author
-    overrides = config.get("author_overrides", {}) if "author_overrides" in config else {}
-    for b in books:
-        actual = classify_author(b.get("author", ""), b.get("author_original", ""), overrides)
-        if actual != "OTHER":
-            b["nationality"] = actual
-        # If classifier says OTHER but Aladin says JP/KR, trust classifier → mark OTHER
-        elif b.get("nationality") in ("JP", "KR"):
-            b["nationality"] = actual
     books = [b for b in books if b.get("nationality") in ("JP", "KR") and b.get("spine_url")]
     verified = []
     for b in books:

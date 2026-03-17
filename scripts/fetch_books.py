@@ -43,12 +43,23 @@ def parse_aladin_item(item: dict, nationality: str = None) -> dict:
             parts[1] = parts[1][0].upper() + parts[1][1:]
             spine_url = '/'.join(parts)
 
+    # Override nationality based on actual categoryName from API
+    cat_name = item.get("categoryName", "")
+    if "일본" in cat_name:
+        actual_nationality = "JP"
+    elif "한국" in cat_name:
+        actual_nationality = "KR"
+    elif "영미" in cat_name or "기타국가" in cat_name or "외국" in cat_name:
+        actual_nationality = "OTHER"
+    else:
+        actual_nationality = nationality
+
     return {
         "isbn13": item.get("isbn13", ""),
         "title": item.get("title", ""),
         "author": author,
         "author_original": item.get("authorInfo", ""),
-        "nationality": nationality,
+        "nationality": actual_nationality,
         "publisher": item.get("publisher", ""),
         "pub_date": item.get("pubDate", ""),
         "cover_url": cover_url,
