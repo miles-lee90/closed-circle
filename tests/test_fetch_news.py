@@ -71,6 +71,20 @@ def test_is_mystery_related_matches_keyword():
     assert is_mystery_related("", "히가시노 게이고 신작") is True
 
 
+def test_is_mystery_related_matches_expanded_keywords():
+    assert is_mystery_related("하드보일드 소설의 영광", "") is True
+    assert is_mystery_related("", "밀실 트릭의 대가") is True
+    assert is_mystery_related("시체가 발견된 후", "") is True
+    assert is_mystery_related("", "납치된 소녀의 행방") is True
+    assert is_mystery_related("", "마쓰모토 세이초 걸작선") is True
+
+
+def test_is_mystery_related_matches_book_title_with_context():
+    assert is_mystery_related("『살인자의 기억법』 출간", "") is True
+    assert is_mystery_related("《명탐정의 창자》 신간 소개", "") is True
+    assert is_mystery_related("", "신작 소설 「어둠의 끝」 리뷰") is True
+
+
 def test_is_mystery_related_rejects_unrelated():
     assert is_mystery_related("에세이 추천", "좋은 책입니다") is False
     assert is_mystery_related("강연 안내", "작가와의 만남") is False
