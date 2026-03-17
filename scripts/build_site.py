@@ -15,7 +15,7 @@ STATIC_DIR = PROJECT_ROOT / "static"
 DOCS_DIR = PROJECT_ROOT / "docs"
 CONFIG_PATH = PROJECT_ROOT / "config.yaml"
 
-RETENTION_DAYS = 90
+RETENTION_DAYS = 365
 
 
 def filter_by_retention(items: list[dict], retention_days: int = RETENTION_DAYS) -> list[dict]:
