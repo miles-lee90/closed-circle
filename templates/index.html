@@ -21,7 +21,7 @@
     {% set spine_h = (h * 3.0)|int %}
     {% set spine_w = (d * 2.8)|int %}
     {% set spine_w = [spine_w, 20]|max %}
-    <div class="spine-wrapper{% if book.tilt %} tilted{% endif %}" data-nationality="{{ book.nationality }}" style="height:{{ spine_h }}px;margin-right:{{ book.gap }}px;{% if book.tilt %}--tilt:{{ book.tilt }}deg{% endif %}">
+    <div class="spine-wrapper" data-nationality="{{ book.nationality }}" style="height:{{ spine_h }}px;margin-right:{{ book.gap }}px">
         <div class="spine-book" style="height:100%">
             <!-- Spine (default) -->
             <div class="spine-face">

@@ -78,14 +78,7 @@ def build():
     # Randomly assign tilt + gap variation
     import random
     random.seed(42)
-    tilt_count = max(2, len(books) // 8)
-    tilt_indices = set(random.sample(range(len(books)), min(tilt_count, len(books))))
-    for i, b in enumerate(books):
-        if i in tilt_indices:
-            b["tilt"] = random.choice([-3, -2.5, 2.5, 3])
-        else:
-            b["tilt"] = 0
-        # Random gap: 2~10px for natural spacing
+    for b in books:
         b["gap"] = random.randint(5, 12)
     news = sorted(news, key=lambda n: n.get("pub_date", ""), reverse=True)
 
