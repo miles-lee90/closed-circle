@@ -37,18 +37,15 @@
                 var pw = rr.width;
                 var ph = rr.height;
 
-                var scrollX = window.scrollX;
-                var scrollY = window.scrollY;
-
                 // Prefer right of click, fallback left
-                var x = e.pageX + 16;
-                if (e.clientX + 16 + pw > vw - 12) x = e.pageX - pw - 16;
-                if (x < scrollX + 12) x = scrollX + 12;
+                var x = e.clientX + 16;
+                if (x + pw > vw - 12) x = e.clientX - pw - 16;
+                if (x < 12) x = 12;
 
                 // Center vertically on click, clamp to viewport
-                var y = e.pageY - ph / 2;
-                if (y < scrollY + 12) y = scrollY + 12;
-                if (y + ph > scrollY + vh - 12) y = scrollY + vh - ph - 12;
+                var y = e.clientY - ph / 2;
+                if (y < 12) y = 12;
+                if (y + ph > vh - 12) y = vh - ph - 12;
 
                 reveal.style.left = x + "px";
                 reveal.style.top = y + "px";
@@ -59,14 +56,17 @@
         });
     });
 
-    document.addEventListener("click", function () {
+    function closePopup() {
         if (openReveal) {
             openReveal.classList.remove("visible");
             openSpine.classList.remove("active");
             openSpine = null;
             openReveal = null;
         }
-    });
+    }
+
+    document.addEventListener("click", closePopup);
+    window.addEventListener("scroll", closePopup);
 })();
 
 document.addEventListener("DOMContentLoaded", function () {
