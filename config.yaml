@@ -52,8 +52,11 @@ publishers:
     feed_url: "TBD"
     type: TBD
   - name: 북다
-    feed_url: "TBD"
-    type: TBD
+    feed_url: "https://nitter.net/vook_da/rss"
+    type: x_rss
+  - name: 서사원
+    feed_url: "https://nitter.net/seosawon_books/rss"
+    type: x_rss
 
 author_overrides:
   "히가시노 게이고": "JP"
