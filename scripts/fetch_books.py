@@ -23,7 +23,7 @@ def load_config():
         return yaml.safe_load(f)
 
 
-def parse_aladin_item(item: dict) -> dict:
+def parse_aladin_item(item: dict, nationality: str = None) -> dict:
     """Parse a single Aladin API item into our book schema."""
     author_raw = item.get("author", "")
     author = re.split(r"\s*\(", author_raw)[0].strip()
@@ -34,7 +34,7 @@ def parse_aladin_item(item: dict) -> dict:
         "title": item.get("title", ""),
         "author": author,
         "author_original": item.get("authorInfo", ""),
-        "nationality": None,
+        "nationality": nationality,
         "publisher": item.get("publisher", ""),
         "pub_date": item.get("pubDate", ""),
         "cover_url": item.get("cover", ""),
@@ -106,10 +106,12 @@ def main():
 
     existing = load_books()
     all_new = []
-    for cat_id in config["aladin"]["category_ids"]:
-        print(f"Fetching category {cat_id}...")
+    for cat in config["aladin"]["categories"]:
+        cat_id = cat["id"]
+        nationality = cat.get("nationality")
+        print(f"Fetching {cat.get('name', cat_id)}...")
         items = fetch_from_aladin(ttb_key, cat_id, config["aladin"].get("max_results", 50))
-        parsed = [parse_aladin_item(item) for item in items]
+        parsed = [parse_aladin_item(item, nationality=nationality) for item in items]
         all_new.extend(parsed)
         print(f"  Found {len(parsed)} books")
 

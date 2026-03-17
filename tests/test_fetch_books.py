@@ -23,8 +23,13 @@ def test_parse_aladin_item():
     assert result["cover_url"].startswith("https://")
     assert result["link"].startswith("https://")
     assert result["price"] == 14400
-    assert result["nationality"] is None
+    assert result["nationality"] is None  # no nationality passed
     assert "fetched_at" in result
+
+
+def test_parse_aladin_item_with_nationality():
+    result = parse_aladin_item(SAMPLE_ITEM, nationality="JP")
+    assert result["nationality"] == "JP"
 
 
 def test_parse_aladin_item_strips_author_role():

@@ -1,8 +1,14 @@
 aladin:
-  category_ids:
-    - 50926   # 일본 추리/미스터리소설
-    - 50919   # 영미 추리/미스터리소설
-    - 51065   # 한국 추리/미스터리소설
+  categories:
+    - id: 50926
+      name: 일본 추리/미스터리소설
+      nationality: JP
+    - id: 50919
+      name: 영미 추리/미스터리소설
+      nationality: OTHER
+    - id: 51065
+      name: 한국 추리/미스터리소설
+      nationality: KR
   max_results: 50
 
 publishers:
