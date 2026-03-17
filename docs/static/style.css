@@ -1,5 +1,5 @@
 :root {
-    --bg: #000000;
+    --bg: #0a0a0a;
     --bg-elevated: #1c1c1e;
     --bg-card: #1c1c1e;
     --bg-glass: rgba(255, 255, 255, 0.08);
@@ -28,8 +28,7 @@
 body {
     background: var(--bg);
     color: var(--text-primary);
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
-                 'Helvetica Neue', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
     font-size: 16px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
@@ -68,15 +67,17 @@ nav {
 }
 
 .logo {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
 }
 
 .logo:hover {
-    color: var(--text-primary);
     opacity: 0.8;
+}
+
+.logo-img {
+    height: 36px;
+    width: auto;
 }
 
 .nav-links {
