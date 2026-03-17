@@ -69,7 +69,7 @@ nav {
 .logo {
     display: flex;
     align-items: center;
-    gap: 0.625rem;
+    gap: 0.5rem;
 }
 
 .logo:hover {
@@ -77,15 +77,22 @@ nav {
 }
 
 .logo-img {
-    height: 32px;
+    height: 38px;
     width: auto;
 }
 
 .logo-text {
-    font-size: 1.0625rem;
-    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.05;
+}
+
+.logo-text span {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 800;
     color: var(--text-primary);
-    letter-spacing: 0.08em;
+    letter-spacing: -0.04em;
 }
 
 .nav-links {
