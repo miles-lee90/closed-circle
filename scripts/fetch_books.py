@@ -58,6 +58,7 @@ def fetch_from_aladin(ttb_key: str, category_id: int, max_results: int = 50) -> 
             "CategoryId": category_id,
             "output": "js",
             "Version": "20131101",
+            "Cover": "Big",
         }
         resp = requests.get(ALADIN_API_URL, params=params, timeout=30)
         resp.raise_for_status()
