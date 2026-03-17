@@ -69,7 +69,7 @@ def parse_aladin_item(item: dict, nationality: str = None, author_overrides: dic
         "cover_url": cover_url,
         "spine_url": spine_url,
         "link": item.get("link", ""),
-        "price": item.get("priceSales", 0),
+        "price": item.get("priceStandard", 0),
         "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
 
