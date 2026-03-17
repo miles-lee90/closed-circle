@@ -1,15 +1,13 @@
-// Logo animation: red dot fades between positions with acceleration/deceleration
-// Starts at position 3 (home), cycles through all 8, pauses 8s at home
+// Logo animation: red dot fades between positions with accel/decel
+// Home position: idx 2 (3 o'clock). Starts immediately, pauses 8s at home.
 (function () {
     var dots = document.querySelectorAll(".red-pos");
     if (!dots.length) return;
 
-    var HOME = 3;
-    var current = HOME;
+    var HOME = 2;
     var total = 8;
 
-    // Intervals: slow at start, fast in middle, slow at end (ease in-out feel)
-    // Order: home(3) -> 4 -> 5 -> 6 -> 7 -> 0 -> 1 -> 2 -> back to 3
+    // Delays per step: slow → fast → slow, last one is the home pause
     var delays = [500, 400, 300, 250, 300, 400, 500, 8000];
 
     function setActive(idx) {
@@ -22,12 +20,12 @@
 
     function tick() {
         step = (step + 1) % total;
-        current = (HOME + step) % total;
+        var current = (HOME + step) % total;
         setActive(current);
         setTimeout(tick, delays[step]);
     }
 
-    // Start after initial pause
+    // Start at home, begin animation immediately
     setActive(HOME);
-    setTimeout(tick, delays[delays.length - 1]);
+    setTimeout(tick, 500);
 })();
