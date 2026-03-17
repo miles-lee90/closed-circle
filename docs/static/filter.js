@@ -16,10 +16,11 @@
     var count = Math.max(2, Math.floor(spines.length * 0.12));
     for (var k = 0; k < count; k++) {
         var idx = indices[k];
-        var angle = (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 4);
-        var shift = Math.abs(angle) * 2;
+        var angle = (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 3);
+        var pad = Math.ceil(Math.abs(angle) * 5);
         spines[idx].style.transform = "rotate(" + angle + "deg)";
-        spines[idx].style.marginTop = shift + "px";
+        spines[idx].style.marginLeft = pad + "px";
+        spines[idx].style.marginRight = pad + "px";
         spines[idx].style.zIndex = "1";
     }
 })();
