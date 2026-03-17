@@ -1,51 +1,29 @@
-// Cover reveal on click — click spine to show, click elsewhere to close
+// 3D book open on click — click spine to rotate open, click again or outside to close
 (function () {
-    var openReveal = null;
     var openSpine = null;
 
     document.querySelectorAll(".spine-wrapper").forEach(function (spine) {
-        var reveal = spine.querySelector(".cover-reveal");
-        if (!reveal) return;
-
         spine.addEventListener("click", function (e) {
             e.stopPropagation();
 
-            // If clicking the same spine, close it
             if (openSpine === spine) {
-                reveal.classList.remove("visible");
-                spine.classList.remove("active");
-                openReveal = null;
+                spine.classList.remove("open");
                 openSpine = null;
                 return;
             }
 
-            // Close previous
-            if (openReveal) {
-                openReveal.classList.remove("visible");
-                openSpine.classList.remove("active");
+            if (openSpine) {
+                openSpine.classList.remove("open");
             }
 
-            // Position near click
-            var rect = spine.getBoundingClientRect();
-            var vw = window.innerWidth;
-            var x = rect.right + 12;
-            if (x + 200 > vw) x = rect.left - 200 - 12;
-
-            reveal.style.left = x + "px";
-            reveal.style.top = rect.top + "px";
-            reveal.classList.add("visible");
-            spine.classList.add("active");
-            openReveal = reveal;
+            spine.classList.add("open");
             openSpine = spine;
         });
     });
 
-    // Click outside closes
     document.addEventListener("click", function () {
-        if (openReveal) {
-            openReveal.classList.remove("visible");
-            openSpine.classList.remove("active");
-            openReveal = null;
+        if (openSpine) {
+            openSpine.classList.remove("open");
             openSpine = null;
         }
     });
