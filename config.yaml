@@ -28,8 +28,8 @@ publishers:
     type: x_rss
   # RSS 미확인 — 추후 조사
   - name: 은행나무
-    feed_url: "TBD"
-    type: TBD
+    feed_url: "https://nitter.net/ehbook/rss"
+    type: x_rss
   - name: 비채
     feed_url: "https://nitter.net/vichebook/rss"
     type: x_rss
@@ -37,11 +37,11 @@ publishers:
     feed_url: "https://nitter.net/mytomobook/rss"
     type: x_rss
   - name: 현대문학
-    feed_url: "TBD"
-    type: TBD
+    feed_url: "https://nitter.net/hdmhbook/rss"
+    type: x_rss
   - name: 나비클럽
-    feed_url: "TBD"
-    type: TBD
+    feed_url: "https://nitter.net/Nabiclub17/rss"
+    type: x_rss
   - name: 블루홀식스
     feed_url: "TBD"
     type: TBD
@@ -49,8 +49,8 @@ publishers:
     feed_url: "TBD"
     type: TBD
   - name: 리드비
-    feed_url: "TBD"
-    type: TBD
+    feed_url: "https://nitter.net/readbie_edit/rss"
+    type: x_rss
   - name: 북다
     feed_url: "https://nitter.net/vook_da/rss"
     type: x_rss
