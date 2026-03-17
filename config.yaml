@@ -45,9 +45,9 @@ publishers:
   - name: 블루홀식스
     feed_url: "https://nitter.net/_blueholesix/rss"
     type: x_rss
-  - name: 반타
-    feed_url: "TBD"
-    type: TBD
+  - name: 반타(오펜하우스)
+    feed_url: "https://nitter.net/ofanhouse/rss"
+    type: x_rss
   - name: 리드비
     feed_url: "https://nitter.net/readbie_edit/rss"
     type: x_rss
