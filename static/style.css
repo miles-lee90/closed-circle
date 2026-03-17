@@ -192,17 +192,16 @@ main {
 
 /* ─── Spine Face ─── */
 .spine-face {
+    height: 100%;
     position: relative;
-    overflow: hidden;
     border-radius: 2px;
     transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
     box-shadow: 1px 0 3px rgba(0,0,0,0.4), -1px 0 2px rgba(0,0,0,0.2);
 }
 
 .spine-face img {
-    width: 100%;
     height: 100%;
-    object-fit: fill;
+    width: auto;
     display: block;
 }
 

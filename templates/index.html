@@ -25,7 +25,7 @@
     <div class="spine-wrapper" data-nationality="{{ book.nationality }}" style="height:{{ spine_h }}px">
         <div class="spine-book" style="height:100%">
             <!-- Spine (default) -->
-            <div class="spine-face" style="width:{{ spine_w }}px;height:100%">
+            <div class="spine-face">
                 {% if book.spine_url %}
                 <img src="{{ book.spine_url }}" alt="{{ book.title }}" loading="lazy"
                      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
