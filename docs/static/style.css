@@ -77,22 +77,22 @@ nav {
 }
 
 .logo-img {
-    height: 38px;
+    height: 42px;
     width: auto;
 }
 
 .logo-text {
     display: flex;
     flex-direction: column;
-    line-height: 1.05;
+    line-height: 1;
 }
 
 .logo-text span {
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.9375rem;
-    font-weight: 800;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.1875rem;
+    font-weight: 700;
     color: var(--text-primary);
-    letter-spacing: -0.04em;
+    letter-spacing: -0.03em;
 }
 
 .nav-links {
