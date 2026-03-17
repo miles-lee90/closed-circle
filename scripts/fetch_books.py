@@ -16,6 +16,7 @@ CONFIG_PATH = PROJECT_ROOT / "config.yaml"
 BOOKS_PATH = DATA_DIR / "books.json"
 
 ALADIN_API_URL = "http://www.aladin.co.kr/ttb/api/ItemList.aspx"
+ALADIN_LOOKUP_URL = "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx"
 
 
 def load_config():
@@ -112,6 +113,30 @@ def save_books(books: list[dict], path: Path = BOOKS_PATH):
         json.dump(books, f, ensure_ascii=False, indent=2)
 
 
+def fetch_book_size(ttb_key: str, isbn13: str) -> dict:
+    """Fetch book packing size (height, width, depth in mm) from ItemLookUp API."""
+    try:
+        resp = requests.get(ALADIN_LOOKUP_URL, params={
+            "ttbkey": ttb_key,
+            "ItemId": isbn13,
+            "ItemIdType": "ISBN13",
+            "output": "js",
+            "Version": "20131101",
+            "OptResult": "packing",
+        }, timeout=15)
+        resp.raise_for_status()
+        data = resp.json()
+        item = data.get("item", [{}])[0]
+        packing = item.get("subInfo", {}).get("packing", {})
+        return {
+            "size_height": packing.get("sizeHeight", 0),
+            "size_width": packing.get("sizeWidth", 0),
+            "size_depth": packing.get("sizeDepth", 0),
+        }
+    except Exception:
+        return {"size_height": 0, "size_width": 0, "size_depth": 0}
+
+
 def merge_books(existing: list[dict], new: list[dict]) -> list[dict]:
     """Merge new books into existing list, deduplicating by isbn13. Newer wins."""
     by_isbn = {b["isbn13"]: b for b in existing}
@@ -139,6 +164,20 @@ def main():
         print(f"  Found {len(parsed)} books")
 
     merged = merge_books(existing, all_new)
+
+    # Fetch size info for books missing it
+    import time
+    needs_size = [b for b in merged if not b.get("size_height")]
+    if needs_size:
+        print(f"Fetching size info for {len(needs_size)} books...")
+        for i, book in enumerate(needs_size):
+            size = fetch_book_size(ttb_key, book["isbn13"])
+            book.update(size)
+            if (i + 1) % 20 == 0:
+                print(f"  {i + 1}/{len(needs_size)} done")
+            time.sleep(0.2)  # rate limit
+        print(f"  Size info fetched for {len(needs_size)} books")
+
     save_books(merged)
     print(f"Total books in database: {len(merged)}")
 

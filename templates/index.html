@@ -17,18 +17,23 @@
 <!-- Bookshelf View -->
 <div class="bookshelf" id="book-grid">
     {% for book in books %}
-    <div class="spine-wrapper" data-nationality="{{ book.nationality }}">
-        <div class="spine-book">
+    {% set h = book.size_height if book.size_height else 188 %}
+    {% set d = book.size_depth if book.size_depth else 15 %}
+    {% set spine_h = (h * 1.6)|int %}
+    {% set spine_w = (d * 2.8)|int %}
+    {% set spine_w = [spine_w, 20]|max %}
+    <div class="spine-wrapper" data-nationality="{{ book.nationality }}" style="height:{{ spine_h }}px">
+        <div class="spine-book" style="height:100%">
             <!-- Spine (default) -->
-            <div class="spine-face">
+            <div class="spine-face" style="width:{{ spine_w }}px;height:100%">
                 {% if book.spine_url %}
                 <img src="{{ book.spine_url }}" alt="{{ book.title }}" loading="lazy"
                      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                <div class="spine-fallback" style="display:none">
+                <div class="spine-fallback" style="display:none;width:{{ spine_w }}px">
                     <span class="spine-title">{{ book.title }}</span>
                 </div>
                 {% else %}
-                <div class="spine-fallback">
+                <div class="spine-fallback" style="width:{{ spine_w }}px">
                     <span class="spine-title">{{ book.title }}</span>
                 </div>
                 {% endif %}
