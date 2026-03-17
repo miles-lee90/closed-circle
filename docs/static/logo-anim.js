@@ -31,12 +31,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Get the spine height to calculate how much horizontal space the tilt needs
         var h = face.offsetHeight;
+        var w = face.offsetWidth;
         var rad = Math.abs(angle) * Math.PI / 180;
-        var extra = Math.ceil(Math.sin(rad) * h) + 4;
+        var extra = Math.ceil(Math.sin(rad) * h + (1 - Math.cos(rad)) * w);
 
-        // Add margin to prevent overlap
-        spine.style.marginLeft = (extra / 2 + 4) + "px";
-        spine.style.marginRight = (extra / 2 + 4) + "px";
+        // Add generous margin to prevent overlap
+        spine.style.marginLeft = (extra + 8) + "px";
+        spine.style.marginRight = (extra + 8) + "px";
 
         // Apply rotation to the inner book, not the wrapper
         face.style.transform = "rotate(" + angle + "deg)";
