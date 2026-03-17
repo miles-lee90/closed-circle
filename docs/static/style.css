@@ -234,32 +234,24 @@ main {
 
 /* ─── Cover Reveal ─── */
 .cover-reveal {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%) scale(0.9);
+    position: fixed;
     width: 180px;
     opacity: 0;
     pointer-events: none;
-    transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
-    z-index: 50;
+    transition: opacity 0.25s ease;
+    z-index: 1000;
     filter: drop-shadow(0 16px 40px rgba(0,0,0,0.7));
 }
 
-.spine-wrapper:hover .cover-reveal,
-.spine-wrapper.active .cover-reveal {
+.cover-reveal.visible {
     opacity: 1;
-    transform: translateX(-50%) scale(1) translateY(-20px);
-    pointer-events: auto;
 }
 
-.spine-wrapper:hover .spine-face,
-.spine-wrapper.active .spine-face {
+.spine-wrapper:hover .spine-face {
     opacity: 0.3;
 }
 
-.spine-wrapper:hover,
-.spine-wrapper.active {
+.spine-wrapper:hover {
     z-index: 60;
 }
 
