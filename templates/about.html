@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}소개 — {{ site_title }}{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>소개</h1>
+</section>
+
+<div class="about-content">
+    <h2>클로즈드 써클이란?</h2>
+    <p>국내 출간되는 미스터리 소설의 신작을 매일 자동으로 수집하여 보여주는 사이트입니다.
+       일본 작가의 미스터리를 우선으로 표시하며, 주요 미스터리 출판사의 소식도 함께 모아 봅니다.</p>
+
+    <h2>추적 중인 출판사</h2>
+    <ul>
+        {% for pub in publishers %}
+        <li>{{ pub }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>데이터 출처</h2>
+    <p>도서 정보는 <a href="https://www.aladin.co.kr" target="_blank" rel="noopener">알라딘</a>
+       Open API를 통해 제공됩니다.</p>
+</div>
+{% endblock %}

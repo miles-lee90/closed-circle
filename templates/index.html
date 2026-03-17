@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}신간 — {{ site_title }}{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>미스터리 신간</h1>
+    <p>국내 출간 미스터리 소설 신작 목록</p>
+</section>
+
+<div class="filters">
+    <button class="filter-btn active" data-filter="all">전체</button>
+    <button class="filter-btn" data-filter="JP">일본</button>
+    <button class="filter-btn" data-filter="KR">국내</button>
+    <button class="filter-btn" data-filter="OTHER">기타 해외</button>
+</div>
+
+<div class="book-grid" id="book-grid">
+    {% for book in books %}
+    <div class="book-card" data-nationality="{{ book.nationality }}">
+        <a href="{{ book.link }}" target="_blank" rel="noopener">
+            <img src="{{ book.cover_url }}" alt="{{ book.title }}" loading="lazy">
+        </a>
+        <div class="book-info">
+            {% if book.nationality == 'JP' %}
+            <span class="badge badge-jp">JP</span>
+            {% elif book.nationality == 'KR' %}
+            <span class="badge badge-kr">KR</span>
+            {% endif %}
+            <h3><a href="{{ book.link }}" target="_blank" rel="noopener">{{ book.title }}</a></h3>
+            <p class="author">{{ book.author }}</p>
+            <p class="meta">{{ book.publisher }} · {{ book.pub_date }}</p>
+            <p class="price">{{ "{:,}".format(book.price) }}원</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not books %}
+<p class="empty">아직 수집된 신간이 없습니다.</p>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="static/filter.js"></script>
+{% endblock %}

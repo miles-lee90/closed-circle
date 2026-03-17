@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ site_title }}{% endblock %}</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">{{ site_title }}</a>
+            <div class="nav-links">
+                <a href="index.html">신간</a>
+                <a href="news.html">출판사 소식</a>
+                <a href="about.html">소개</a>
+            </div>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>{{ site_description }}</p>
+        <p>마지막 업데이트: {{ updated_at }}</p>
+        <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank">알라딘</a></p>
+    </footer>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

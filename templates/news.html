@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}출판사 소식 — {{ site_title }}{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>출판사 소식</h1>
+    <p>미스터리 출판사의 최신 소식</p>
+</section>
+
+<div class="filters">
+    <button class="filter-btn active" data-filter="all">전체</button>
+    {% for pub in publishers %}
+    <button class="filter-btn" data-filter="{{ pub }}">{{ pub }}</button>
+    {% endfor %}
+</div>
+
+<div class="news-list" id="news-list">
+    {% for item in news %}
+    <div class="news-card" data-publisher="{{ item.publisher }}">
+        <span class="news-publisher">{{ item.publisher }}</span>
+        <h3><a href="{{ item.link }}" target="_blank" rel="noopener">{{ item.title }}</a></h3>
+        <p class="news-summary">{{ item.summary }}</p>
+        <p class="meta">{{ item.pub_date }}</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not news %}
+<p class="empty">아직 수집된 소식이 없습니다.</p>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="static/filter.js"></script>
+{% endblock %}
