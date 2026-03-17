@@ -12,22 +12,23 @@ aladin:
   max_results: 50
 
 publishers:
+  # 동작 확인된 RSS 피드
   - name: 엘릭시르
     feed_url: "https://rss.blog.naver.com/elixirbooks.xml"
     type: naver_rss
   - name: 북스피어
-    feed_url: "https://rss.blog.naver.com/booksphere.xml"
+    feed_url: "https://rss.blog.naver.com/booksfear.xml"
     type: naver_rss
   - name: 황금가지
-    feed_url: "https://rss.blog.naver.com/goldenbough.xml"
-    type: naver_rss
+    feed_url: "https://goldenbough.minumsa.com/feed"
+    type: website_rss
   - name: 문학동네
-    feed_url: "https://rss.blog.naver.com/munhakdongnebooks.xml"
+    feed_url: "https://rss.blog.naver.com/munhakdongne.xml"
     type: naver_rss
+  # RSS 미확인 — 추후 조사
   - name: 은행나무
-    feed_url: "https://rss.blog.naver.com/ginkobook.xml"
-    type: naver_rss
-  # Phase 2 — URL 조사 후 추가
+    feed_url: "TBD"
+    type: TBD
   - name: 비채
     feed_url: "TBD"
     type: TBD
