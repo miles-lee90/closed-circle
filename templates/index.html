@@ -11,7 +11,6 @@
     <button class="filter-btn active" data-filter="all">전체</button>
     <button class="filter-btn" data-filter="JP">일본</button>
     <button class="filter-btn" data-filter="KR">국내</button>
-    <button class="filter-btn" data-filter="OTHER">기타 해외</button>
 </div>
 
 <!-- Bookshelf View -->
@@ -28,15 +27,11 @@
             <div class="spine-face">
                 {% if book.spine_url %}
                 <img src="{{ book.spine_url }}" alt="{{ book.title }}" loading="lazy"
-                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                <div class="spine-fallback" style="display:none;width:{{ spine_w }}px">
-                    <span class="spine-title">{{ book.title }}</span>
-                </div>
-                {% else %}
-                <div class="spine-fallback" style="width:{{ spine_w }}px">
-                    <span class="spine-title">{{ book.title }}</span>
-                </div>
+                     onerror="this.parentElement.classList.add('no-spine-img')">
                 {% endif %}
+                <div class="spine-cover-crop" style="width:{{ spine_w }}px;background-image:url('{{ book.cover_url }}')">
+                    <span class="spine-title">{{ book.title }}</span>
+                </div>
                 {% if book.nationality == 'JP' %}
                 <span class="spine-badge badge-jp"></span>
                 {% elif book.nationality == 'KR' %}

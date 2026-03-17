@@ -205,27 +205,40 @@ main {
     display: block;
 }
 
-.spine-fallback {
-    width: 40px;
-    height: 260px;
-    background: var(--bg-elevated);
+/* Cover crop fallback — shown when spine image is missing */
+.spine-cover-crop {
+    display: none;
+    height: 100%;
+    background-size: cover;
+    background-position: left center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Show cover crop when spine image fails or doesn't exist */
+.spine-face.no-spine-img img { display: none; }
+.spine-face.no-spine-img .spine-cover-crop,
+.spine-face:not(:has(img)) .spine-cover-crop {
+    display: block;
+}
+
+.spine-cover-crop .spine-title {
+    position: absolute;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem 0;
-}
-
-.spine-title {
     writing-mode: vertical-rl;
     text-orientation: mixed;
-    font-size: 0.6875rem;
+    font-size: 0.625rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: #fff;
     letter-spacing: 0.02em;
+    padding: 0.5rem 0;
+    background: rgba(0,0,0,0.45);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-height: 90%;
 }
 
 .spine-badge {
