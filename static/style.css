@@ -84,13 +84,22 @@ nav {
 .logo-text {
     display: flex;
     flex-direction: column;
-    line-height: 1;
+    line-height: 1.05;
 }
 
-.logo-text span {
-    font-family: 'Fredoka', sans-serif;
+.logo-serif {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-weight: 800;
     font-size: 1.1875rem;
-    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.logo-sans {
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    font-weight: 800;
+    font-size: 1.125rem;
     color: var(--text-primary);
     letter-spacing: -0.03em;
 }
