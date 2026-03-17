@@ -66,6 +66,10 @@ author_overrides:
   "시마다 소지": "JP"
   "아야츠지 유키토": "JP"
   "유메노 규사쿠": "JP"
+  # 알라딘 분류 오류 교정 — 비일본 작가
+  "요 네스뵈": "OTHER"
+  "마거릿 밀러": "OTHER"
+  "프리드리히 뒤렌마트": "OTHER"
 
 schedule:
   cron: "0 0 * * *"  # UTC 00:00 = KST 09:00

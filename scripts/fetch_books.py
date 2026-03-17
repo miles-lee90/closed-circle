@@ -24,7 +24,7 @@ def load_config():
         return yaml.safe_load(f)
 
 
-def parse_aladin_item(item: dict, nationality: str = None) -> dict:
+def parse_aladin_item(item: dict, nationality: str = None, author_overrides: dict = None) -> dict:
     """Parse a single Aladin API item into our book schema."""
     author_raw = item.get("author", "")
     author = re.split(r"\s*\(", author_raw)[0].strip()
@@ -53,6 +53,10 @@ def parse_aladin_item(item: dict, nationality: str = None) -> dict:
         actual_nationality = "OTHER"
     else:
         actual_nationality = nationality
+
+    # Author overrides take highest priority
+    if author_overrides and author in author_overrides:
+        actual_nationality = author_overrides[author]
 
     return {
         "isbn13": item.get("isbn13", ""),
@@ -164,13 +168,16 @@ def main():
         sys.exit(1)
 
     existing = load_books()
+    overrides = config.get("author_overrides", {})
     all_new = []
     for cat in config["aladin"]["categories"]:
         cat_id = cat["id"]
         nationality = cat.get("nationality")
         print(f"Fetching {cat.get('name', cat_id)}...")
         items = fetch_from_aladin(ttb_key, cat_id, config["aladin"].get("max_results", 50))
-        parsed = [parse_aladin_item(item, nationality=nationality) for item in items]
+        parsed = [parse_aladin_item(item, nationality=nationality, author_overrides=overrides) for item in items]
+        # Skip items with no ISBN (sets, bundles)
+        parsed = [p for p in parsed if p["isbn13"]]
         all_new.extend(parsed)
         print(f"  Found {len(parsed)} books")
 
