@@ -1,39 +1,53 @@
-// Cover reveal follows mouse position
+// Cover reveal on click — click spine to show, click elsewhere to close
 (function () {
-    var activeReveal = null;
-
-    document.addEventListener("mousemove", function (e) {
-        if (!activeReveal) return;
-        var vw = window.innerWidth;
-        var vh = window.innerHeight;
-        var rw = activeReveal.offsetWidth;
-        var rh = activeReveal.offsetHeight;
-
-        var x = e.clientX + 20;
-        var y = e.clientY - rh / 2;
-
-        // Keep within viewport
-        if (x + rw > vw) x = e.clientX - rw - 20;
-        if (y < 8) y = 8;
-        if (y + rh > vh - 8) y = vh - rh - 8;
-
-        activeReveal.style.left = x + "px";
-        activeReveal.style.top = y + "px";
-    });
+    var openReveal = null;
+    var openSpine = null;
 
     document.querySelectorAll(".spine-wrapper").forEach(function (spine) {
         var reveal = spine.querySelector(".cover-reveal");
         if (!reveal) return;
 
-        spine.addEventListener("mouseenter", function () {
-            activeReveal = reveal;
-            reveal.classList.add("visible");
-        });
+        spine.addEventListener("click", function (e) {
+            e.stopPropagation();
 
-        spine.addEventListener("mouseleave", function () {
-            reveal.classList.remove("visible");
-            activeReveal = null;
+            // If clicking the same spine, close it
+            if (openSpine === spine) {
+                reveal.classList.remove("visible");
+                spine.classList.remove("active");
+                openReveal = null;
+                openSpine = null;
+                return;
+            }
+
+            // Close previous
+            if (openReveal) {
+                openReveal.classList.remove("visible");
+                openSpine.classList.remove("active");
+            }
+
+            // Position near click
+            var rect = spine.getBoundingClientRect();
+            var vw = window.innerWidth;
+            var x = rect.right + 12;
+            if (x + 200 > vw) x = rect.left - 200 - 12;
+
+            reveal.style.left = x + "px";
+            reveal.style.top = rect.top + "px";
+            reveal.classList.add("visible");
+            spine.classList.add("active");
+            openReveal = reveal;
+            openSpine = spine;
         });
+    });
+
+    // Click outside closes
+    document.addEventListener("click", function () {
+        if (openReveal) {
+            openReveal.classList.remove("visible");
+            openSpine.classList.remove("active");
+            openReveal = null;
+            openSpine = null;
+        }
     });
 })();
 

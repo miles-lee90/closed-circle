@@ -245,14 +245,19 @@ main {
 
 .cover-reveal.visible {
     opacity: 1;
+    pointer-events: auto;
 }
 
-.spine-wrapper:hover .spine-face {
-    opacity: 0.3;
+.spine-wrapper.active .spine-face {
+    opacity: 0.4;
 }
 
-.spine-wrapper:hover {
+.spine-wrapper.active {
     z-index: 60;
+}
+
+.spine-wrapper {
+    cursor: pointer;
 }
 
 .cover-reveal img {
