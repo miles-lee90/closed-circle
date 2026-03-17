@@ -1,0 +1,65 @@
+aladin:
+  category_ids:
+    - 51167  # 소설 > 미스터리/스릴러
+  max_results: 50
+
+publishers:
+  - name: 엘릭시르
+    feed_url: "https://rss.blog.naver.com/elixirbooks.xml"
+    type: naver_rss
+  - name: 북스피어
+    feed_url: "https://rss.blog.naver.com/booksphere.xml"
+    type: naver_rss
+  - name: 황금가지
+    feed_url: "https://rss.blog.naver.com/goldenbough.xml"
+    type: naver_rss
+  - name: 문학동네
+    feed_url: "https://rss.blog.naver.com/munhakdongnebooks.xml"
+    type: naver_rss
+  - name: 은행나무
+    feed_url: "https://rss.blog.naver.com/ginkobook.xml"
+    type: naver_rss
+  # Phase 2 — URL 조사 후 추가
+  - name: 비채
+    feed_url: "TBD"
+    type: TBD
+  - name: 내 친구의 서재
+    feed_url: "TBD"
+    type: TBD
+  - name: 현대문학
+    feed_url: "TBD"
+    type: TBD
+  - name: 나비클럽
+    feed_url: "TBD"
+    type: TBD
+  - name: 블루홀식스
+    feed_url: "TBD"
+    type: TBD
+  - name: 반타
+    feed_url: "TBD"
+    type: TBD
+  - name: 리드비
+    feed_url: "TBD"
+    type: TBD
+  - name: 북다
+    feed_url: "TBD"
+    type: TBD
+
+author_overrides:
+  "히가시노 게이고": "JP"
+  "미야베 미유키": "JP"
+  "요코야마 히데오": "JP"
+  "모리미 도미히코": "JP"
+  "무라카미 하루키": "JP"
+  "아쿠타가와 류노스케": "JP"
+  "에도가와 란포": "JP"
+  "시마다 소지": "JP"
+  "아야츠지 유키토": "JP"
+  "유메노 규사쿠": "JP"
+
+schedule:
+  cron: "0 0 * * *"  # UTC 00:00 = KST 09:00
+
+site:
+  title: "클로즈드 써클"
+  description: "국내 출간 미스터리 소설 신작을 매일 업데이트합니다"
