@@ -237,7 +237,7 @@ main {
 
 /* ─── Cover Info Popup ─── */
 .cover-reveal {
-    position: absolute;
+    position: fixed;
     width: 200px;
     opacity: 0;
     pointer-events: none;
