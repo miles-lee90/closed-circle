@@ -32,10 +32,16 @@
                 <span class="spine-badge badge-kr"></span>
                 {% endif %}
             </div>
-            <!-- Cover (3D back face) -->
-            <a class="cover-reveal" href="{{ book.link }}" target="_blank" rel="noopener">
-                <img src="{{ book.cover_url }}" alt="{{ book.title }}" loading="lazy">
-            </a>
+            <!-- Info popup -->
+            <div class="cover-reveal">
+                <a href="{{ book.link }}" target="_blank" rel="noopener">
+                    <img src="{{ book.cover_url }}" alt="{{ book.title }}" loading="lazy">
+                </a>
+                <h3 class="cover-title"><a href="{{ book.link }}" target="_blank" rel="noopener">{{ book.title }}</a></h3>
+                <p class="cover-author">{{ book.author }}</p>
+                <p class="cover-meta">{{ book.publisher }} · {{ book.pub_date }}</p>
+                <p class="cover-price">{{ "{:,}".format(book.price) }}원</p>
+            </div>
         </div>
     </div>
     {% endfor %}

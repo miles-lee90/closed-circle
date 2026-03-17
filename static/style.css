@@ -195,19 +195,11 @@ main {
 
 .spine-wrapper {
     position: relative;
-    perspective: 1000px;
     cursor: pointer;
 }
 
 .spine-book {
     position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.5s ease;
-    transform-origin: right center;
-}
-
-.spine-wrapper.open .spine-book {
-    transform: rotateY(90deg) translateZ(60px);
 }
 
 /* ─── Spine Face ─── */
@@ -217,15 +209,10 @@ main {
     border-radius: 2px;
     transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     box-shadow: 1px 0 3px rgba(0,0,0,0.4), -1px 0 2px rgba(0,0,0,0.2);
-    backface-visibility: hidden;
 }
 
 .spine-wrapper:hover .spine-face {
     filter: brightness(0.7);
-}
-
-.spine-wrapper.open:hover .spine-face {
-    filter: none;
 }
 
 .spine-face img {
@@ -248,67 +235,70 @@ main {
 .spine-badge.badge-jp { background: var(--badge-jp); }
 .spine-badge.badge-kr { background: var(--badge-kr); }
 
-/* ─── Cover Reveal (attached to right edge of spine, faces right) ─── */
+/* ─── Cover Info Popup ─── */
 .cover-reveal {
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 100%;
-    width: auto;
-    backface-visibility: hidden;
-    transform: rotateY(90deg);
-    transform-origin: right center;
+    position: fixed;
+    width: 200px;
+    opacity: 0;
     pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 1000;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    filter: drop-shadow(0 12px 32px rgba(0,0,0,0.6));
 }
 
-.spine-wrapper.open .cover-reveal {
+.cover-reveal.visible {
+    opacity: 1;
     pointer-events: auto;
 }
 
-.spine-wrapper.open {
+.spine-wrapper.active {
     z-index: 60;
 }
 
 .cover-reveal img {
-    height: 100%;
-    width: auto;
-    border-radius: 2px;
+    width: 100%;
+    border-radius: 8px;
     display: block;
+    margin-bottom: 0.5rem;
 }
 
-.cover-info {
-    padding: 0.625rem 0.125rem;
-    text-align: center;
-}
-
-.cover-info h3 {
+.cover-title {
     font-size: 0.8125rem;
     font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 0.2rem;
-    line-height: 1.3;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    margin-bottom: 0.25rem;
+    line-height: 1.35;
 }
 
-.cover-info .author {
+.cover-title a {
+    color: var(--text-primary);
+}
+
+.cover-title a:hover {
+    color: var(--accent);
+}
+
+.cover-author {
     font-size: 0.75rem;
     color: var(--text-secondary);
+    margin-bottom: 0.15rem;
 }
 
-.cover-info .meta {
+.cover-meta {
     font-size: 0.6875rem;
     color: var(--text-tertiary);
     margin-top: 0.15rem;
 }
 
-.cover-info .price {
+.cover-price {
     font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-primary);
-    margin-top: 0.2rem;
+    margin-top: 0.25rem;
 }
 
 /* ─── Badges ─── */

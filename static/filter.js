@@ -1,30 +1,63 @@
-// 3D book open on click — click spine to rotate open, click again or outside to close
+// Click spine to show info popup next to it
 (function () {
     var openSpine = null;
+    var openReveal = null;
 
     document.querySelectorAll(".spine-wrapper").forEach(function (spine) {
+        var reveal = spine.querySelector(".cover-reveal");
+        if (!reveal) return;
+
         spine.addEventListener("click", function (e) {
             e.stopPropagation();
 
             if (openSpine === spine) {
-                spine.classList.remove("open");
+                reveal.classList.remove("visible");
+                spine.classList.remove("active");
                 openSpine = null;
+                openReveal = null;
                 return;
             }
 
-            if (openSpine) {
-                openSpine.classList.remove("open");
+            if (openReveal) {
+                openReveal.classList.remove("visible");
+                openSpine.classList.remove("active");
             }
 
-            spine.classList.add("open");
+            // Position popup next to the spine
+            var rect = spine.getBoundingClientRect();
+            var vw = window.innerWidth;
+            var vh = window.innerHeight;
+            var pw = 220;
+
+            var x = rect.right + 8;
+            if (x + pw > vw) x = rect.left - pw - 8;
+
+            var y = rect.top;
+            // Don't go below viewport
+            reveal.style.left = x + "px";
+            reveal.style.top = y + "px";
+            reveal.classList.add("visible");
+            spine.classList.add("active");
+
+            // Adjust if popup goes below viewport
+            requestAnimationFrame(function () {
+                var rr = reveal.getBoundingClientRect();
+                if (rr.bottom > vh - 8) {
+                    reveal.style.top = (vh - rr.height - 8) + "px";
+                }
+            });
+
             openSpine = spine;
+            openReveal = reveal;
         });
     });
 
     document.addEventListener("click", function () {
-        if (openSpine) {
-            openSpine.classList.remove("open");
+        if (openReveal) {
+            openReveal.classList.remove("visible");
+            openSpine.classList.remove("active");
             openSpine = null;
+            openReveal = null;
         }
     });
 })();
