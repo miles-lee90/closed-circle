@@ -110,7 +110,7 @@ nav {
 main {
     max-width: 1280px;
     margin: 0 auto;
-    padding: 0 clamp(1.5rem, 4vw, 3rem);
+    padding: 0 clamp(0.75rem, 2vw, 1.5rem);
     padding-bottom: 6rem;
 }
 
@@ -359,7 +359,7 @@ main {
     row-gap: 4rem;
     padding-bottom: 2rem;
     min-height: 400px;
-    max-width: 980px;
+    max-width: 100%;
     margin: 0 auto;
 }
 
