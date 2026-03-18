@@ -87,10 +87,28 @@ def build():
     env = Environment(loader=FileSystemLoader(TEMPLATES_DIR), autoescape=True)
 
     site = config.get("site", {})
+    recent_books = sorted(books, key=lambda b: b.get("pub_date", ""), reverse=True)[:10]
+
+    # 평적 매대 배치 데이터 생성
+    books_per_row = 5
+    for i, rb in enumerate(recent_books):
+        row = i // books_per_row
+        col = i % books_per_row
+        base_x = col * 18 + 5
+        base_y = row * 45 + 5
+        rb["display_x"] = round(base_x + random.uniform(-3, 3), 1)
+        rb["display_y"] = round(base_y + random.uniform(-3, 3), 1)
+        mag = random.uniform(5, 12)
+        rb["display_rotation"] = round(mag * random.choice([-1, 1]), 1)
+        rb["display_z"] = random.randint(1, 10)
+        rb["display_w"] = round((rb.get("size_width") or 128) * 0.75)
+        rb["display_h"] = round((rb.get("size_height") or 188) * 0.75)
+
     context = {
         "site_title": site.get("title", "클로즈드 써클"),
         "site_description": site.get("description", ""),
         "books": books,
+        "recent_books": recent_books,
         "news": news,
         "publishers": publishers,
         "updated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
