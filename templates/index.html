@@ -2,22 +2,71 @@
 {% block title %}Closed Circle — 미스터리 신간 알리미{% endblock %}
 
 {% block content %}
-<section class="landing-hero">
-    <img src="static/logo.svg" alt="Closed Circle" class="landing-logo">
-    <h1 class="landing-title">CLOSED CIRCLE</h1>
-    <p class="landing-tagline">미스터리 신간을 한눈에</p>
+<section class="display-table">
+    <div class="display-area">
+        {% for book in recent_books %}
+        <div class="display-book"
+             style="left:{{ book.display_x }}%;top:{{ book.display_y }}%;width:{{ book.display_w }}px;height:{{ book.display_h }}px;transform:rotate({{ book.display_rotation }}deg);z-index:{{ book.display_z }}"
+             data-title="{{ book.title }}"
+             data-author="{{ book.author }}"
+             data-publisher="{{ book.publisher }}"
+             data-date="{{ book.pub_date }}"
+             data-price="{{ '{:,}'.format(book.price) }}"
+             data-link="{{ book.link }}"
+             data-cover="{{ book.cover_url }}">
+            <img src="{{ book.cover_url }}" alt="{{ book.title }}" loading="lazy">
+        </div>
+        {% endfor %}
+    </div>
+    <a href="books.html" class="landing-more">전체 신간 보기 &rarr;</a>
 </section>
 
-<div class="landing-cards">
-    <a href="books.html" class="landing-card">
-        <span class="landing-card-icon">&#128218;</span>
-        <h2>신간</h2>
-        <p>이번 달 미스터리 신간 {{ books|length }}권</p>
-    </a>
-    <a href="news.html" class="landing-card">
-        <span class="landing-card-icon">&#128240;</span>
-        <h2>출판사 소식</h2>
-        <p>{{ publishers|length }}개 출판사의 최신 소식</p>
-    </a>
+<!-- 오버레이 -->
+<div class="display-overlay" id="display-overlay">
+    <div class="display-overlay-content">
+        <button class="display-overlay-close" id="overlay-close" aria-label="닫기">&times;</button>
+        <img class="display-overlay-cover" id="overlay-cover" src="" alt="">
+        <h3 class="display-overlay-title" id="overlay-title"></h3>
+        <p class="display-overlay-author" id="overlay-author"></p>
+        <p class="display-overlay-meta" id="overlay-meta"></p>
+        <p class="display-overlay-price" id="overlay-price"></p>
+        <a class="display-overlay-link" id="overlay-link" href="" target="_blank" rel="noopener">알라딘에서 보기 &rarr;</a>
+    </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    var books = document.querySelectorAll(".display-book");
+    var overlay = document.getElementById("display-overlay");
+    var closeBtn = document.getElementById("overlay-close");
+
+    books.forEach(function (book) {
+        book.addEventListener("click", function () {
+            document.getElementById("overlay-cover").src = book.dataset.cover;
+            document.getElementById("overlay-cover").alt = book.dataset.title;
+            document.getElementById("overlay-title").textContent = book.dataset.title;
+            document.getElementById("overlay-author").textContent = book.dataset.author;
+            document.getElementById("overlay-meta").textContent = book.dataset.publisher + " · " + book.dataset.date;
+            document.getElementById("overlay-price").textContent = book.dataset.price + "원";
+            var link = document.getElementById("overlay-link");
+            link.href = book.dataset.link;
+            overlay.classList.add("visible");
+        });
+    });
+
+    function closeOverlay() {
+        overlay.classList.remove("visible");
+    }
+
+    closeBtn.addEventListener("click", closeOverlay);
+    overlay.addEventListener("click", function (e) {
+        if (e.target === overlay) closeOverlay();
+    });
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") closeOverlay();
+    });
+})();
+</script>
 {% endblock %}
