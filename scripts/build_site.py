@@ -5,6 +5,8 @@ import shutil
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+from kiwipiepy import Kiwi
+
 import yaml
 from jinja2 import Environment, FileSystemLoader
 
@@ -33,6 +35,50 @@ def sort_books_jp_first(books: list[dict]) -> list[dict]:
         return (p, [-ord(c) for c in pub_date])
 
     return sorted(books, key=sort_key)
+
+
+_kiwi = Kiwi()
+
+KEYWORD_STOPWORDS = {
+    "소설", "작가", "작품", "이야기", "시리즈", "독자", "세계", "사람",
+    "일본", "한국", "미스터리", "추리", "문학", "출판", "번역", "수상",
+    "올해", "이번", "국내", "최초", "자신", "우리", "모든", "하나",
+    "어떤", "때문", "결국", "가장", "바로", "지금", "것", "수", "등",
+    "안", "중", "속", "위", "곳", "때", "말", "더", "또", "그", "이",
+    "년", "월", "권", "편", "명", "개", "번", "원", "쪽", "사건",
+    "정통", "전통", "독특", "주목", "최근", "활동", "활약", "인간",
+    "진정", "분명", "현실", "정도", "느낌", "관심", "의미", "부분",
+    "시작", "마지막", "이후", "과거", "현재", "시절", "당시",
+}
+
+
+def extract_keywords(book: dict, max_count: int = 3) -> list[str]:
+    """kiwipiepy로 설명/줄거리에서 핵심 명사 키워드를 추출한다."""
+    text = (book.get("publisher_desc") or "") + " " + (book.get("story") or "") + " " + (book.get("description") or "")
+    if not text.strip():
+        return []
+
+    author = book.get("author", "")
+    title = book.get("title", "")
+    exclude = {author, title}
+    # 저자명 부분 매칭도 제외 (예: "사쿠라다 도모야" → "사쿠라다", "도모야")
+    exclude.update(author.split())
+
+    tokens = _kiwi.tokenize(text)
+    nouns = [
+        t.form for t in tokens
+        if t.tag in ("NNG", "NNP")
+        and len(t.form) >= 2
+        and t.form not in KEYWORD_STOPWORDS
+        and t.form not in exclude
+    ]
+
+    freq = {}
+    for n in nouns:
+        freq[n] = freq.get(n, 0) + 1
+
+    top = sorted(freq.items(), key=lambda x: (-x[1], -len(x[0])))
+    return [w for w, _ in top[:max_count]]
 
 
 def load_json(path: Path) -> list[dict]:
@@ -87,28 +133,20 @@ def build():
     env = Environment(loader=FileSystemLoader(TEMPLATES_DIR), autoescape=True)
 
     site = config.get("site", {})
-    recent_books = sorted(books, key=lambda b: b.get("pub_date", ""), reverse=True)[:10]
+    jp_books = sorted(
+        [b for b in books if b.get("nationality") == "JP"],
+        key=lambda b: b.get("pub_date", ""), reverse=True,
+    )
+    featured_book = jp_books[0] if jp_books else None
 
-    # 평적 매대 배치 데이터 생성
-    books_per_row = 5
-    for i, rb in enumerate(recent_books):
-        row = i // books_per_row
-        col = i % books_per_row
-        base_x = col * 18 + 5
-        base_y = row * 45 + 5
-        rb["display_x"] = round(base_x + random.uniform(-3, 3), 1)
-        rb["display_y"] = round(base_y + random.uniform(-3, 3), 1)
-        mag = random.uniform(5, 12)
-        rb["display_rotation"] = round(mag * random.choice([-1, 1]), 1)
-        rb["display_z"] = random.randint(1, 10)
-        rb["display_w"] = round((rb.get("size_width") or 128) * 0.75)
-        rb["display_h"] = round((rb.get("size_height") or 188) * 0.75)
+    if featured_book:
+        featured_book["keywords"] = extract_keywords(featured_book)
 
     context = {
         "site_title": site.get("title", "클로즈드 써클"),
         "site_description": site.get("description", ""),
         "books": books,
-        "recent_books": recent_books,
+        "featured_book": featured_book,
         "news": news,
         "publishers": publishers,
         "updated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),

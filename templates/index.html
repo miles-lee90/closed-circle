@@ -2,70 +2,156 @@
 {% block title %}Closed Circle — 미스터리 신간 알리미{% endblock %}
 
 {% block content %}
-<section class="display-table">
-    <div class="display-area">
-        {% for book in recent_books %}
-        <div class="display-book"
-             style="left:{{ book.display_x }}%;top:{{ book.display_y }}%;width:{{ book.display_w }}px;height:{{ book.display_h }}px;transform:rotate({{ book.display_rotation }}deg);z-index:{{ book.display_z }}"
-             data-title="{{ book.title }}"
-             data-author="{{ book.author }}"
-             data-publisher="{{ book.publisher }}"
-             data-date="{{ book.pub_date }}"
-             data-price="{{ '{:,}'.format(book.price) }}"
-             data-link="{{ book.link }}"
-             data-cover="{{ book.cover_url }}">
-            <img src="{{ book.cover_url }}" alt="{{ book.title }}" loading="lazy">
+{% if featured_book %}
+{% set bw = ((featured_book.size_width or 128) * 2.2)|int %}
+{% set bh = ((featured_book.size_height or 188) * 2.2)|int %}
+{% set bd = ((featured_book.size_depth or 16) * 2.2)|int %}
+<section class="hero-feature">
+    <div class="hero-feature-inner">
+        <div class="hero-info">
+            <span class="hero-label">NEW RELEASE</span>
+            <h1 class="hero-title">{{ featured_book.title }}</h1>
+            <p class="hero-author">{{ featured_book.author }}</p>
+            <div class="hero-meta">
+                <span class="hero-meta-item">{{ featured_book.publisher }}</span>
+                <span class="hero-meta-sep">·</span>
+                <span class="hero-meta-item">{{ featured_book.pub_date }}</span>
+                <span class="hero-meta-sep">·</span>
+                <span class="hero-meta-item">{{ "{:,}".format(featured_book.price) }}원</span>
+            </div>
+            {% if featured_book.keywords %}
+            <div class="hero-tags">
+                {% for kw in featured_book.keywords %}
+                <span class="hero-tag">{{ kw }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% set desc_text = featured_book.publisher_desc or featured_book.story or featured_book.description %}
+            {% if desc_text %}
+            <p class="hero-desc">{{ desc_text }}</p>
+            {% endif %}
+            <div class="hero-actions">
+                <a href="{{ featured_book.link }}" target="_blank" rel="noopener" class="hero-link">알라딘에서 보기 &rarr;</a>
+            </div>
         </div>
-        {% endfor %}
+        <div class="hero-cover">
+            <div class="book3d-scene" style="width:{{ bw }}px;height:{{ bh }}px;">
+                <div class="book3d" id="book3d"
+                     style="width:{{ bw }}px;height:{{ bh }}px;"
+                     data-width="{{ bw }}" data-height="{{ bh }}" data-depth="{{ bd }}">
+                    <!-- 앞표지 (bw × bh) -->
+                    <div class="book3d-face book3d-front"
+                         style="width:{{ bw }}px;height:{{ bh }}px;
+                                transform:translateZ({{ bd // 2 }}px)">
+                        <img src="{{ featured_book.cover_url }}" alt="{{ featured_book.title }}">
+                    </div>
+                    <!-- 뒷표지 (bw × bh) -->
+                    <div class="book3d-face book3d-back"
+                         style="width:{{ bw }}px;height:{{ bh }}px;
+                                transform:rotateY(180deg) translateZ({{ bd // 2 }}px)">
+                        {% if featured_book.back_cover_url %}
+                        <img src="{{ featured_book.back_cover_url }}" alt="{{ featured_book.title }} 뒷표지">
+                        {% endif %}
+                    </div>
+                    <!-- 책등 (bd × bh, 좌측에 중심 정렬) -->
+                    <div class="book3d-face book3d-spine"
+                         style="width:{{ bd }}px;height:{{ bh }}px;
+                                left:{{ (bw - bd) // 2 }}px;
+                                transform:rotateY(-90deg) translateZ({{ bw // 2 }}px)">
+                        {% if featured_book.spine_url %}
+                        <img src="{{ featured_book.spine_url }}" alt="책등">
+                        {% endif %}
+                    </div>
+                    <!-- 책배 (bd × bh, 우측 종이) -->
+                    <div class="book3d-face book3d-fore book3d-paper"
+                         style="width:{{ bd }}px;height:{{ bh }}px;
+                                left:{{ (bw - bd) // 2 }}px;
+                                transform:rotateY(90deg) translateZ({{ bw // 2 }}px)">
+                    </div>
+                    <!-- 윗면 (bw × bd, 종이) -->
+                    <div class="book3d-face book3d-top book3d-paper"
+                         style="width:{{ bw }}px;height:{{ bd }}px;
+                                top:{{ (bh - bd) // 2 }}px;
+                                transform:rotateX(90deg) translateZ({{ bh // 2 }}px)">
+                    </div>
+                    <!-- 아랫면 (bw × bd, 종이) -->
+                    <div class="book3d-face book3d-bottom book3d-paper"
+                         style="width:{{ bw }}px;height:{{ bd }}px;
+                                top:{{ (bh - bd) // 2 }}px;
+                                transform:rotateX(-90deg) translateZ({{ bh // 2 }}px)">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <a href="books.html" class="landing-more">전체 신간 보기 &rarr;</a>
 </section>
-
-<!-- 오버레이 -->
-<div class="display-overlay" id="display-overlay">
-    <div class="display-overlay-content">
-        <button class="display-overlay-close" id="overlay-close" aria-label="닫기">&times;</button>
-        <img class="display-overlay-cover" id="overlay-cover" src="" alt="">
-        <h3 class="display-overlay-title" id="overlay-title"></h3>
-        <p class="display-overlay-author" id="overlay-author"></p>
-        <p class="display-overlay-meta" id="overlay-meta"></p>
-        <p class="display-overlay-price" id="overlay-price"></p>
-        <a class="display-overlay-link" id="overlay-link" href="" target="_blank" rel="noopener">알라딘에서 보기 &rarr;</a>
-    </div>
-</div>
+{% else %}
+<p class="empty">아직 수집된 신간이 없습니다.</p>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}
 <script>
 (function () {
-    var books = document.querySelectorAll(".display-book");
-    var overlay = document.getElementById("display-overlay");
-    var closeBtn = document.getElementById("overlay-close");
+    var book = document.getElementById("book3d");
+    if (!book) return;
 
-    books.forEach(function (book) {
-        book.addEventListener("click", function () {
-            document.getElementById("overlay-cover").src = book.dataset.cover;
-            document.getElementById("overlay-cover").alt = book.dataset.title;
-            document.getElementById("overlay-title").textContent = book.dataset.title;
-            document.getElementById("overlay-author").textContent = book.dataset.author;
-            document.getElementById("overlay-meta").textContent = book.dataset.publisher + " · " + book.dataset.date;
-            document.getElementById("overlay-price").textContent = book.dataset.price + "원";
-            var link = document.getElementById("overlay-link");
-            link.href = book.dataset.link;
-            overlay.classList.add("visible");
-        });
-    });
+    var rotY = -20, rotX = 5;
+    var dragging = false;
+    var lastX, lastY;
+    var scene = book.parentElement;
 
-    function closeOverlay() {
-        overlay.classList.remove("visible");
+    function update() {
+        book.style.transform = "rotateX(" + rotX + "deg) rotateY(" + rotY + "deg)";
     }
+    update();
 
-    closeBtn.addEventListener("click", closeOverlay);
-    overlay.addEventListener("click", function (e) {
-        if (e.target === overlay) closeOverlay();
+    scene.addEventListener("mousedown", function (e) {
+        dragging = true;
+        lastX = e.clientX;
+        lastY = e.clientY;
+        scene.style.cursor = "grabbing";
+        e.preventDefault();
     });
-    document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") closeOverlay();
+
+    document.addEventListener("mousemove", function (e) {
+        if (!dragging) return;
+        var dx = e.clientX - lastX;
+        var dy = e.clientY - lastY;
+        rotY += dx * 0.5;
+        rotX -= dy * 0.3;
+        rotX = Math.max(-40, Math.min(40, rotX));
+        lastX = e.clientX;
+        lastY = e.clientY;
+        update();
+    });
+
+    document.addEventListener("mouseup", function () {
+        dragging = false;
+        scene.style.cursor = "grab";
+    });
+
+    // 터치
+    scene.addEventListener("touchstart", function (e) {
+        dragging = true;
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+    }, { passive: true });
+
+    document.addEventListener("touchmove", function (e) {
+        if (!dragging) return;
+        var dx = e.touches[0].clientX - lastX;
+        var dy = e.touches[0].clientY - lastY;
+        rotY += dx * 0.5;
+        rotX -= dy * 0.3;
+        rotX = Math.max(-40, Math.min(40, rotX));
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+    }, { passive: true });
+
+    document.addEventListener("touchend", function () {
+        dragging = false;
     });
 })();
 </script>

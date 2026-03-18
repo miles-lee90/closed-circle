@@ -34,6 +34,7 @@ def parse_aladin_item(item: dict, nationality: str = None, author_overrides: dic
 
     # Spine URL: cover500 → Spine, _1.jpg → _d.jpg, first letter of code uppercase
     spine_url = ""
+    back_cover_url = ""
     if "/cover500/" in cover_url or "/cover/" in cover_url:
         spine_url = cover_url.replace("/cover500/", "/Spine/").replace("/cover/", "/Spine/")
         spine_url = re.sub(r'_\d+\.jpg$', '_d.jpg', spine_url)
@@ -42,6 +43,14 @@ def parse_aladin_item(item: dict, nationality: str = None, author_overrides: dic
         if len(parts) == 2 and parts[1]:
             parts[1] = parts[1][0].upper() + parts[1][1:]
             spine_url = '/'.join(parts)
+
+        # Back cover URL: cover500 → letslook, _1.jpg → _b.jpg
+        back_cover_url = cover_url.replace("/cover500/", "/letslook/").replace("/cover/", "/letslook/")
+        back_cover_url = re.sub(r'_\d+\.jpg$', '_b.jpg', back_cover_url)
+        parts = back_cover_url.rsplit('/', 1)
+        if len(parts) == 2 and parts[1]:
+            parts[1] = parts[1][0].upper() + parts[1][1:]
+            back_cover_url = '/'.join(parts)
 
     # Override nationality based on actual categoryName from API
     cat_name = item.get("categoryName", "")
@@ -68,6 +77,7 @@ def parse_aladin_item(item: dict, nationality: str = None, author_overrides: dic
         "pub_date": item.get("pubDate", ""),
         "cover_url": cover_url,
         "spine_url": spine_url,
+        "back_cover_url": back_cover_url,
         "link": item.get("link", ""),
         "price": item.get("priceStandard", 0),
         "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -128,8 +138,8 @@ def save_books(books: list[dict], path: Path = BOOKS_PATH):
         json.dump(books, f, ensure_ascii=False, indent=2)
 
 
-def fetch_book_size(ttb_key: str, isbn13: str) -> dict:
-    """Fetch book packing size (height, width, depth in mm) from ItemLookUp API."""
+def fetch_book_detail(ttb_key: str, isbn13: str) -> dict:
+    """Fetch book size + description from ItemLookUp API."""
     try:
         resp = requests.get(ALADIN_LOOKUP_URL, params={
             "ttbkey": ttb_key,
@@ -137,7 +147,7 @@ def fetch_book_size(ttb_key: str, isbn13: str) -> dict:
             "ItemIdType": "ISBN13",
             "output": "js",
             "Version": "20131101",
-            "OptResult": "packing",
+            "OptResult": "packing,fulldescription,story",
         }, timeout=15)
         resp.raise_for_status()
         data = resp.json()
@@ -147,9 +157,45 @@ def fetch_book_size(ttb_key: str, isbn13: str) -> dict:
             "size_height": packing.get("sizeHeight", 0),
             "size_width": packing.get("sizeWidth", 0),
             "size_depth": packing.get("sizeDepth", 0),
+            "description": item.get("fulldescription", "") or item.get("description", ""),
+            "story": item.get("story", ""),
         }
     except Exception:
-        return {"size_height": 0, "size_width": 0, "size_depth": 0}
+        return {"size_height": 0, "size_width": 0, "size_depth": 0, "description": "", "story": ""}
+
+
+def fetch_publisher_desc(item_id: str, session: requests.Session = None) -> str:
+    """알라딘 상품 페이지에서 출판사 제공 책소개를 스크래핑한다."""
+    try:
+        from bs4 import BeautifulSoup
+        s = session or requests.Session()
+        s.headers.setdefault("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)")
+
+        referer = f"https://www.aladin.co.kr/shop/wproduct.aspx?ItemId={item_id}"
+        s.get(referer, timeout=15)
+
+        url = f"https://www.aladin.co.kr/shop/product/getContents.aspx?itemId={item_id}&name=PublisherDesc"
+        resp = s.get(url, timeout=15, headers={"Referer": referer, "X-Requested-With": "XMLHttpRequest"})
+        soup = BeautifulSoup(resp.content, "html.parser")
+        text = soup.get_text(separator="\n", strip=True)
+
+        # "출판사 제공 책소개" 헤더 제거, "더보기" 이후 중복 제거
+        lines = text.split("\n")
+        clean = []
+        for line in lines:
+            if line in ("출판사 제공 책소개", "출판사 제공", "책소개", "더보기"):
+                continue
+            clean.append(line)
+
+        result = "\n".join(clean).strip()
+        # "더보기" 이후 중복 텍스트 제거
+        if "더보기" in text:
+            half = len(result) // 2
+            if half > 100 and result[half:half+50] in result[:half]:
+                result = result[:half].strip()
+        return result
+    except Exception:
+        return ""
 
 
 def merge_books(existing: list[dict], new: list[dict]) -> list[dict]:
@@ -189,12 +235,29 @@ def main():
     if needs_size:
         print(f"Fetching size info for {len(needs_size)} books...")
         for i, book in enumerate(needs_size):
-            size = fetch_book_size(ttb_key, book["isbn13"])
+            size = fetch_book_detail(ttb_key, book["isbn13"])
             book.update(size)
             if (i + 1) % 20 == 0:
                 print(f"  {i + 1}/{len(needs_size)} done")
             time.sleep(0.2)  # rate limit
         print(f"  Size info fetched for {len(needs_size)} books")
+
+    # Fetch publisher descriptions for books missing it
+    needs_desc = [b for b in merged if not b.get("publisher_desc")]
+    if needs_desc:
+        print(f"Fetching publisher descriptions for {len(needs_desc)} books...")
+        session = requests.Session()
+        for i, book in enumerate(needs_desc):
+            item_id = re.search(r"ItemId=(\d+)", book.get("link", ""))
+            if item_id:
+                desc = fetch_publisher_desc(item_id.group(1), session)
+                if desc:
+                    book["publisher_desc"] = desc
+            if (i + 1) % 10 == 0:
+                print(f"  {i + 1}/{len(needs_desc)} done")
+            time.sleep(0.5)
+        has_desc = sum(1 for b in merged if b.get("publisher_desc"))
+        print(f"  Publisher descriptions: {has_desc}/{len(merged)}")
 
     save_books(merged)
     print(f"Total books in database: {len(merged)}")
