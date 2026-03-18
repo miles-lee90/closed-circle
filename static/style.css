@@ -139,61 +139,43 @@ main {
 
 .hero-label {
     display: inline-block;
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: var(--badge-jp);
-    letter-spacing: 0.1em;
-    margin-bottom: 0.75rem;
+    letter-spacing: 0.15em;
+    margin-bottom: 1.25rem;
+    padding: 0.35rem 0.9rem;
+    border: 1px solid var(--badge-jp);
+    border-radius: 980px;
 }
 
 .hero-title {
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
     color: var(--text-primary);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
 }
 
 .hero-author {
-    font-size: 1rem;
+    font-size: 1.0625rem;
     color: var(--text-secondary);
-    margin-bottom: 1.25rem;
-}
-
-.hero-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1.25rem;
-}
-
-.hero-meta-item {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-}
-
-.hero-meta-sep {
-    font-size: 0.85rem;
-    color: var(--text-tertiary);
+    margin-bottom: 1.5rem;
 }
 
 .hero-desc {
-    font-size: 0.875rem;
-    color: var(--text-tertiary);
-    line-height: 1.8;
-    margin-bottom: 1.25rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.85;
+    margin-bottom: 1.5rem;
 }
 
 .hero-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
 }
 
 .hero-tag {
@@ -204,25 +186,32 @@ main {
     color: var(--text-secondary);
 }
 
-.hero-actions {
+.hero-meta {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
-.hero-link {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--accent);
-}
-
-.hero-link:hover {
-    color: var(--accent-hover);
-}
-
-.hero-date {
-    font-size: 0.75rem;
+.hero-meta-item {
+    font-size: 0.8125rem;
     color: var(--text-tertiary);
+}
+
+.hero-meta-sep {
+    font-size: 0.8125rem;
+    color: var(--text-tertiary);
+    opacity: 0.4;
+}
+
+.hero-meta-link {
+    font-size: 0.8125rem;
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.hero-meta-link:hover {
+    color: var(--accent-hover);
 }
 
 .hero-cover {
@@ -294,17 +283,6 @@ main {
         linear-gradient(0deg, #e8e0d4, #ddd5c8) !important;
 }
 
-.landing-more {
-    display: inline-block;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--accent);
-    transition: color var(--transition);
-}
-
-.landing-more:hover {
-    color: var(--accent-hover);
-}
 
 /* ─── Hero ─── */
 .hero {

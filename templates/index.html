@@ -12,13 +12,10 @@
             <span class="hero-label">NEW RELEASE</span>
             <h1 class="hero-title">{{ featured_book.title }}</h1>
             <p class="hero-author">{{ featured_book.author }}</p>
-            <div class="hero-meta">
-                <span class="hero-meta-item">{{ featured_book.publisher }}</span>
-                <span class="hero-meta-sep">·</span>
-                <span class="hero-meta-item">{{ featured_book.pub_date }}</span>
-                <span class="hero-meta-sep">·</span>
-                <span class="hero-meta-item">{{ "{:,}".format(featured_book.price) }}원</span>
-            </div>
+            {% set desc_text = featured_book.summary or featured_book.description %}
+            {% if desc_text %}
+            <p class="hero-desc">{{ desc_text }}</p>
+            {% endif %}
             {% if featured_book.keywords %}
             <div class="hero-tags">
                 {% for kw in featured_book.keywords %}
@@ -26,12 +23,14 @@
                 {% endfor %}
             </div>
             {% endif %}
-            {% set desc_text = featured_book.publisher_desc or featured_book.story or featured_book.description %}
-            {% if desc_text %}
-            <p class="hero-desc">{{ desc_text }}</p>
-            {% endif %}
-            <div class="hero-actions">
-                <a href="{{ featured_book.link }}" target="_blank" rel="noopener" class="hero-link">알라딘에서 보기 &rarr;</a>
+            <div class="hero-meta">
+                <span class="hero-meta-item">{{ featured_book.publisher }}</span>
+                <span class="hero-meta-sep">·</span>
+                <span class="hero-meta-item">{{ featured_book.pub_date }}</span>
+                <span class="hero-meta-sep">·</span>
+                <span class="hero-meta-item">{{ "{:,}".format(featured_book.price) }}원</span>
+                <span class="hero-meta-sep">·</span>
+                <a href="{{ featured_book.link }}" target="_blank" rel="noopener" class="hero-meta-link">알라딘</a>
             </div>
         </div>
         <div class="hero-cover">
@@ -84,7 +83,6 @@
             </div>
         </div>
     </div>
-    <a href="books.html" class="landing-more">전체 신간 보기 &rarr;</a>
 </section>
 {% else %}
 <p class="empty">아직 수집된 신간이 없습니다.</p>
@@ -154,5 +152,6 @@
         dragging = false;
     });
 })();
+
 </script>
 {% endblock %}
