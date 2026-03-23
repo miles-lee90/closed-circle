@@ -114,6 +114,353 @@ main {
     padding-bottom: 6rem;
 }
 
+/* ─── Shelf Viewer (메인 페이지) ─── */
+.shelf-viewer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 53px);
+}
+
+.shelf-row {
+    position: relative;
+    width: 100%;
+}
+
+.shelf-stage {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 200px);
+}
+
+.shelf-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* 책등 + 표지 공통 */
+.si {
+    position: absolute;
+    bottom: 0;
+    cursor: pointer;
+    box-shadow: none;
+    border: none;
+    background: none;
+}
+
+.si:hover {
+    filter: brightness(0.75);
+}
+
+.si > img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* 선택된 책: 표지 */
+.si-active {
+    box-shadow: none;
+    z-index: 10;
+}
+
+.si-active:hover {
+    filter: none;
+}
+
+.si-cover-link {
+    position: relative;
+    display: block;
+}
+
+.si-cover-front {
+    position: relative;
+    z-index: 2;
+    width: auto;
+    border-radius: 2px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    display: block;
+}
+
+.si-cover-back {
+    display: none;
+}
+
+.si-cover-link:hover .si-cover-front {
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+}
+
+/* 책 정보 (줄 아래 중앙) */
+.shelf-info {
+    text-align: center;
+    padding: 1.5rem 1rem 0;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.shelf-info.visible {
+    opacity: 1;
+}
+
+.shelf-info-title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.02em;
+}
+
+.shelf-info-author {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.15rem;
+}
+
+.shelf-info-date {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+/* 화살표 */
+.shelf-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: all var(--transition);
+    backdrop-filter: blur(8px);
+}
+
+.shelf-arrow:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--text-tertiary);
+}
+
+.shelf-arrow-left { left: 0.5rem; }
+.shelf-arrow-right { right: 0.5rem; }
+
+@media (max-width: 768px) {
+    .shelf-cover-front,
+    .shelf-cover-back {
+        height: 320px;
+    }
+
+    .shelf-item.active {
+        min-width: 200px;
+    }
+
+    .shelf-info-title {
+        font-size: 1.0625rem;
+    }
+}
+
+/* ─── Home Page ─── */
+.home-hero {
+    padding: 4rem 0 3rem;
+}
+
+.home-hero-inner {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    max-width: 880px;
+    margin: 0 auto;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: transform var(--transition);
+}
+
+.home-hero-inner:hover {
+    transform: translateY(-4px);
+}
+
+.home-hero-cover {
+    flex-shrink: 0;
+}
+
+.home-hero-cover img {
+    width: 200px;
+    border-radius: 4px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.home-hero-info {
+    flex: 1;
+}
+
+.home-hero-title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+}
+
+.home-hero-author {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.home-hero-desc {
+    font-size: 0.9rem;
+    color: var(--text-tertiary);
+    line-height: 1.8;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.home-section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.home-recent {
+    padding: 2rem 0 3rem;
+    max-width: 880px;
+    margin: 0 auto;
+}
+
+.home-recent-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.home-book-card {
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: transform var(--transition);
+}
+
+.home-book-card:hover {
+    transform: translateY(-6px);
+}
+
+.home-book-card img {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    margin-bottom: 0.75rem;
+}
+
+.home-book-info {
+    padding: 0 0.125rem;
+}
+
+.home-book-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 0.2rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.home-book-author {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+.home-news {
+    padding: 2rem 0 3rem;
+    max-width: 880px;
+    margin: 0 auto;
+    border-top: 1px solid var(--border);
+}
+
+.home-news-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.home-news-item {
+    display: block;
+    text-decoration: none;
+    color: var(--text-primary);
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+    transition: all var(--transition);
+}
+
+.home-news-item:hover {
+    background: var(--bg-glass-hover);
+    transform: translateY(-2px);
+}
+
+.home-news-publisher {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+}
+
+.home-news-item h3 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-top: 0.35rem;
+}
+
+.home-news-date {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    margin-top: 0.35rem;
+}
+
+.home-more {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--accent);
+}
+
+.home-more:hover {
+    color: var(--accent-hover);
+}
+
+@media (max-width: 768px) {
+    .home-hero-inner {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .home-hero-cover img {
+        width: 160px;
+    }
+
+    .home-recent-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 /* ─── Hero Feature (싱글 북 매거진) ─── */
 .hero-feature {
     display: flex;

@@ -8,7 +8,7 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="static/style.css?v=2026-03-231420UTC">
 </head>
 <body>
     <header>
@@ -26,166 +26,267 @@
     </header>
     <main>
         
-
-
-
-
-<section class="hero-feature">
-    <div class="hero-feature-inner">
-        <div class="hero-info">
-            <span class="hero-label">NEW RELEASE</span>
-            <h1 class="hero-title">괴담의 숲</h1>
-            <p class="hero-author">미쓰다 신조</p>
-            
-            
-            <p class="hero-desc">고저택 뒤 사사 숲을 둘러싼 괴담들이 점차 얽히고 연결되며 예상치 못한 공포로 이어진다. 일본 공포 미스터리의 거장 미쓰다 신조의 대표작이 7년 만에 새로운 제목으로 돌아왔다.</p>
-            
-            
-            <div class="hero-tags">
-                
-                <span class="hero-tag">괴담</span>
-                
-                <span class="hero-tag">제목</span>
-                
-                <span class="hero-tag">공포</span>
-                
-            </div>
-            
-            <div class="hero-meta">
-                <span class="hero-meta-item">북로드</span>
-                <span class="hero-meta-sep">·</span>
-                <span class="hero-meta-item">2026-03-27</span>
-                <span class="hero-meta-sep">·</span>
-                <span class="hero-meta-item">17,800원</span>
-                <span class="hero-meta-sep">·</span>
-                <a href="https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=388571908&amp;amp;partner=openAPI&amp;amp;start=api" target="_blank" rel="noopener" class="hero-meta-link">알라딘</a>
-            </div>
-        </div>
-        <div class="hero-cover">
-            <div class="book3d-scene" style="width:272px;height:429px;">
-                <div class="book3d" id="book3d"
-                     style="width:272px;height:429px;"
-                     data-width="272" data-height="429" data-depth="37">
-                    <!-- 앞표지 (bw × bh) -->
-                    <div class="book3d-face book3d-front"
-                         style="width:272px;height:429px;
-                                transform:translateZ(18px)">
-                        <img src="https://image.aladin.co.kr/product/38857/19/cover500/k852137906_1.jpg" alt="괴담의 숲">
-                    </div>
-                    <!-- 뒷표지 (bw × bh) -->
-                    <div class="book3d-face book3d-back"
-                         style="width:272px;height:429px;
-                                transform:rotateY(180deg) translateZ(18px)">
-                        
-                        <img src="https://image.aladin.co.kr/product/38857/19/letslook/K852137906_b.jpg" alt="괴담의 숲 뒷표지">
-                        
-                    </div>
-                    <!-- 책등 (bd × bh, 좌측에 중심 정렬) -->
-                    <div class="book3d-face book3d-spine"
-                         style="width:37px;height:429px;
-                                left:117px;
-                                transform:rotateY(-90deg) translateZ(136px)">
-                        
-                        <img src="https://image.aladin.co.kr/product/38857/19/Spine/K852137906_d.jpg" alt="책등">
-                        
-                    </div>
-                    <!-- 책배 (bd × bh, 우측 종이) -->
-                    <div class="book3d-face book3d-fore book3d-paper"
-                         style="width:37px;height:429px;
-                                left:117px;
-                                transform:rotateY(90deg) translateZ(136px)">
-                    </div>
-                    <!-- 윗면 (bw × bd, 종이) -->
-                    <div class="book3d-face book3d-top book3d-paper"
-                         style="width:272px;height:37px;
-                                top:196px;
-                                transform:rotateX(90deg) translateZ(214px)">
-                    </div>
-                    <!-- 아랫면 (bw × bd, 종이) -->
-                    <div class="book3d-face book3d-bottom book3d-paper"
-                         style="width:272px;height:37px;
-                                top:196px;
-                                transform:rotateX(-90deg) translateZ(214px)">
-                    </div>
-                </div>
-            </div>
-        </div>
+<section class="shelf-viewer">
+    <div class="shelf-stage" id="shelf-stage">
+        <button class="shelf-arrow shelf-arrow-left" id="shelf-left" aria-label="이전">&#8249;</button>
+        <div class="shelf-track" id="shelf-track"></div>
+        <button class="shelf-arrow shelf-arrow-right" id="shelf-right" aria-label="다음">&#8250;</button>
+    </div>
+    <div class="shelf-info" id="shelf-info">
+        <h2 id="shelf-title"></h2>
+        <p class="shelf-info-author" id="shelf-author"></p>
+        <p class="shelf-info-date" id="shelf-date"></p>
     </div>
 </section>
-
 
     </main>
     <footer>
         <p>국내 출간 미스터리 소설 신작을 매일 업데이트합니다</p>
-        <p>마지막 업데이트: 2026-03-23 13:20 UTC</p>
+        <p>마지막 업데이트: 2026-03-23 14:20 UTC</p>
         <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank">알라딘</a></p>
     </footer>
     
 <script>
 (function () {
-    var book = document.getElementById("book3d");
-    if (!book) return;
+    var BOOKS = [
+        
+        {
+            title: "\ubaa8\ubc29\uc18c\ub140",
+            author: "\uc18c\ud5a5",
+            date: "2026-03-31",
+            spine: "https://image.aladin.co.kr/product/38816/96/Spine/K412137182_d.jpg",
+            cover: "https://image.aladin.co.kr/product/38816/96/cover500/k412137182_1.jpg",
+            back: "https://image.aladin.co.kr/product/38816/96/letslook/K412137182_b.jpg",
+            detail: "book/9791193190647.html",
+            spineH: 512,
+            spineW: 51
+        },
+        
+        {
+            title: "\uad34\ub2f4\uc758 \uc232",
+            author: "\ubbf8\uc4f0\ub2e4 \uc2e0\uc870",
+            date: "2026-03-27",
+            spine: "https://image.aladin.co.kr/product/38857/19/Spine/K852137906_d.jpg",
+            cover: "https://image.aladin.co.kr/product/38857/19/cover500/k852137906_1.jpg",
+            back: "https://image.aladin.co.kr/product/38857/19/letslook/K852137906_b.jpg",
+            detail: "book/9791158792527.html",
+            spineH: 487,
+            spineW: 49
+        },
+        
+        {
+            title: "\ub0b4\uac00 \ub300\ub2f5\ud558\ub294 \ub108\uc758 \uc218\uc218\uaed8\ub07c 2 - \uadf8 \uc5b4\uae68\ub97c \uac10\uc300 \uac01\uc624",
+            author: "\uac00\ubbf8\uc2dc\ub85c \uad50\uc2a4\ucf00",
+            date: "2026-03-24",
+            spine: "https://image.aladin.co.kr/product/38850/3/Spine/K102137706_d.jpg",
+            cover: "https://image.aladin.co.kr/product/38850/3/cover500/k102137706_1.jpg",
+            back: "https://image.aladin.co.kr/product/38850/3/letslook/K102137706_b.jpg",
+            detail: "book/9791193149713.html",
+            spineH: 470,
+            spineW: 47
+        },
+        
+        {
+            title: "\uc11c\uce58\ub77c\uc774\ud2b8\uc640 \uc720\uc778\ub4f1",
+            author: "\uc0ac\ucfe0\ub77c\ub2e4 \ub3c4\ubaa8\uc57c",
+            date: "2026-03-20",
+            spine: "https://image.aladin.co.kr/product/38834/92/Spine/K712137380_d.jpg",
+            cover: "https://image.aladin.co.kr/product/38834/92/cover500/k712137380_1.jpg",
+            back: "https://image.aladin.co.kr/product/38834/92/letslook/K712137380_b.jpg",
+            detail: "book/9791191803594.html",
+            spineH: 470,
+            spineW: 47
+        },
+        
+        {
+            title: "\uc6a9\uad81\uc7a5\uc758 \uace0\ubc31",
+            author: "\uc870\uc2b9\ub9ac",
+            date: "2026-03-20",
+            spine: "https://image.aladin.co.kr/product/38850/38/Spine/K562137707_d.jpg",
+            cover: "https://image.aladin.co.kr/product/38850/38/cover500/k562137707_1.jpg",
+            back: "https://image.aladin.co.kr/product/38850/38/letslook/K562137707_b.jpg",
+            detail: "book/9791158162085.html",
+            spineH: 470,
+            spineW: 47
+        },
+        
+        {
+            title: "\ubd88\ube5b \uc5c6\ub294 \ubc24\uc758 \ub3c4\uc2dc",
+            author: "\uc815\ud574\uc5f0",
+            date: "2026-03-18",
+            spine: "https://image.aladin.co.kr/product/38815/72/Spine/K532137189_d.jpg",
+            cover: "https://image.aladin.co.kr/product/38815/72/cover500/k532137189_1.jpg",
+            back: "https://image.aladin.co.kr/product/38815/72/letslook/K532137189_b.jpg",
+            detail: "book/9791141602758.html",
+            spineH: 470,
+            spineW: 47
+        },
+        
+        {
+            title: "\ubc14\uc5d8\uc758 \uc9d1",
+            author: "\uc774\ub2e4\ubaa8",
+            date: "2026-03-18",
+            spine: "https://image.aladin.co.kr/product/38756/75/Spine/K482136656_d.jpg",
+            cover: "https://image.aladin.co.kr/product/38756/75/cover500/k482136656_1.jpg",
+            back: "https://image.aladin.co.kr/product/38756/75/letslook/K482136656_b.jpg",
+            detail: "book/9791189770716.html",
+            spineH: 470,
+            spineW: 47
+        },
+        
+        {
+            title: "5\uce35\uc758 \ucc3d",
+            author: "\uc5d0\ub3c4\uac00\uc640 \ub780\ud3ec",
+            date: "2026-03-13",
+            spine: "https://image.aladin.co.kr/product/38829/58/Spine/8965115892_d.jpg",
+            cover: "https://image.aladin.co.kr/product/38829/58/cover500/8965115892_1.jpg",
+            back: "https://image.aladin.co.kr/product/38829/58/letslook/8965115892_b.jpg",
+            detail: "book/9788965115892.html",
+            spineH: 475,
+            spineW: 47
+        },
+        
+        {
+            title: "\uc5b4\ub824\uc6b4 \ubb38\uc81c\uac00 \uac00\ub4dd\ud55c \ub808\uc2a4\ud1a0\ub791",
+            author: "\uc720\ud0a4 \uc2e0\uc774\uce58\ub85c",
+            date: "2026-03-10",
+            spine: "https://image.aladin.co.kr/product/38788/30/Spine/K342137162_d.jpg",
+            cover: "https://image.aladin.co.kr/product/38788/30/cover500/k342137162_1.jpg",
+            back: "https://image.aladin.co.kr/product/38788/30/letslook/K342137162_b.jpg",
+            detail: "book/9791170613633.html",
+            spineH: 470,
+            spineW: 47
+        },
+        
+        {
+            title: "\ub808\ubca8 \uc138\ube10",
+            author: "\ubbf8\uc57c\ubca0 \ubbf8\uc720\ud0a4",
+            date: "2026-03-10",
+            spine: "https://image.aladin.co.kr/product/38758/49/Spine/K882137761_d.jpg",
+            cover: "https://image.aladin.co.kr/product/38758/49/cover500/k882137761_1.jpg",
+            back: "https://image.aladin.co.kr/product/38758/49/letslook/K882137761_b.jpg",
+            detail: "book/9791192313856.html",
+            spineH: 492,
+            spineW: 49
+        }
+        
+    ];
 
-    var rotY = -20, rotX = 5;
-    var dragging = false;
-    var lastX, lastY;
-    var scene = book.parentElement;
+    var total = BOOKS.length;
+    if (!total) return;
 
-    function update() {
-        book.style.transform = "rotateX(" + rotX + "deg) rotateY(" + rotY + "deg)";
+    var track = document.getElementById("shelf-track");
+    var titleEl = document.getElementById("shelf-title");
+    var authorEl = document.getElementById("shelf-author");
+    var dateEl = document.getElementById("shelf-date");
+    var infoEl = document.getElementById("shelf-info");
+    var current = 0;
+    var GAP = 40;
+    var COVER_W = 320;
+    var animating = false;
+
+    function mod(n, m) { return ((n % m) + m) % m; }
+
+    function render() {
+        var stageW = track.parentElement.offsetWidth;
+        var items = [];
+
+        // 선택된 책 기준으로 양옆에 충분히 배치
+        for (var offset = -total; offset <= total; offset++) {
+            var idx = mod(current + offset, total);
+            var b = BOOKS[idx];
+            items.push({ offset: offset, idx: idx, book: b });
+        }
+
+        // 위치 계산: 중앙(offset=0)을 기준으로 좌우로 쌓아감
+        var positions = [];
+        var centerX = stageW / 2;
+
+        // 선택된 책은 중앙 (표지 너비)
+        var activeLeft = centerX - COVER_W / 2;
+
+        // 오른쪽으로
+        var x = activeLeft + COVER_W + GAP;
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].offset <= 0) continue;
+            positions[i] = x;
+            x += items[i].book.spineW + GAP;
+        }
+
+        // 왼쪽으로
+        x = activeLeft - GAP;
+        for (var i = items.length - 1; i >= 0; i--) {
+            if (items[i].offset >= 0) continue;
+            x -= items[i].book.spineW;
+            positions[i] = x;
+            x -= GAP;
+        }
+
+        // 선택된 아이템 위치
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].offset === 0) {
+                positions[i] = activeLeft;
+                break;
+            }
+        }
+
+        // DOM 생성
+        var html = "";
+        for (var i = 0; i < items.length; i++) {
+            var it = items[i];
+            var b = it.book;
+            var px = positions[i];
+            if (px === undefined) continue;
+            if (px > stageW + 100 || px < -300) continue; // 화면 밖 제외
+
+            var isActive = it.offset === 0;
+
+            if (isActive) {
+                html += '<div class="si si-active" style="left:' + px + 'px" data-offset="0">';
+                html += '<a href="' + b.detail + '" class="si-cover-link">';
+                html += '<img class="si-cover-back" src="' + b.back + '" alt="" style="height:' + b.spineH + 'px"' + (b.back ? '' : ';display:none') + '>';
+                html += '<img class="si-cover-front" src="' + b.cover + '" alt="' + b.title + '" style="height:' + b.spineH + 'px">';
+                html += '</a></div>';
+            } else {
+                html += '<div class="si" style="left:' + px + 'px;width:' + b.spineW + 'px;height:' + b.spineH + 'px" data-offset="' + it.offset + '">';
+                html += '<img src="' + b.spine + '" alt="' + b.title + '">';
+                html += '</div>';
+            }
+        }
+        track.innerHTML = html;
+
+        titleEl.textContent = BOOKS[current].title;
+        authorEl.textContent = BOOKS[current].author;
+        dateEl.textContent = BOOKS[current].date;
+        infoEl.classList.add("visible");
+
+        // 클릭 이벤트
+        track.querySelectorAll(".si").forEach(function (el) {
+            el.addEventListener("click", function (e) {
+                if (e.target.closest(".si-cover-link")) return;
+                var off = parseInt(el.dataset.offset);
+                if (off !== 0) {
+                    current = mod(current + off, total);
+                    render();
+                }
+            });
+        });
     }
-    update();
 
-    scene.addEventListener("mousedown", function (e) {
-        dragging = true;
-        lastX = e.clientX;
-        lastY = e.clientY;
-        scene.style.cursor = "grabbing";
-        e.preventDefault();
+    render();
+    window.addEventListener("resize", render);
+
+    document.getElementById("shelf-left").addEventListener("click", function () {
+        current = mod(current - 1, total); render();
     });
-
-    document.addEventListener("mousemove", function (e) {
-        if (!dragging) return;
-        var dx = e.clientX - lastX;
-        var dy = e.clientY - lastY;
-        rotY += dx * 0.5;
-        rotX -= dy * 0.3;
-        rotX = Math.max(-40, Math.min(40, rotX));
-        lastX = e.clientX;
-        lastY = e.clientY;
-        update();
+    document.getElementById("shelf-right").addEventListener("click", function () {
+        current = mod(current + 1, total); render();
     });
-
-    document.addEventListener("mouseup", function () {
-        dragging = false;
-        scene.style.cursor = "grab";
-    });
-
-    // 터치
-    scene.addEventListener("touchstart", function (e) {
-        dragging = true;
-        lastX = e.touches[0].clientX;
-        lastY = e.touches[0].clientY;
-    }, { passive: true });
-
-    document.addEventListener("touchmove", function (e) {
-        if (!dragging) return;
-        e.preventDefault();
-        var dx = e.touches[0].clientX - lastX;
-        var dy = e.touches[0].clientY - lastY;
-        rotY += dx * 0.5;
-        rotX -= dy * 0.3;
-        rotX = Math.max(-40, Math.min(40, rotX));
-        lastX = e.touches[0].clientX;
-        lastY = e.touches[0].clientY;
-        update();
-    }, { passive: false });
-
-    document.addEventListener("touchend", function () {
-        dragging = false;
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowLeft") { current = mod(current - 1, total); render(); }
+        if (e.key === "ArrowRight") { current = mod(current + 1, total); render(); }
     });
 })();
-
 </script>
 
     <script src="static/logo-anim.js"></script>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5층의 창 - Closed Circle</title>
+    <link rel="icon" type="image/svg+xml" href="../static/favicon.svg">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="../static/style.css?v=2026-03-231420UTC">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="../index.html" class="logo">
+                <img src="../static/logo.svg" alt="클로즈드 써클" class="logo-img">
+                <span class="logo-text">CLOSED CIRCLE</span>
+            </a>
+            <div class="nav-links">
+                <a href="../books.html">신간</a>
+                <a href="../news.html">출판사 소식</a>
+                <a href="../about.html">소개</a>
+            </div>
+        </nav>
+    </header>
+    <main>
+        
+
+
+
+<section class="hero-feature">
+    <div class="hero-feature-inner">
+        <div class="hero-info">
+            
+            <span class="hero-label">일본 미스터리</span>
+            
+            <h1 class="hero-title">5층의 창</h1>
+            <p class="hero-author">에도가와 란포</p>
+            
+            
+            <p class="hero-desc">『5층의 창』은 일본 추리문학 초창기의 실험성과 매력을 보여주는 작품이다. 오래된 문체와 시대적 표현이 고스란히 녹아 있다. 릴레이 추리소설인 만큼, 각 작가별 문체나 스타일이 모두 다르다. 그렇기에 각 장마다 다른 감각의 서사가 이어져, 작품에서 전개되는 이야기뿐만 아니라 그 외적인 즐거움도 상당하다. 이 외적인 즐거움을 위해 원작의 분위기를 살리면서도 독자가 자연스럽게 읽을 수 있는 번역으로 완성했다. 고전 특유의 낯섦을 넘어서는 재미와 그 시대 미스터리의 매력을 선사한다.</p>
+            
+            
+            <div class="hero-tags">
+                
+                <span class="hero-tag">릴레이</span>
+                
+                <span class="hero-tag">즐거움</span>
+                
+                <span class="hero-tag">매력</span>
+                
+            </div>
+            
+            <div class="hero-meta">
+                <span class="hero-meta-item">시간의물레</span>
+                <span class="hero-meta-sep">·</span>
+                <span class="hero-meta-item">2026-03-13</span>
+                <span class="hero-meta-sep">·</span>
+                <span class="hero-meta-item">15,000원</span>
+                <span class="hero-meta-sep">·</span>
+                <a href="https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=388295864&amp;amp;partner=openAPI&amp;amp;start=api" target="_blank" rel="noopener" class="hero-meta-link">알라딘</a>
+            </div>
+        </div>
+        <div class="hero-cover">
+            <div class="book3d-scene" style="width:286px;height:418px;">
+                <div class="book3d" id="book3d"
+                     style="width:286px;height:418px;">
+                    <div class="book3d-face book3d-front"
+                         style="width:286px;height:418px;
+                                transform:translateZ(13px)">
+                        <img src="https://image.aladin.co.kr/product/38829/58/cover500/8965115892_1.jpg" alt="5층의 창">
+                    </div>
+                    <div class="book3d-face book3d-back"
+                         style="width:286px;height:418px;
+                                transform:rotateY(180deg) translateZ(13px)">
+                        
+                        <img src="https://image.aladin.co.kr/product/38829/58/letslook/8965115892_b.jpg" alt="5층의 창 뒷표지">
+                        
+                    </div>
+                    <div class="book3d-face book3d-spine"
+                         style="width:26px;height:418px;
+                                left:130px;
+                                transform:rotateY(-90deg) translateZ(143px)">
+                        
+                        <img src="https://image.aladin.co.kr/product/38829/58/Spine/8965115892_d.jpg" alt="책등">
+                        
+                    </div>
+                    <div class="book3d-face book3d-fore book3d-paper"
+                         style="width:26px;height:418px;
+                                left:130px;
+                                transform:rotateY(90deg) translateZ(143px)">
+                    </div>
+                    <div class="book3d-face book3d-top book3d-paper"
+                         style="width:286px;height:26px;
+                                top:196px;
+                                transform:rotateX(90deg) translateZ(209px)">
+                    </div>
+                    <div class="book3d-face book3d-bottom book3d-paper"
+                         style="width:286px;height:26px;
+                                top:196px;
+                                transform:rotateX(-90deg) translateZ(209px)">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    </main>
+    <footer>
+        <p>국내 출간 미스터리 소설 신작을 매일 업데이트합니다</p>
+        <p>마지막 업데이트: 2026-03-23 14:20 UTC</p>
+        <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank">알라딘</a></p>
+    </footer>
+    
+<script>
+(function () {
+    var book = document.getElementById("book3d");
+    if (!book) return;
+
+    var rotY = -20, rotX = 5;
+    var dragging = false;
+    var lastX, lastY;
+    var scene = book.parentElement;
+
+    function update() {
+        book.style.transform = "rotateX(" + rotX + "deg) rotateY(" + rotY + "deg)";
+    }
+    update();
+
+    scene.addEventListener("mousedown", function (e) {
+        dragging = true;
+        lastX = e.clientX;
+        lastY = e.clientY;
+        scene.style.cursor = "grabbing";
+        e.preventDefault();
+    });
+
+    document.addEventListener("mousemove", function (e) {
+        if (!dragging) return;
+        rotY += (e.clientX - lastX) * 0.5;
+        rotX -= (e.clientY - lastY) * 0.3;
+        rotX = Math.max(-40, Math.min(40, rotX));
+        lastX = e.clientX;
+        lastY = e.clientY;
+        update();
+    });
+
+    document.addEventListener("mouseup", function () {
+        dragging = false;
+        scene.style.cursor = "grab";
+    });
+
+    scene.addEventListener("touchstart", function (e) {
+        dragging = true;
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+    }, { passive: true });
+
+    document.addEventListener("touchmove", function (e) {
+        if (!dragging) return;
+        e.preventDefault();
+        rotY += (e.touches[0].clientX - lastX) * 0.5;
+        rotX -= (e.touches[0].clientY - lastY) * 0.3;
+        rotX = Math.max(-40, Math.min(40, rotX));
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+        update();
+    }, { passive: false });
+
+    document.addEventListener("touchend", function () {
+        dragging = false;
+    });
+})();
+</script>
+
+    <script src="../static/logo-anim.js"></script>
+</body>
+</html>

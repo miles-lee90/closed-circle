@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}{{ book.title }} - Closed Circle{% endblock %}
+
+{% block content %}
+{% set bw = ((book.size_width or 128) * 2.2)|int %}
+{% set bh = ((book.size_height or 188) * 2.2)|int %}
+{% set bd = ((book.size_depth or 16) * 2.2)|int %}
+<section class="hero-feature">
+    <div class="hero-feature-inner">
+        <div class="hero-info">
+            {% if book.nationality == 'JP' %}
+            <span class="hero-label">일본 미스터리</span>
+            {% elif book.nationality == 'KR' %}
+            <span class="hero-label hero-label-kr">한국 미스터리</span>
+            {% endif %}
+            <h1 class="hero-title">{{ book.title }}</h1>
+            <p class="hero-author">{{ book.author }}</p>
+            {% set desc_text = book.summary or book.publisher_desc or book.description %}
+            {% if desc_text %}
+            <p class="hero-desc">{{ desc_text }}</p>
+            {% endif %}
+            {% if book.keywords %}
+            <div class="hero-tags">
+                {% for kw in book.keywords %}
+                <span class="hero-tag">{{ kw }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="hero-meta">
+                <span class="hero-meta-item">{{ book.publisher }}</span>
+                <span class="hero-meta-sep">·</span>
+                <span class="hero-meta-item">{{ book.pub_date }}</span>
+                <span class="hero-meta-sep">·</span>
+                <span class="hero-meta-item">{{ "{:,}".format(book.price) }}원</span>
+                <span class="hero-meta-sep">·</span>
+                <a href="{{ book.link }}" target="_blank" rel="noopener" class="hero-meta-link">알라딘</a>
+            </div>
+        </div>
+        <div class="hero-cover">
+            <div class="book3d-scene" style="width:{{ bw }}px;height:{{ bh }}px;">
+                <div class="book3d" id="book3d"
+                     style="width:{{ bw }}px;height:{{ bh }}px;">
+                    <div class="book3d-face book3d-front"
+                         style="width:{{ bw }}px;height:{{ bh }}px;
+                                transform:translateZ({{ bd // 2 }}px)">
+                        <img src="{{ book.cover_url }}" alt="{{ book.title }}">
+                    </div>
+                    <div class="book3d-face book3d-back"
+                         style="width:{{ bw }}px;height:{{ bh }}px;
+                                transform:rotateY(180deg) translateZ({{ bd // 2 }}px)">
+                        {% if book.back_cover_url %}
+                        <img src="{{ book.back_cover_url }}" alt="{{ book.title }} 뒷표지">
+                        {% endif %}
+                    </div>
+                    <div class="book3d-face book3d-spine"
+                         style="width:{{ bd }}px;height:{{ bh }}px;
+                                left:{{ (bw - bd) // 2 }}px;
+                                transform:rotateY(-90deg) translateZ({{ bw // 2 }}px)">
+                        {% if book.spine_url %}
+                        <img src="{{ book.spine_url }}" alt="책등">
+                        {% endif %}
+                    </div>
+                    <div class="book3d-face book3d-fore book3d-paper"
+                         style="width:{{ bd }}px;height:{{ bh }}px;
+                                left:{{ (bw - bd) // 2 }}px;
+                                transform:rotateY(90deg) translateZ({{ bw // 2 }}px)">
+                    </div>
+                    <div class="book3d-face book3d-top book3d-paper"
+                         style="width:{{ bw }}px;height:{{ bd }}px;
+                                top:{{ (bh - bd) // 2 }}px;
+                                transform:rotateX(90deg) translateZ({{ bh // 2 }}px)">
+                    </div>
+                    <div class="book3d-face book3d-bottom book3d-paper"
+                         style="width:{{ bw }}px;height:{{ bd }}px;
+                                top:{{ (bh - bd) // 2 }}px;
+                                transform:rotateX(-90deg) translateZ({{ bh // 2 }}px)">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    var book = document.getElementById("book3d");
+    if (!book) return;
+
+    var rotY = -20, rotX = 5;
+    var dragging = false;
+    var lastX, lastY;
+    var scene = book.parentElement;
+
+    function update() {
+        book.style.transform = "rotateX(" + rotX + "deg) rotateY(" + rotY + "deg)";
+    }
+    update();
+
+    scene.addEventListener("mousedown", function (e) {
+        dragging = true;
+        lastX = e.clientX;
+        lastY = e.clientY;
+        scene.style.cursor = "grabbing";
+        e.preventDefault();
+    });
+
+    document.addEventListener("mousemove", function (e) {
+        if (!dragging) return;
+        rotY += (e.clientX - lastX) * 0.5;
+        rotX -= (e.clientY - lastY) * 0.3;
+        rotX = Math.max(-40, Math.min(40, rotX));
+        lastX = e.clientX;
+        lastY = e.clientY;
+        update();
+    });
+
+    document.addEventListener("mouseup", function () {
+        dragging = false;
+        scene.style.cursor = "grab";
+    });
+
+    scene.addEventListener("touchstart", function (e) {
+        dragging = true;
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+    }, { passive: true });
+
+    document.addEventListener("touchmove", function (e) {
+        if (!dragging) return;
+        e.preventDefault();
+        rotY += (e.touches[0].clientX - lastX) * 0.5;
+        rotX -= (e.touches[0].clientY - lastY) * 0.3;
+        rotX = Math.max(-40, Math.min(40, rotX));
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+        update();
+    }, { passive: false });
+
+    document.addEventListener("touchend", function () {
+        dragging = false;
+    });
+})();
+</script>
+{% endblock %}

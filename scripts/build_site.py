@@ -141,17 +141,30 @@ def build():
     )
     featured_book = jp_books[0] if jp_books else None
 
-    if featured_book:
-        featured_book["keywords"] = extract_keywords(featured_book)
+    # 모든 책에 키워드 추출
+    for b in books:
+        b["keywords"] = extract_keywords(b)
 
-    context = {
+    if featured_book:
+        featured_book = jp_books[0]
+
+    recent_books = sorted(books, key=lambda b: b.get("pub_date", ""), reverse=True)[:10]
+
+    base_context = {
         "site_title": site.get("title", "클로즈드 써클"),
         "site_description": site.get("description", ""),
+        "updated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        "base_path": "",
+    }
+
+    context = {
+        **base_context,
         "books": books,
         "featured_book": featured_book,
+        "recent_books": recent_books,
+        "recent_news": news[:3],
         "news": news,
         "publishers": publishers,
-        "updated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
     }
 
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
@@ -161,6 +174,16 @@ def build():
         html = template.render(**context)
         (DOCS_DIR / template_name).write_text(html, encoding="utf-8")
         print(f"Built {template_name}")
+
+    # 각 책 상세 페이지 생성
+    book_dir = DOCS_DIR / "book"
+    book_dir.mkdir(parents=True, exist_ok=True)
+    detail_template = env.get_template("book_detail.html")
+    for b in books:
+        book_context = {**base_context, "base_path": "../", "book": b}
+        html = detail_template.render(**book_context)
+        (book_dir / f"{b['isbn13']}.html").write_text(html, encoding="utf-8")
+    print(f"Built {len(books)} book detail pages")
 
     static_dest = DOCS_DIR / "static"
     if STATIC_DIR.exists():

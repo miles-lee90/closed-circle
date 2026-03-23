@@ -4,23 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Closed Circle{% endblock %}</title>
-    <link rel="icon" type="image/svg+xml" href="static/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="{{ base_path }}static/favicon.svg">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="{{ base_path }}static/style.css?v={{ updated_at|replace(' ', '')|replace(':', '') }}">
 </head>
 <body>
     <header>
         <nav>
-            <a href="index.html" class="logo">
-                <img src="static/logo.svg" alt="{{ site_title }}" class="logo-img">
+            <a href="{{ base_path }}index.html" class="logo">
+                <img src="{{ base_path }}static/logo.svg" alt="{{ site_title }}" class="logo-img">
                 <span class="logo-text">CLOSED CIRCLE</span>
             </a>
             <div class="nav-links">
-                <a href="books.html">신간</a>
-                <a href="news.html">출판사 소식</a>
-                <a href="about.html">소개</a>
+                <a href="{{ base_path }}books.html">신간</a>
+                <a href="{{ base_path }}news.html">출판사 소식</a>
+                <a href="{{ base_path }}about.html">소개</a>
             </div>
         </nav>
     </header>
@@ -33,6 +33,6 @@
         <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank">알라딘</a></p>
     </footer>
     {% block scripts %}{% endblock %}
-    <script src="static/logo-anim.js"></script>
+    <script src="{{ base_path }}static/logo-anim.js"></script>
 </body>
 </html>
