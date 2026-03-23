@@ -496,6 +496,11 @@ main {
     border-radius: 980px;
 }
 
+.hero-label-kr {
+    color: var(--badge-kr);
+    border-color: var(--badge-kr);
+}
+
 .hero-title {
     font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 700;
@@ -697,6 +702,50 @@ main {
     color: #fff;
 }
 
+/* ─── Floating Filter (books) ─── */
+.floating-filter {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    display: flex;
+    gap: 3px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 3px;
+    z-index: 50;
+    transition: opacity 0.3s ease;
+}
+
+.floating-filter.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.floating-filter-btn {
+    background: none;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all var(--transition);
+}
+
+.floating-filter-btn:hover {
+    color: var(--text-secondary);
+}
+
+.floating-filter-btn.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-primary);
+}
+
 /* ─── Bookshelf ─── */
 .bookshelf {
     display: flex;
@@ -752,71 +801,6 @@ main {
 .spine-badge.badge-jp { background: var(--badge-jp); }
 .spine-badge.badge-kr { background: var(--badge-kr); }
 
-/* ─── Cover Info Popup ─── */
-.cover-reveal {
-    position: fixed;
-    width: 200px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
-    z-index: 1000;
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 0.75rem;
-    filter: drop-shadow(0 12px 32px rgba(0,0,0,0.6));
-}
-
-.cover-reveal.visible {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.spine-wrapper.active {
-    z-index: 60;
-}
-
-.cover-reveal img {
-    width: 100%;
-    border-radius: 8px;
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-.cover-title {
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 0.25rem;
-    line-height: 1.35;
-}
-
-.cover-title a {
-    color: var(--text-primary);
-}
-
-.cover-title a:hover {
-    color: var(--accent);
-}
-
-.cover-author {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    margin-bottom: 0.15rem;
-}
-
-.cover-meta {
-    font-size: 0.6875rem;
-    color: var(--text-tertiary);
-    margin-top: 0.15rem;
-}
-
-.cover-price {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-top: 0.25rem;
-}
 
 /* ─── Badges ─── */
 .badge {
@@ -972,6 +956,54 @@ footer a:hover {
     font-size: 1.125rem;
 }
 
+/* ─── Books 3D Transition ─── */
+.bookshelf.detail-open .spine-wrapper:not(.active-spine) {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease 0.1s;
+}
+
+.bookshelf.detail-open .spine-wrapper.active-spine {
+    position: absolute;
+    z-index: 60;
+}
+
+/* Inline Detail View */
+.book-detail-inline {
+    display: flex;
+    align-items: center;
+    gap: 3.5rem;
+    max-width: 880px;
+    width: 100%;
+    margin: 0 auto;
+    min-height: calc(100vh - 53px);
+    padding: 3rem 2rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.book-detail-inline.visible {
+    opacity: 1;
+}
+
+.book-detail-inline .hero-info {
+    flex: 1;
+}
+
+.book-detail-inline .hero-cover {
+    flex-shrink: 0;
+}
+
+/* Spine stagger fade */
+.spine-wrapper.stagger-in {
+    animation: staggerFadeIn 0.3s ease forwards;
+}
+
+@keyframes staggerFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* ─── Responsive ─── */
 @media (max-width: 768px) {
     .hero {
@@ -985,10 +1017,6 @@ footer a:hover {
 
     .spine-wrapper {
         height: 240px;
-    }
-
-    .cover-reveal {
-        width: 150px;
     }
 
     .filters {
@@ -1010,6 +1038,25 @@ footer a:hover {
     }
 
     .hero-meta {
+        justify-content: center;
+    }
+
+    .book-detail-inline {
+        flex-direction: column-reverse;
+        gap: 2rem;
+        text-align: center;
+        padding: 2rem 1rem;
+    }
+
+    .book-detail-inline .book3d-scene {
+        transform: scale(0.75);
+    }
+
+    .book-detail-inline .hero-tags {
+        justify-content: center;
+    }
+
+    .book-detail-inline .hero-meta {
         justify-content: center;
     }
 }
