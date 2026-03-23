@@ -1,14 +1,15 @@
 """Build static site from collected data using Jinja2 templates."""
 
 import json
+import random
 import shutil
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from kiwipiepy import Kiwi
-
+import requests
 import yaml
 from jinja2 import Environment, FileSystemLoader
+from kiwipiepy import Kiwi
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
@@ -107,22 +108,23 @@ def build():
     save_json(news, DATA_DIR / "publisher_news.json")
 
     # Only JP and KR, only books with spine images, verify spine exists
-    import requests
+    from concurrent.futures import ThreadPoolExecutor
     books = [b for b in books if b.get("nationality") in ("JP", "KR") and b.get("spine_url")]
-    verified = []
-    for b in books:
+
+    def check_spine(b):
         try:
-            r = requests.head(b["spine_url"], timeout=5)
-            if r.status_code == 200:
-                verified.append(b)
+            r = requests.head(b["spine_url"], timeout=2)
+            return r.status_code == 200
         except Exception:
-            pass
-    books = verified
+            return False
+
+    with ThreadPoolExecutor(max_workers=10) as pool:
+        results = list(pool.map(check_spine, books))
+    books = [b for b, ok in zip(books, results) if ok]
     print(f"Verified spine images: {len(books)} books")
     books = sort_books_jp_first(books)
 
     # Randomly assign tilt + gap variation
-    import random
     random.seed(42)
     for b in books:
         b["gap"] = random.randint(5, 12)

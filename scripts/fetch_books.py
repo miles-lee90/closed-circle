@@ -183,16 +183,20 @@ def fetch_publisher_desc(item_id: str, session: requests.Session = None) -> str:
         lines = text.split("\n")
         clean = []
         for line in lines:
-            if line in ("출판사 제공 책소개", "출판사 제공", "책소개", "더보기"):
+            if line in ("출판사 제공 책소개", "출판사 제공", "책소개", "더보기", "접기"):
                 continue
             clean.append(line)
 
         result = "\n".join(clean).strip()
-        # "더보기" 이후 중복 텍스트 제거
-        if "더보기" in text:
-            half = len(result) // 2
-            if half > 100 and result[half:half+50] in result[:half]:
-                result = result[:half].strip()
+        # 중복 텍스트 제거 (알라딘 페이지가 접기/펼치기로 같은 내용을 두 번 포함)
+        if len(result) > 200:
+            for ratio in [0.45, 0.5, 0.55]:
+                cut = int(len(result) * ratio)
+                chunk = result[cut:cut+80]
+                pos = result.find(chunk)
+                if pos != -1 and pos < cut - 40:
+                    result = result[:cut].strip()
+                    break
         return result
     except Exception:
         return ""

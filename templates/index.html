@@ -139,6 +139,7 @@
 
     document.addEventListener("touchmove", function (e) {
         if (!dragging) return;
+        e.preventDefault();
         var dx = e.touches[0].clientX - lastX;
         var dy = e.touches[0].clientY - lastY;
         rotY += dx * 0.5;
@@ -146,7 +147,8 @@
         rotX = Math.max(-40, Math.min(40, rotX));
         lastX = e.touches[0].clientX;
         lastY = e.touches[0].clientY;
-    }, { passive: true });
+        update();
+    }, { passive: false });
 
     document.addEventListener("touchend", function () {
         dragging = false;
