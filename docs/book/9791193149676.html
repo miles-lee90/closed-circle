@@ -8,22 +8,30 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="../static/style.css?v=2026-03-232341UTC">
+    <link rel="stylesheet" href="../static/style.css?v=2026-03-271155UTC">
 </head>
 <body>
     <header>
         <nav>
-            <a href="../index.html" class="logo">
-                <img src="../static/logo.svg" alt="클로즈드 써클" class="logo-img">
-                <span class="logo-text">CLOSED CIRCLE</span>
-            </a>
             <div class="nav-links">
-                <a href="../books.html">신간</a>
-                <a href="../news.html">출판사 소식</a>
+                <a href="../news.html">소식</a>
                 <a href="../about.html">소개</a>
+            </div>
+            <a href="../index.html" class="nav-title">CLOSED CIRCLE</a>
+            <div class="nav-right">
+                <button class="nav-search-btn" id="search-toggle" aria-label="검색">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </button>
             </div>
         </nav>
     </header>
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="제목, 작가, 출판사 검색..." autocomplete="off">
+            <button class="search-close" id="search-close">&times;</button>
+        </div>
+        <div class="search-results" id="search-results"></div>
+    </div>
     <main>
         
 
@@ -39,7 +47,8 @@
             <p class="hero-author">나카야마 시치리</p>
             
             
-            <p class="hero-desc">출판사 소개
+            <div class="hero-desc-wrap">
+                <p class="hero-desc hero-desc-collapsed">출판사 소개
 출판사 소개
 블루홀식스(블루홀6)
 출판사 페이지
@@ -69,6 +78,10 @@
 시치리의 작품의 특징 중 하나는 ‘리더빌리티’다. 즉 가독성이 있고 쉽게 읽힌다는 점이다. 시치리는 리더빌리티를 추구하기 위해 내용의 사건성과 스토리에 따라 완급을 조정한다고 한다. 가령 ‘!’의 수 등으로 컨트롤하는 것이다. 그는 예를 들어 『테미스의 검』에서는 느낌표를 하나도 사용하지 않았다고 말한다. 덧붙이자면, 작품의 주제에 따라 ‘!’과 ‘?’의 개수를 정한다는 것이다. 이 주제라면 원고지 한 장당 몇 개로 해야겠다.&#39; 이런 식으로 말이다.
 또한 그는 한 달에 한 작품을 출간하는 엄청난 집필 속도의 비결에 대해 다음과 같이 말한다. 자신은 다른 미스터리 작가들과 작품을 쓰는 방식에서 차이가 있다는 것이다. 보통 작가들은 원목을 하나하나 조각칼로 깎듯이 작품을 쓴다면, 자신은 프라모델 형식으로 작업한다고 한다. 그러니 어떤 테마에 대해 써달라는 제안을 받으면 이전에 써두었던 설계도를 떠올리고 그것을 바로 가공해 조립할 수 있는 것이다. 물론 프라모델이기 때문에 중간에 수정할 필요도 없다. 가히 천재적인 만능 이야기꾼답다. 앞으로도 만능 재주꾼이 어떤 이야기로 독자들을 놀라게 할지 기대해주시기를 바란다.
 접기</p>
+                
+                <button class="desc-toggle" onclick="this.previousElementSibling.classList.toggle('hero-desc-collapsed');this.textContent=this.textContent==='더보기'?'접기':'더보기';">더보기</button>
+                
+            </div>
             
             
             <div class="hero-tags">
@@ -139,7 +152,7 @@
     </main>
     <footer>
         <p>국내 출간 미스터리 소설 신작을 매일 업데이트합니다</p>
-        <p>마지막 업데이트: 2026-03-23 23:41 UTC</p>
+        <p>마지막 업데이트: 2026-03-27 11:55 UTC</p>
         <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank">알라딘</a></p>
     </footer>
     

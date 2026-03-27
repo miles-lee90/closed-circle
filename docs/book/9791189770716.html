@@ -8,22 +8,30 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="../static/style.css?v=2026-03-232341UTC">
+    <link rel="stylesheet" href="../static/style.css?v=2026-03-271155UTC">
 </head>
 <body>
     <header>
         <nav>
-            <a href="../index.html" class="logo">
-                <img src="../static/logo.svg" alt="클로즈드 써클" class="logo-img">
-                <span class="logo-text">CLOSED CIRCLE</span>
-            </a>
             <div class="nav-links">
-                <a href="../books.html">신간</a>
-                <a href="../news.html">출판사 소식</a>
+                <a href="../news.html">소식</a>
                 <a href="../about.html">소개</a>
+            </div>
+            <a href="../index.html" class="nav-title">CLOSED CIRCLE</a>
+            <div class="nav-right">
+                <button class="nav-search-btn" id="search-toggle" aria-label="검색">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </button>
             </div>
         </nav>
     </header>
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="제목, 작가, 출판사 검색..." autocomplete="off">
+            <button class="search-close" id="search-close">&times;</button>
+        </div>
+        <div class="search-results" id="search-results"></div>
+    </div>
     <main>
         
 
@@ -39,7 +47,8 @@
             <p class="hero-author">이다모</p>
             
             
-            <p class="hero-desc">동양의 잔혹한 주술과 서양의 악마학이 결합된 압도적 오컬트 스릴러. 당신이 잠든 사이, 가장 가까운 곳에서 비릿한 악마의 숨결이 들려온다.
+            <div class="hero-desc-wrap">
+                <p class="hero-desc hero-desc-collapsed">동양의 잔혹한 주술과 서양의 악마학이 결합된 압도적 오컬트 스릴러. 당신이 잠든 사이, 가장 가까운 곳에서 비릿한 악마의 숨결이 들려온다.
 “빌지 말아야 할 것에 손을 모았고, 들지 말아야 할 것을 집 안으로 들였다.”
 성적과 성공만이 전부인 숨 막히는 일상, 그 균열을 파고든 고대의 악마. 지독한 입시 압박에 시달리던 입시생 서현은 캠프 마지막 날 숲속 깊은 곳에서 넝쿨에 휘감긴 기괴한 사당을 발견한다. 그곳에는 모셔야 할 신이 아니라 결코 풀려나서는 안 될 존재가 있었다. 비릿한 물비린내와 함께 저주가 일상을 잠식하고, 보이지 않는 손길에 의해 가족은 무참히 무너져 내리기 시작한다. 점점 더 거대해지는 그것을 막기 위해 심령사 세령과 구마 사제 도결은 목숨을 건 최후의 사투를 준비하는데…….
 한국적 샤머니즘과 서구적 공포의 습하고 기괴한 만남
@@ -55,6 +64,10 @@
 한국적 샤머니즘의 기괴한 미학과 서구 오컬트의 파괴적 공포가 완벽하게 융합된 이 소설은, 현대 장르 문학이 도달할 수 있는 새로운 지평을 보여 주는 수작입니다.
 마지막 책장을 덮는 순간, 여러분은 귓가에 맴도는 두꺼비의 울음소리와 코끝을 스치는 서늘한 비린내로부터 자유롭지 못할 것입니다.
 접기</p>
+                
+                <button class="desc-toggle" onclick="this.previousElementSibling.classList.toggle('hero-desc-collapsed');this.textContent=this.textContent==='더보기'?'접기':'더보기';">더보기</button>
+                
+            </div>
             
             
             <div class="hero-tags">
@@ -125,7 +138,7 @@
     </main>
     <footer>
         <p>국내 출간 미스터리 소설 신작을 매일 업데이트합니다</p>
-        <p>마지막 업데이트: 2026-03-23 23:41 UTC</p>
+        <p>마지막 업데이트: 2026-03-27 11:55 UTC</p>
         <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank">알라딘</a></p>
     </footer>
     

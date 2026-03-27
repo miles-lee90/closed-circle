@@ -44,13 +44,9 @@ def parse_aladin_item(item: dict, nationality: str = None, author_overrides: dic
             parts[1] = parts[1][0].upper() + parts[1][1:]
             spine_url = '/'.join(parts)
 
-        # Back cover URL: cover500 → letslook, _1.jpg → _b.jpg
-        back_cover_url = cover_url.replace("/cover500/", "/letslook/").replace("/cover/", "/letslook/")
-        back_cover_url = re.sub(r'_\d+\.jpg$', '_b.jpg', back_cover_url)
-        parts = back_cover_url.rsplit('/', 1)
-        if len(parts) == 2 and parts[1]:
-            parts[1] = parts[1][0].upper() + parts[1][1:]
-            back_cover_url = '/'.join(parts)
+        # Back cover URL: 상품 페이지에서 스크래핑 (letslook ID가 커버와 다름)
+        # fetch 단계에서는 빈 값, 이후 scrape_back_covers()에서 채움
+        back_cover_url = ""
 
     # Override nationality based on actual categoryName from API
     cat_name = item.get("categoryName", "")
@@ -202,6 +198,46 @@ def fetch_publisher_desc(item_id: str, session: requests.Session = None) -> str:
         return ""
 
 
+def scrape_back_cover(item_id: str, session: requests.Session = None) -> str:
+    """알라딘 상품 페이지에서 letslook 뒷표지 이미지 URL을 스크래핑한다."""
+    try:
+        s = session or requests.Session()
+        s.headers.setdefault("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)")
+        url = f"https://www.aladin.co.kr/shop/wproduct.aspx?ItemId={item_id}"
+        resp = s.get(url, timeout=15)
+        # letslook/XXXXX_b.jpg 패턴 찾기
+        match = re.search(r'(https?:)?//image\.aladin\.co\.kr/product/[^"\']*letslook/[^"\']*_b\.jpg', resp.text)
+        if match:
+            found = match.group(0)
+            if found.startswith("//"):
+                found = "https:" + found
+            return found
+    except Exception:
+        pass
+    return ""
+
+
+def scrape_back_covers(books: list[dict], session: requests.Session = None):
+    """뒷표지 URL이 없는 책들의 뒷표지를 스크래핑한다."""
+    import time
+    needs = [b for b in books if not b.get("back_cover_url")]
+    if not needs:
+        return
+    print(f"Scraping back covers for {len(needs)} books...")
+    s = session or requests.Session()
+    for i, book in enumerate(needs):
+        item_id = re.search(r"ItemId=(\d+)", book.get("link", ""))
+        if item_id:
+            url = scrape_back_cover(item_id.group(1), s)
+            if url:
+                book["back_cover_url"] = url
+        if (i + 1) % 10 == 0:
+            print(f"  {i + 1}/{len(needs)} done")
+        time.sleep(0.5)
+    has_back = sum(1 for b in books if b.get("back_cover_url"))
+    print(f"  Back covers: {has_back}/{len(books)}")
+
+
 def merge_books(existing: list[dict], new: list[dict]) -> list[dict]:
     """Merge new books into existing list, deduplicating by isbn13. Newer wins."""
     by_isbn = {b["isbn13"]: b for b in existing}
@@ -262,6 +298,9 @@ def main():
             time.sleep(0.5)
         has_desc = sum(1 for b in merged if b.get("publisher_desc"))
         print(f"  Publisher descriptions: {has_desc}/{len(merged)}")
+
+    # Scrape back cover URLs from product pages
+    scrape_back_covers(merged, session if 'session' in dir() else None)
 
     save_books(merged)
     print(f"Total books in database: {len(merged)}")

@@ -1,30 +1,45 @@
 {% extends "base.html" %}
-{% block title %}신간 - Closed Circle{% endblock %}
+{% block title %}Closed Circle{% endblock %}
 
 {% block content %}
-<div class="bookshelf" id="book-grid">
-    {% for book in books %}
-    {% set h = book.size_height if book.size_height else 188 %}
-    {% set d = book.size_depth if book.size_depth else 15 %}
-    {% set spine_h = (h * 3.0)|int %}
-    {% set spine_w = (d * 1.6)|int %}
-    {% set spine_w = [spine_w, 20]|max %}
-    <div class="spine-wrapper"
-         data-nationality="{{ book.nationality }}"
-         data-idx="{{ loop.index0 }}"
-         style="height:{{ spine_h }}px;margin-right:{{ book.gap }}px">
-        <div class="spine-book" style="height:100%">
-            <div class="spine-face">
-                <img class="spine-img" src="{{ book.spine_url }}" alt="{{ book.title }}" loading="lazy">
-                {% if book.nationality == 'JP' %}
-                <span class="spine-badge badge-jp"></span>
-                {% elif book.nationality == 'KR' %}
-                <span class="spine-badge badge-kr"></span>
-                {% endif %}
+<div class="book-persp-wrapper" id="book-persp-wrapper">
+    <div class="book-stack" id="book-grid">
+        {% for book in books %}
+        {% set bw = ((book.size_width or 128) * 2.2)|int %}
+        {% set bh = ((book.size_height or 188) * 2.2)|int %}
+        {% set bd = ((book.size_depth or 16) * 2.2)|int %}
+        <div class="book-slide" data-nationality="{{ book.nationality }}" data-idx="{{ loop.index0 }}">
+            <div class="book3d book-item"
+                 style="width:{{ bw }}px;height:{{ bh }}px;">
+                <div class="book3d-face book3d-front"
+                     style="width:{{ bw }}px;height:{{ bh }}px;transform:translateZ({{ bd // 2 }}px)">
+                    <img src="{{ book.cover_url }}" alt="{{ book.title }}" loading="lazy">
+                </div>
+                <div class="book3d-face book3d-back"
+                     style="width:{{ bw }}px;height:{{ bh }}px;transform:rotateY(180deg) translateZ({{ bd // 2 }}px)">
+                    {% if book.back_cover_url %}
+                    <img src="{{ book.back_cover_url }}" alt="{{ book.title }} 뒷표지" loading="lazy">
+                    {% endif %}
+                </div>
+                <div class="book3d-face book3d-spine"
+                     style="width:{{ bd }}px;height:{{ bh }}px;left:{{ (bw - bd) // 2 }}px;transform:rotateY(-90deg) translateZ({{ bw // 2 }}px)">
+                    {% if book.spine_url %}
+                    <img src="{{ book.spine_url }}" alt="책등" loading="lazy">
+                    {% endif %}
+                </div>
+                <div class="book3d-face book3d-fore book3d-paper"
+                     style="width:{{ bd }}px;height:{{ bh }}px;left:{{ (bw - bd) // 2 }}px;transform:rotateY(90deg) translateZ({{ bw // 2 }}px)">
+                </div>
+                <div class="book3d-face book3d-top book3d-paper"
+                     style="width:{{ bw }}px;height:{{ bd }}px;top:{{ (bh - bd) // 2 }}px;transform:rotateX(90deg) translateZ({{ bh // 2 }}px)">
+                </div>
+                <div class="book3d-face book3d-bottom book3d-paper"
+                     style="width:{{ bw }}px;height:{{ bd }}px;top:{{ (bh - bd) // 2 }}px;transform:rotateX(-90deg) translateZ({{ bh // 2 }}px)">
+                </div>
             </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>
 
 <div id="book-detail-container"></div>
@@ -66,4 +81,56 @@ var BOOKS = [
 ];
 </script>
 <script src="static/books.js"></script>
+<script>
+(function () {
+    var overlay = document.getElementById("search-overlay");
+    var input = document.getElementById("search-input");
+    var results = document.getElementById("search-results");
+    var toggleBtn = document.getElementById("search-toggle");
+    var closeBtn = document.getElementById("search-close");
+
+    function open() {
+        overlay.classList.add("active");
+        input.value = "";
+        results.innerHTML = "";
+        setTimeout(function () { input.focus(); }, 100);
+    }
+    function close() {
+        overlay.classList.remove("active");
+        input.blur();
+    }
+
+    toggleBtn.addEventListener("click", open);
+    closeBtn.addEventListener("click", close);
+    overlay.addEventListener("click", function (e) {
+        if (e.target === overlay) close();
+    });
+    document.addEventListener("keydown", function (e) {
+        if ((e.metaKey || e.ctrlKey) && e.key === "k") { e.preventDefault(); open(); }
+        if (e.key === "Escape" && overlay.classList.contains("active")) close();
+    });
+
+    input.addEventListener("input", function () {
+        var q = input.value.trim().toLowerCase();
+        if (!q) { results.innerHTML = ""; return; }
+        var matched = BOOKS.filter(function (b) {
+            return b.title.toLowerCase().indexOf(q) !== -1 ||
+                   b.author.toLowerCase().indexOf(q) !== -1 ||
+                   b.publisher.toLowerCase().indexOf(q) !== -1;
+        });
+        if (!matched.length) {
+            results.innerHTML = '<p style="color:var(--text-tertiary);font-size:0.9375rem;">검색 결과가 없습니다</p>';
+            return;
+        }
+        results.innerHTML = matched.map(function (b) {
+            return '<a href="book/' + b.isbn + '.html" class="search-result-item">' +
+                '<img class="search-result-cover" src="' + b.coverUrl + '" alt="">' +
+                '<div class="search-result-info">' +
+                    '<div class="search-result-title">' + b.title + '</div>' +
+                    '<div class="search-result-meta">' + b.author + ' · ' + b.publisher + '</div>' +
+                '</div></a>';
+        }).join("");
+    });
+})();
+</script>
 {% endblock %}

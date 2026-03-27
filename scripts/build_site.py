@@ -118,8 +118,20 @@ def build():
         except Exception:
             return False
 
+    def check_back_cover(b):
+        url = b.get("back_cover_url")
+        if not url:
+            return
+        try:
+            r = requests.head(url, timeout=2)
+            if r.status_code != 200:
+                b["back_cover_url"] = ""
+        except Exception:
+            b["back_cover_url"] = ""
+
     with ThreadPoolExecutor(max_workers=10) as pool:
         results = list(pool.map(check_spine, books))
+        pool.map(check_back_cover, books)
     books = [b for b, ok in zip(books, results) if ok]
     print(f"Verified spine images: {len(books)} books")
     books = sort_books_jp_first(books)
@@ -169,11 +181,11 @@ def build():
 
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
 
-    for template_name in ["index.html", "books.html", "news.html", "about.html"]:
+    for template_name, output_name in [("books.html", "index.html"), ("news.html", "news.html"), ("about.html", "about.html")]:
         template = env.get_template(template_name)
         html = template.render(**context)
-        (DOCS_DIR / template_name).write_text(html, encoding="utf-8")
-        print(f"Built {template_name}")
+        (DOCS_DIR / output_name).write_text(html, encoding="utf-8")
+        print(f"Built {output_name}")
 
     # 각 책 상세 페이지 생성
     book_dir = DOCS_DIR / "book"

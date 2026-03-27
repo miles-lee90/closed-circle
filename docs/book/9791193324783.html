@@ -8,22 +8,30 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="../static/style.css?v=2026-03-232341UTC">
+    <link rel="stylesheet" href="../static/style.css?v=2026-03-271155UTC">
 </head>
 <body>
     <header>
         <nav>
-            <a href="../index.html" class="logo">
-                <img src="../static/logo.svg" alt="클로즈드 써클" class="logo-img">
-                <span class="logo-text">CLOSED CIRCLE</span>
-            </a>
             <div class="nav-links">
-                <a href="../books.html">신간</a>
-                <a href="../news.html">출판사 소식</a>
+                <a href="../news.html">소식</a>
                 <a href="../about.html">소개</a>
+            </div>
+            <a href="../index.html" class="nav-title">CLOSED CIRCLE</a>
+            <div class="nav-right">
+                <button class="nav-search-btn" id="search-toggle" aria-label="검색">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </button>
             </div>
         </nav>
     </header>
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="제목, 작가, 출판사 검색..." autocomplete="off">
+            <button class="search-close" id="search-close">&times;</button>
+        </div>
+        <div class="search-results" id="search-results"></div>
+    </div>
     <main>
         
 
@@ -39,7 +47,8 @@
             <p class="hero-author">야쿠마루 가쿠</p>
             
             
-            <p class="hero-desc">출판사 소개
+            <div class="hero-desc-wrap">
+                <p class="hero-desc hero-desc-collapsed">출판사 소개
 출판사 소개
 북플라자
 도서 모두보기
@@ -56,6 +65,10 @@
 그들의 숨겨진 과거와 충격적인 반전!
 “끝까지 간다. 목숨이 다할 때까지!”
 사카키 신이치는 첫사랑인 스미노와의 관계 도중 자신 안에 깃든 살인 충동을 깨닫는다. 스미노와 헤어진 이후 주식으로 큰 성공을 거머쥐지만 삶은 공허하기만 하다. 그러던 어느 날 말기 암 진단을 받고 마침내 자신이 그토록 원하던 살인을 시작한다. 목이 졸려 살해당한 여자들의 시신이 잇달아 발견되자 경시청의 베테랑 형사 아오이 료가 신이치의 뒤를 쫓는다. 하지만 료 또한 말기 암으로 시한부를 선고받게 되는데…. 서늘한 범죄와 뜨거운 슬픔이 교차하는 압도적 서스펜스가 깊고 잔인한 여운을 남긴다.</p>
+                
+                <button class="desc-toggle" onclick="this.previousElementSibling.classList.toggle('hero-desc-collapsed');this.textContent=this.textContent==='더보기'?'접기':'더보기';">더보기</button>
+                
+            </div>
             
             
             <div class="hero-tags">
@@ -91,7 +104,7 @@
                          style="width:308px;height:462px;
                                 transform:rotateY(180deg) translateZ(23px)">
                         
-                        <img src="https://image.aladin.co.kr/product/38331/41/letslook/K782034443_b.jpg" alt="죽기 전에 벌한다 뒷표지">
+                        <img src="https://image.aladin.co.kr/product/38331/41/letslook/S592034710_b.jpg" alt="죽기 전에 벌한다 뒷표지">
                         
                     </div>
                     <div class="book3d-face book3d-spine"
@@ -126,7 +139,7 @@
     </main>
     <footer>
         <p>국내 출간 미스터리 소설 신작을 매일 업데이트합니다</p>
-        <p>마지막 업데이트: 2026-03-23 23:41 UTC</p>
+        <p>마지막 업데이트: 2026-03-27 11:55 UTC</p>
         <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank">알라딘</a></p>
     </footer>
     

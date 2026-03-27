@@ -8,22 +8,30 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="../static/style.css?v=2026-03-232341UTC">
+    <link rel="stylesheet" href="../static/style.css?v=2026-03-271155UTC">
 </head>
 <body>
     <header>
         <nav>
-            <a href="../index.html" class="logo">
-                <img src="../static/logo.svg" alt="클로즈드 써클" class="logo-img">
-                <span class="logo-text">CLOSED CIRCLE</span>
-            </a>
             <div class="nav-links">
-                <a href="../books.html">신간</a>
-                <a href="../news.html">출판사 소식</a>
+                <a href="../news.html">소식</a>
                 <a href="../about.html">소개</a>
+            </div>
+            <a href="../index.html" class="nav-title">CLOSED CIRCLE</a>
+            <div class="nav-right">
+                <button class="nav-search-btn" id="search-toggle" aria-label="검색">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </button>
             </div>
         </nav>
     </header>
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="제목, 작가, 출판사 검색..." autocomplete="off">
+            <button class="search-close" id="search-close">&times;</button>
+        </div>
+        <div class="search-results" id="search-results"></div>
+    </div>
     <main>
         
 
@@ -39,7 +47,8 @@
             <p class="hero-author">나재원</p>
             
             
-            <p class="hero-desc">출판사 소개
+            <div class="hero-desc-wrap">
+                <p class="hero-desc hero-desc-collapsed">출판사 소개
 출판사 소개
 고즈넉이엔티
 도서 모두보기
@@ -87,6 +96,10 @@
 작가는 인간의 기억이라는 추상적 미로와 무의식 전반을 의미하는 코어메모리, 즉 한 사람의 과거가 현재의 그 사람을 완벽히 설명할 수 있는가 하는 물음을 던지고 있다. 가까운 사이일수록 더 큰 비밀을 숨기고 있으며, 그 비밀이 드러나는 순간 모든 것이 붕괴된다는 인간관계의 취약성을 타인의 기억 접속이라는 SF적 장치를 통해 그려낸 작가의 선택은 일견 추상적이고 위험한 시도처럼 보이기까지 한다. 하지만 막상 작품 속 서로 다른 목적을 안고 몸소 실험의 베타테스터가 된 개발자들이 직면하는 혼란과 공포 그리고 연대를 따라가다 보면 누구나 그 선택에 고개를 끄덕일 수밖에 없게 된다.
 『인사이드』는 오싹하고 그로테스크한 미스터리 스릴러 SF인 동시에 따뜻한 온도를 가진 휴먼 드라마다. 숨기고 싶었던 과거의 민낯이 폭로되면서 팀원 간의 신뢰에는 균열이 가고 관계가 파국으로 치닫지만, 작가는 특유의 감성으로 이질적인 감정이 부딪히며 자아내는 독특한 불협화음 속에서도 포기하지 않는 주인공의 모습을 설득력 있게 그려냈다. 이로써 작품 전반의 세련되고도 불쾌하지 않은 긴장이 완성됐다. 그 속에서 작품은 우리 스스로 내면에 접근하는 가장 인간적이고 현실적인 방법을 제안한다.
 접기</p>
+                
+                <button class="desc-toggle" onclick="this.previousElementSibling.classList.toggle('hero-desc-collapsed');this.textContent=this.textContent==='더보기'?'접기':'더보기';">더보기</button>
+                
+            </div>
             
             
             <div class="hero-tags">
@@ -157,7 +170,7 @@
     </main>
     <footer>
         <p>국내 출간 미스터리 소설 신작을 매일 업데이트합니다</p>
-        <p>마지막 업데이트: 2026-03-23 23:41 UTC</p>
+        <p>마지막 업데이트: 2026-03-27 11:55 UTC</p>
         <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank">알라딘</a></p>
     </footer>
     

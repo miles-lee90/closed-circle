@@ -8,22 +8,30 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="../static/style.css?v=2026-03-232341UTC">
+    <link rel="stylesheet" href="../static/style.css?v=2026-03-271155UTC">
 </head>
 <body>
     <header>
         <nav>
-            <a href="../index.html" class="logo">
-                <img src="../static/logo.svg" alt="클로즈드 써클" class="logo-img">
-                <span class="logo-text">CLOSED CIRCLE</span>
-            </a>
             <div class="nav-links">
-                <a href="../books.html">신간</a>
-                <a href="../news.html">출판사 소식</a>
+                <a href="../news.html">소식</a>
                 <a href="../about.html">소개</a>
+            </div>
+            <a href="../index.html" class="nav-title">CLOSED CIRCLE</a>
+            <div class="nav-right">
+                <button class="nav-search-btn" id="search-toggle" aria-label="검색">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </button>
             </div>
         </nav>
     </header>
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="제목, 작가, 출판사 검색..." autocomplete="off">
+            <button class="search-close" id="search-close">&times;</button>
+        </div>
+        <div class="search-results" id="search-results"></div>
+    </div>
     <main>
         
 
@@ -39,7 +47,8 @@
             <p class="hero-author">소향</p>
             
             
-            <p class="hero-desc">“완벽한 타인이 되는 것과
+            <div class="hero-desc-wrap">
+                <p class="hero-desc hero-desc-collapsed">“완벽한 타인이 되는 것과
 불완전한 자신으로 남는 것 중
 어느 쪽이 더 안전할까?”
 판돈 30억, 담보는 아빠의 목숨.
@@ -75,6 +84,10 @@
 작가 에세이에서는 『모방소녀』가 어떻게 기획되고 구성되었는지 보다 구체적으로 드러난다. 두 여고생을 중심에 둔 이유는 무엇인지, 그리고 ‘모방’이라는 개념을 개인의 일탈이 아닌 사회적 현상으로 확장하려 한 의도가 무엇이었는지를 설명한다. 소설 속 상징적 장면과 인물 구도가 어떤 문제의식 위에서 설계되었는지를 밝히며, 작품 해석의 단서를 제공한다.
 마지막으로 사회학자 노명우는 교육이 계급 이동의 통로인 동시에 계급 재생산의 장치임을 분석한다. 입시 경쟁을 개인 윤리의 문제가 아니라 구조의 문제로 바라보게 하며, 서사의 여운을 차분한 인식으로 정리한다.
 접기</p>
+                
+                <button class="desc-toggle" onclick="this.previousElementSibling.classList.toggle('hero-desc-collapsed');this.textContent=this.textContent==='더보기'?'접기':'더보기';">더보기</button>
+                
+            </div>
             
             
             <div class="hero-tags">
@@ -145,7 +158,7 @@
     </main>
     <footer>
         <p>국내 출간 미스터리 소설 신작을 매일 업데이트합니다</p>
-        <p>마지막 업데이트: 2026-03-23 23:41 UTC</p>
+        <p>마지막 업데이트: 2026-03-27 11:55 UTC</p>
         <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank">알라딘</a></p>
     </footer>
     

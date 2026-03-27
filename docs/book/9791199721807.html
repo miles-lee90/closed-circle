@@ -8,22 +8,30 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="../static/style.css?v=2026-03-232341UTC">
+    <link rel="stylesheet" href="../static/style.css?v=2026-03-271155UTC">
 </head>
 <body>
     <header>
         <nav>
-            <a href="../index.html" class="logo">
-                <img src="../static/logo.svg" alt="클로즈드 써클" class="logo-img">
-                <span class="logo-text">CLOSED CIRCLE</span>
-            </a>
             <div class="nav-links">
-                <a href="../books.html">신간</a>
-                <a href="../news.html">출판사 소식</a>
+                <a href="../news.html">소식</a>
                 <a href="../about.html">소개</a>
+            </div>
+            <a href="../index.html" class="nav-title">CLOSED CIRCLE</a>
+            <div class="nav-right">
+                <button class="nav-search-btn" id="search-toggle" aria-label="검색">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </button>
             </div>
         </nav>
     </header>
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="제목, 작가, 출판사 검색..." autocomplete="off">
+            <button class="search-close" id="search-close">&times;</button>
+        </div>
+        <div class="search-results" id="search-results"></div>
+    </div>
     <main>
         
 
@@ -39,7 +47,8 @@
             <p class="hero-author">기미노 아라타</p>
             
             
-            <p class="hero-desc">치밀한 논증과 숨 막히는 법정 공방,
+            <div class="hero-desc-wrap">
+                <p class="hero-desc hero-desc-collapsed">치밀한 논증과 숨 막히는 법정 공방,
 마녀재판 변호인의 불가능한 임무가 시작된다!
 현직 정신과 의사가 그려 내는
 시대적 광기에 휩싸인 다양한 인간 군상
@@ -91,6 +100,10 @@
 《마녀재판의 변호인》은 단순한 오락 이상의 가치를 지닌다. 이 작품은 역사 속 부당함을 생생하게 체감하게 한다. 증거도 없이, 논리도 없이, 오직 편견과 광기만으로 사람을 죽였던 시대. 현직 정신과 의사인 작가는 시대적 불안과 집단 광기, 맹신에 가까운 편견이 지배하는 사회를 냉정하게 그려 냈다.
 논리로 광기에 맞서는 법학자 로젠의 분투를 따라가다 보면, 독자들은 어느새 책의 마지막 장을 넘기게 될 것이다. 그리고 책을 덮는 순간, 역사 속 부당함뿐 아니라 현재 우리 사회의 편견과 불합리에 대해서도 생각하게 될 것이다. 《마녀재판의 변호인》은 중세 유럽을 무대로 한 법정 미스터리이다. 마지막 반전까지 소설의 본질인 ‘재미’에 집중한 훌륭한 오락 소설이다. 하지만 동시에, 논리와 증거의 중요성, 그리고 불합리에 맞서는 용기 또한 묵직하게 담아낸 작품이다.
 접기</p>
+                
+                <button class="desc-toggle" onclick="this.previousElementSibling.classList.toggle('hero-desc-collapsed');this.textContent=this.textContent==='더보기'?'접기':'더보기';">더보기</button>
+                
+            </div>
             
             
             <div class="hero-tags">
@@ -161,7 +174,7 @@
     </main>
     <footer>
         <p>국내 출간 미스터리 소설 신작을 매일 업데이트합니다</p>
-        <p>마지막 업데이트: 2026-03-23 23:41 UTC</p>
+        <p>마지막 업데이트: 2026-03-27 11:55 UTC</p>
         <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank">알라딘</a></p>
     </footer>
     

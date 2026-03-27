@@ -8,22 +8,30 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="../static/style.css?v=2026-03-232341UTC">
+    <link rel="stylesheet" href="../static/style.css?v=2026-03-271155UTC">
 </head>
 <body>
     <header>
         <nav>
-            <a href="../index.html" class="logo">
-                <img src="../static/logo.svg" alt="클로즈드 써클" class="logo-img">
-                <span class="logo-text">CLOSED CIRCLE</span>
-            </a>
             <div class="nav-links">
-                <a href="../books.html">신간</a>
-                <a href="../news.html">출판사 소식</a>
+                <a href="../news.html">소식</a>
                 <a href="../about.html">소개</a>
+            </div>
+            <a href="../index.html" class="nav-title">CLOSED CIRCLE</a>
+            <div class="nav-right">
+                <button class="nav-search-btn" id="search-toggle" aria-label="검색">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </button>
             </div>
         </nav>
     </header>
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="제목, 작가, 출판사 검색..." autocomplete="off">
+            <button class="search-close" id="search-close">&times;</button>
+        </div>
+        <div class="search-results" id="search-results"></div>
+    </div>
     <main>
         
 
@@ -39,7 +47,8 @@
             <p class="hero-author">도진기</p>
             
             
-            <p class="hero-desc">출판사 소개
+            <div class="hero-desc-wrap">
+                <p class="hero-desc hero-desc-collapsed">출판사 소개
 출판사 소개
 황금가지
 도서 모두보기
@@ -64,6 +73,10 @@
 『4의 재판』은 법의 한계를 지적하는 묵직한 주제 의식에만 머무르지 않고, ‘눈에는 눈, 이에는 이’라는 장르적 쾌감을 선사하는 웰메이드 복수극으로서의 미덕 또한 놓치지 않는다. 주인공 선재는 전직 사격 국가대표 출신으로 법에는 문외한이다. 단지 약혼자의 죽음과 얽힌 사건에서 명백한 살인범이라고 생각되는 인물에게 자신의 심증에 맞는 판결이 내리기를 바랄 뿐이다. 그러나 법정의 판사가 모두와 같은 생각을 갖고 있진 않다. 범인이 완벽한 법리 뒤에 숨은 채, 피해자를 조롱하고 공격해 오는 상황에서, 선재는 무기력한 피해자에서 냉철한 추적자로 변모하며, 살인자가 악용한 법의 논리를 역으로 비틀어 치명적인 덫을 놓는다. 20년 법조 경력의 작가가 설계한 정교한 수 싸움과 예측을 불허하는 전개, 마지막 순간까지 결말을 알 수 없는 팽팽한 긴장감 등 미스터리 장르 본연의 몰입감을 충실히 담았다.
 &#34;소림사는 불공이 2순위이고 무술이 1순위라고 합니다. 그렇듯이, 제게도 어디까지나 주제는 2순위이고, 재미가 1순위입니다.&#34; -작가의 말 중
 접기</p>
+                
+                <button class="desc-toggle" onclick="this.previousElementSibling.classList.toggle('hero-desc-collapsed');this.textContent=this.textContent==='더보기'?'접기':'더보기';">더보기</button>
+                
+            </div>
             
             
             <div class="hero-tags">
@@ -134,7 +147,7 @@
     </main>
     <footer>
         <p>국내 출간 미스터리 소설 신작을 매일 업데이트합니다</p>
-        <p>마지막 업데이트: 2026-03-23 23:41 UTC</p>
+        <p>마지막 업데이트: 2026-03-27 11:55 UTC</p>
         <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank">알라딘</a></p>
     </footer>
     

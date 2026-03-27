@@ -4,113 +4,174 @@
     var grid = document.getElementById("book-grid");
     var filterBar = document.getElementById("floating-filter");
     var filterBtns = filterBar.querySelectorAll(".floating-filter-btn");
+    var perspWrapper = document.getElementById("book-persp-wrapper");
+    var detailContainer = document.getElementById("book-detail-container");
+    var slides = grid.querySelectorAll(".book-slide");
 
-    // ─── Floating Filter ───
+    // ─── Scroll-following perspective origin ───
+    function updatePerspOrigin() {
+        var rect = perspWrapper.getBoundingClientRect();
+        var viewCenterY = window.innerHeight / 2;
+        var originY = viewCenterY - rect.top;
+        originY = Math.max(0, Math.min(rect.height, originY));
+        perspWrapper.style.perspectiveOrigin = "50% " + (originY / rect.height * 100) + "%";
+    }
+    window.addEventListener("scroll", updatePerspOrigin, { passive: true });
+    window.addEventListener("resize", updatePerspOrigin);
+    updatePerspOrigin();
+
+    // ─── Adjust faces based on spine image ratio ───
+    document.querySelectorAll(".book-item").forEach(function (bookEl) {
+        var spineImg = bookEl.querySelector(".book3d-spine img");
+        if (!spineImg) return;
+        function adjust() {
+            if (!spineImg.naturalWidth || !spineImg.naturalHeight) return;
+            var bw = bookEl.offsetWidth, bh = bookEl.offsetHeight;
+            var bd = Math.round(bh * (spineImg.naturalWidth / spineImg.naturalHeight));
+            var halfBd = Math.floor(bd / 2);
+            var spineLeft = Math.floor((bw - bd) / 2);
+            var topY = Math.floor((bh - bd) / 2);
+            var s = bookEl.querySelector(".book3d-spine");
+            s.style.width = bd + "px"; s.style.left = spineLeft + "px";
+            var f = bookEl.querySelector(".book3d-fore");
+            if (f) { f.style.width = bd + "px"; f.style.left = spineLeft + "px"; }
+            var t = bookEl.querySelector(".book3d-top");
+            if (t) { t.style.height = bd + "px"; t.style.top = topY + "px"; }
+            var b = bookEl.querySelector(".book3d-bottom");
+            if (b) { b.style.height = bd + "px"; b.style.top = topY + "px"; }
+            var fr = bookEl.querySelector(".book3d-front");
+            if (fr) fr.style.transform = "translateZ(" + halfBd + "px)";
+            var bk = bookEl.querySelector(".book3d-back");
+            if (bk) bk.style.transform = "rotateY(180deg) translateZ(" + halfBd + "px)";
+        }
+        if (spineImg.complete) adjust(); else spineImg.addEventListener("load", adjust);
+    });
+
+    // ─── Hover (on .book-slide wrappers) ───
+    var currentHovered = null;
+    var spinesList = grid.querySelectorAll(".book3d-spine");
+
+    document.addEventListener("mousemove", function (e) {
+        if (isDetailOpen) return;
+        var mx = e.clientX, my = e.clientY, found = null;
+        for (var i = 0; i < spinesList.length; i++) {
+            var rect = spinesList[i].getBoundingClientRect();
+            if (mx >= rect.left && mx <= rect.right && my >= rect.top && my <= rect.bottom) {
+                found = spinesList[i].closest(".book-slide");
+                break;
+            }
+        }
+        if (found !== currentHovered) {
+            if (currentHovered) currentHovered.classList.remove("hovered");
+            if (found) found.classList.add("hovered");
+            currentHovered = found;
+        }
+    });
+
+    // ─── Filter ───
     filterBtns.forEach(function (btn) {
         btn.addEventListener("click", function () {
             filterBtns.forEach(function (b) { b.classList.remove("active"); });
             btn.classList.add("active");
-
             var filter = btn.getAttribute("data-filter");
-            var spines = grid.querySelectorAll(".spine-wrapper");
-            var delay = 0;
-
-            spines.forEach(function (spine) {
-                var show = filter === "all" || spine.getAttribute("data-nationality") === filter;
-                if (show) {
-                    spine.style.display = "";
-                    spine.classList.remove("stagger-in");
-                    void spine.offsetWidth; // reflow
-                    spine.style.animationDelay = delay + "ms";
-                    spine.classList.add("stagger-in");
-                    delay += 20;
-                } else {
-                    spine.style.display = "none";
-                    spine.classList.remove("stagger-in");
-                }
+            slides.forEach(function (slide) {
+                var show = filter === "all" || slide.getAttribute("data-nationality") === filter;
+                slide.style.display = show ? "" : "none";
             });
         });
     });
 
-    // ─── 3D Transition ───
-    var detailContainer = document.getElementById("book-detail-container");
-    var activeSpine = null;
+    // ─── Detail View ───
     var isDetailOpen = false;
+    var isAnimating = false;
+    var selectedSlide = null;
+    var wasDragging = false;
+    var dragCleanup = null;
 
-    function createBook3D(book) {
-        var w = book.sizeW, h = book.sizeH, d = book.sizeD;
-        var scene = document.createElement("div");
-        scene.className = "book3d-scene";
-        scene.style.width = w + "px";
-        scene.style.height = h + "px";
+    grid.addEventListener("click", function () {
+        if (!currentHovered || isAnimating || isDetailOpen) return;
+        var idx = parseInt(currentHovered.getAttribute("data-idx"));
+        if (isNaN(idx)) return;
+        openDetail(idx, currentHovered);
+    });
 
-        var bookEl = document.createElement("div");
-        bookEl.className = "book3d";
-        bookEl.id = "book3d-inline";
-        bookEl.style.width = w + "px";
-        bookEl.style.height = h + "px";
+    function easeInOutCubic(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+    function lerp(a, b, t) { return a + (b - a) * t; }
 
-        // Front
-        var front = document.createElement("div");
-        front.className = "book3d-face book3d-front";
-        front.style.cssText = "width:" + w + "px;height:" + h + "px;transform:translateZ(" + (d / 2) + "px)";
-        front.innerHTML = '<img src="' + book.coverUrl + '" alt="' + book.title + '">';
+    function openDetail(idx, slide) {
+        isAnimating = true;
+        isDetailOpen = true;
+        selectedSlide = slide;
+        history.pushState({ detail: true }, "");
+        var book = BOOKS[idx];
+        var bookItem = slide.querySelector(".book-item");
+        var allSlides = Array.from(slides);
+        var selectedIdx = allSlides.indexOf(slide);
 
-        // Back
-        var back = document.createElement("div");
-        back.className = "book3d-face book3d-back";
-        back.style.cssText = "width:" + w + "px;height:" + h + "px;transform:rotateY(180deg) translateZ(" + (d / 2) + "px)";
-        if (book.backCoverUrl) {
-            back.innerHTML = '<img src="' + book.backCoverUrl + '" alt="뒷표지">';
-        }
+        // Phase 1: Dismiss other books (wrapper translateY, no 3D interference)
+        filterBar.classList.add("hidden");
+        allSlides.forEach(function (s, i) {
+            if (s === slide) return;
+            s.classList.add(i < selectedIdx ? "dismiss-up" : "dismiss-down");
+        });
 
-        // Spine
-        var spineLeft = Math.floor((w - d) / 2);
-        var spine = document.createElement("div");
-        spine.className = "book3d-face book3d-spine";
-        spine.style.cssText = "width:" + d + "px;height:" + h + "px;left:" + spineLeft + "px;transform:rotateY(-90deg) translateZ(" + (w / 2) + "px)";
-        spine.innerHTML = '<img src="' + book.spineUrl + '" alt="책등">';
+        // Phase 2: After dismiss, rotate + move simultaneously
+        setTimeout(function () {
+            // Hide dismissed
+            allSlides.forEach(function (s) {
+                if (s !== slide) s.style.visibility = "hidden";
+            });
 
-        // Fore edge
-        var fore = document.createElement("div");
-        fore.className = "book3d-face book3d-fore book3d-paper";
-        fore.style.cssText = "width:" + d + "px;height:" + h + "px;left:" + spineLeft + "px;transform:rotateY(90deg) translateZ(" + (w / 2) + "px)";
+            document.body.classList.add("detail-active");
+            slide.style.transition = "none";
+            slide.style.zIndex = "200";
 
-        // Top
-        var topFace = document.createElement("div");
-        topFace.className = "book3d-face book3d-top book3d-paper";
-        var topY = Math.floor((h - d) / 2);
-        topFace.style.cssText = "width:" + w + "px;height:" + d + "px;top:" + topY + "px;transform:rotateX(90deg) translateZ(" + (h / 2) + "px)";
+            var endLeft = Math.round(window.innerWidth * 0.22);
+            var endTop = 160;
 
-        // Bottom
-        var bottomFace = document.createElement("div");
-        bottomFace.className = "book3d-face book3d-bottom book3d-paper";
-        bottomFace.style.cssText = "width:" + w + "px;height:" + d + "px;top:" + topY + "px;transform:rotateX(-90deg) translateZ(" + (h / 2) + "px)";
+            // Measure slide's pure box position (remove 3D transform temporarily)
+            var saved = bookItem.style.transform;
+            bookItem.style.transform = "none";
+            var boxRect = slide.getBoundingClientRect();
+            bookItem.style.transform = saved;
 
-        bookEl.appendChild(front);
-        bookEl.appendChild(back);
-        bookEl.appendChild(spine);
-        bookEl.appendChild(fore);
-        bookEl.appendChild(topFace);
-        bookEl.appendChild(bottomFace);
-        scene.appendChild(bookEl);
+            var dx = endLeft - boxRect.left;
+            var dy = endTop - boxRect.top;
 
-        return { scene: scene, bookEl: bookEl };
+            var duration = 1000;
+            var start = { scale: 1.33, rx: -90, ry: -180, rz: 90 };
+            var end = { scale: 1, rx: 3, ry: -35, rz: 0 };
+            var startTime = null;
+
+            function frame(ts) {
+                if (!startTime) startTime = ts;
+                var t = Math.min((ts - startTime) / duration, 1);
+                var et = easeInOutCubic(t);
+
+                var sc = lerp(start.scale, end.scale, et);
+                var rx = lerp(start.rx, end.rx, et);
+                var ry = lerp(start.ry, end.ry, et);
+                var rz = lerp(start.rz, end.rz, et);
+
+                bookItem.style.transform = "scale(" + sc.toFixed(3) + ") rotateX(" + rx.toFixed(1) + "deg) rotateY(" + ry.toFixed(1) + "deg) rotateZ(" + rz.toFixed(1) + "deg)";
+
+                slide.style.transform = "translate(" + (dx * et).toFixed(1) + "px, " + (dy * et).toFixed(1) + "px)";
+
+                if (t < 1) {
+                    requestAnimationFrame(frame);
+                } else {
+                    // Stay in flow with translate — no fixed switch, no perspective jump
+                    showInfo(book, bookItem);
+                }
+            }
+            requestAnimationFrame(frame);
+        }, 500);
     }
 
-    function openDetail(idx, spineEl) {
-        if (isDetailOpen) return;
-        isDetailOpen = true;
-
-        var book = BOOKS[idx];
-        activeSpine = spineEl;
-        spineEl.classList.add("active-spine");
-        grid.classList.add("detail-open");
-        filterBar.classList.add("hidden");
-
-        // Build inline detail
-        var b3d = createBook3D(book);
-
+    function showInfo(book, bookItem) {
+        // Build hero-feature layout (book left, info right)
         var nationalityLabel = book.nationality === "JP"
             ? '<span class="hero-label">일본 미스터리</span>'
             : '<span class="hero-label hero-label-kr">한국 미스터리</span>';
@@ -125,170 +186,174 @@
         }
 
         var descHtml = book.desc
-            ? '<p class="hero-desc">' + book.desc + '</p>'
+            ? '<div class="hero-desc-wrap"><p class="hero-desc hero-desc-collapsed">' + book.desc + '</p>' +
+              (book.desc.length > 150 ? '<button class="desc-toggle">더보기</button>' : '') + '</div>'
             : '';
 
         var priceStr = book.price.toLocaleString() + '원';
 
-        var detail = document.createElement("div");
-        detail.className = "book-detail-inline";
-        detail.innerHTML =
-            '<div class="hero-cover"></div>' +
-            '<div class="hero-info">' +
-                nationalityLabel +
-                '<h1 class="hero-title">' + book.title + '</h1>' +
-                '<p class="hero-author">' + book.author + '</p>' +
-                descHtml +
-                keywordsHtml +
-                '<div class="hero-meta">' +
-                    '<span class="hero-meta-item">' + book.publisher + '</span>' +
-                    '<span class="hero-meta-sep">·</span>' +
-                    '<span class="hero-meta-item">' + book.pubDate + '</span>' +
-                    '<span class="hero-meta-sep">·</span>' +
-                    '<span class="hero-meta-item">' + priceStr + '</span>' +
-                    '<span class="hero-meta-sep">·</span>' +
-                    '<a href="' + book.link + '" target="_blank" rel="noopener" class="hero-meta-link">알라딘</a>' +
+        detailContainer.innerHTML =
+            '<div class="detail-info-panel">' +
+                '<div class="hero-info">' +
+                    nationalityLabel +
+                    '<h1 class="hero-title">' + book.title + '</h1>' +
+                    '<p class="hero-author">' + book.author + '</p>' +
+                    descHtml +
+                    keywordsHtml +
+                    '<div class="hero-meta">' +
+                        '<span class="hero-meta-item">' + book.publisher + '</span>' +
+                        '<span class="hero-meta-sep">·</span>' +
+                        '<span class="hero-meta-item">' + book.pubDate + '</span>' +
+                        '<span class="hero-meta-sep">·</span>' +
+                        '<span class="hero-meta-item">' + priceStr + '</span>' +
+                        '<span class="hero-meta-sep">·</span>' +
+                        '<a href="' + book.link + '" target="_blank" rel="noopener" class="hero-meta-link">알라딘</a>' +
+                    '</div>' +
                 '</div>' +
             '</div>';
 
-        detail.querySelector(".hero-cover").appendChild(b3d.scene);
+        var panel = detailContainer.querySelector(".detail-info-panel");
+        requestAnimationFrame(function () { panel.classList.add("visible"); });
 
-        // Start with rotateY(-90deg) = spine face showing
-        b3d.bookEl.style.transform = "rotateX(0deg) rotateY(-90deg)";
-
-        detailContainer.innerHTML = "";
-        detailContainer.appendChild(detail);
-
-        // Animate: rotate to show cover
-        requestAnimationFrame(function () {
-            requestAnimationFrame(function () {
-                b3d.bookEl.style.transition = "transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1)";
-                b3d.bookEl.style.transform = "rotateX(5deg) rotateY(-20deg)";
-                detail.classList.add("visible");
+        // 더보기
+        var toggleBtn = detailContainer.querySelector(".desc-toggle");
+        if (toggleBtn) {
+            toggleBtn.addEventListener("click", function () {
+                var desc = this.previousElementSibling;
+                desc.classList.toggle("hero-desc-collapsed");
+                this.textContent = desc.classList.contains("hero-desc-collapsed") ? "더보기" : "접기";
             });
-        });
+        }
 
-        // Setup drag rotation
-        setupDrag(b3d.scene, b3d.bookEl, -20, 5);
+        // Drag rotation on the book (mouse + touch)
+        var rotY = -35, rotX = 3;
+        var dragging = false, lastX, lastY;
+        bookItem.style.cursor = "grab";
+
+        function onDragStart(x, y) {
+            dragging = true; lastX = x; lastY = y;
+            bookItem.style.cursor = "grabbing";
+        }
+        function onDragMove(x, y) {
+            if (!dragging) return;
+            wasDragging = true;
+            rotY += (x - lastX) * 0.5;
+            rotX -= (y - lastY) * 0.3;
+            rotX = Math.max(-40, Math.min(40, rotX));
+            lastX = x; lastY = y;
+            bookItem.style.transform = "scale(1) rotateX(" + rotX + "deg) rotateY(" + rotY + "deg)";
+        }
+        function onDragEnd() {
+            if (!dragging) return; dragging = false; bookItem.style.cursor = "grab";
+        }
+
+        function onMouseDown(e) { onDragStart(e.clientX, e.clientY); e.preventDefault(); }
+        function onMouseMove(e) { onDragMove(e.clientX, e.clientY); }
+        function onTouchStart(e) { var t = e.touches[0]; onDragStart(t.clientX, t.clientY); e.preventDefault(); }
+        function onTouchMove(e) { if (!dragging) return; var t = e.touches[0]; onDragMove(t.clientX, t.clientY); e.preventDefault(); }
+
+        bookItem.addEventListener("mousedown", onMouseDown);
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup", onDragEnd);
+        bookItem.addEventListener("touchstart", onTouchStart, { passive: false });
+        document.addEventListener("touchmove", onTouchMove, { passive: false });
+        document.addEventListener("touchend", onDragEnd);
+
+        dragCleanup = function () {
+            bookItem.removeEventListener("mousedown", onMouseDown);
+            document.removeEventListener("mousemove", onMouseMove);
+            document.removeEventListener("mouseup", onDragEnd);
+            bookItem.removeEventListener("touchstart", onTouchStart);
+            document.removeEventListener("touchmove", onTouchMove);
+            document.removeEventListener("touchend", onDragEnd);
+            dragCleanup = null;
+        };
+
+        isAnimating = false;
     }
 
     function closeDetail() {
-        if (!isDetailOpen) return;
-        isDetailOpen = false;
+        if (isAnimating || !isDetailOpen) return;
+        isAnimating = true;
 
-        var detail = detailContainer.querySelector(".book-detail-inline");
-        var bookEl = document.getElementById("book3d-inline");
+        // Fade out info
+        var panel = detailContainer.querySelector(".detail-info-panel");
+        if (panel) panel.classList.remove("visible");
 
-        if (detail) {
-            detail.classList.remove("visible");
-        }
+        // Rotate book back
+        var bookItem = selectedSlide ? selectedSlide.querySelector(".book-item") : null;
+        if (bookItem) {
+            var duration = 700;
+            var startTime = null;
+            // Read current transform values (approximate)
+            var start = { scale: 1, rx: 3, ry: -35, rz: 0 };
+            var end = { scale: 1.33, rx: -90, ry: -180, rz: 90 };
 
-        if (bookEl) {
-            bookEl.style.transition = "transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1)";
-            bookEl.style.transform = "rotateX(0deg) rotateY(-90deg)";
-        }
-
-        grid.classList.remove("detail-open");
-        filterBar.classList.remove("hidden");
-
-        if (activeSpine) {
-            activeSpine.classList.remove("active-spine");
-            activeSpine = null;
-        }
-
-        // Stagger fade in spines
-        var spines = grid.querySelectorAll(".spine-wrapper");
-        var delay = 0;
-        spines.forEach(function (s) {
-            if (s.style.display !== "none") {
-                s.classList.remove("stagger-in");
-                void s.offsetWidth;
-                s.style.animationDelay = delay + "ms";
-                s.classList.add("stagger-in");
-                delay += 15;
+            function frame(ts) {
+                if (!startTime) startTime = ts;
+                var t = Math.min((ts - startTime) / duration, 1);
+                var et = easeInOutCubic(t);
+                bookItem.style.transform = "scale(" + lerp(start.scale, end.scale, et).toFixed(3) + ") rotateX(" + lerp(start.rx, end.rx, et).toFixed(1) + "deg) rotateY(" + lerp(start.ry, end.ry, et).toFixed(1) + "deg) rotateZ(" + lerp(start.rz, end.rz, et).toFixed(1) + "deg)";
+                if (t < 1) requestAnimationFrame(frame);
+                else finishClose();
             }
-        });
-
-        setTimeout(function () {
-            detailContainer.innerHTML = "";
-        }, 700);
-    }
-
-    // ─── Drag Rotation ───
-    function setupDrag(scene, bookEl, initRotY, initRotX) {
-        var rotY = initRotY, rotX = initRotX;
-        var dragging = false;
-        var lastX, lastY;
-
-        scene.addEventListener("mousedown", function (e) {
-            dragging = true;
-            lastX = e.clientX;
-            lastY = e.clientY;
-            scene.style.cursor = "grabbing";
-            bookEl.style.transition = "transform 0.1s ease-out";
-            e.preventDefault();
-        });
-
-        document.addEventListener("mousemove", function (e) {
-            if (!dragging) return;
-            rotY += (e.clientX - lastX) * 0.5;
-            rotX -= (e.clientY - lastY) * 0.3;
-            rotX = Math.max(-40, Math.min(40, rotX));
-            lastX = e.clientX;
-            lastY = e.clientY;
-            bookEl.style.transform = "rotateX(" + rotX + "deg) rotateY(" + rotY + "deg)";
-        });
-
-        document.addEventListener("mouseup", function () {
-            if (!dragging) return;
-            dragging = false;
-            scene.style.cursor = "grab";
-        });
-
-        scene.addEventListener("touchstart", function (e) {
-            dragging = true;
-            lastX = e.touches[0].clientX;
-            lastY = e.touches[0].clientY;
-            bookEl.style.transition = "transform 0.1s ease-out";
-        }, { passive: true });
-
-        document.addEventListener("touchmove", function (e) {
-            if (!dragging) return;
-            e.preventDefault();
-            rotY += (e.touches[0].clientX - lastX) * 0.5;
-            rotX -= (e.touches[0].clientY - lastY) * 0.3;
-            rotX = Math.max(-40, Math.min(40, rotX));
-            lastX = e.touches[0].clientX;
-            lastY = e.touches[0].clientY;
-            bookEl.style.transform = "rotateX(" + rotX + "deg) rotateY(" + rotY + "deg)";
-        }, { passive: false });
-
-        document.addEventListener("touchend", function () {
-            dragging = false;
-        });
-    }
-
-    // ─── Event Listeners ───
-    grid.addEventListener("click", function (e) {
-        var spineEl = e.target.closest(".spine-wrapper");
-        if (!spineEl || isDetailOpen) return;
-        var idx = parseInt(spineEl.getAttribute("data-idx"));
-        if (isNaN(idx)) return;
-        openDetail(idx, spineEl);
-    });
-
-    document.addEventListener("click", function (e) {
-        if (!isDetailOpen) return;
-        // Close if clicking outside the detail view and the 3D book
-        if (!e.target.closest(".book-detail-inline") && !e.target.closest(".spine-wrapper")) {
-            closeDetail();
+            requestAnimationFrame(frame);
+        } else {
+            finishClose();
         }
-    });
+
+        function finishClose() {
+            if (dragCleanup) dragCleanup();
+            detailContainer.innerHTML = "";
+            document.body.classList.remove("detail-active");
+
+            // Remember which slide was selected
+            var scrollTarget = selectedSlide;
+
+            // Restore all slides
+            slides.forEach(function (s) {
+                s.classList.remove("dismiss-up", "dismiss-down", "hovered");
+                s.style.visibility = "";
+                s.style.display = "";
+                s.style.transform = "";
+                s.style.position = "";
+                s.style.top = "";
+                s.style.left = "";
+                s.style.margin = "";
+                s.style.zIndex = "";
+                s.style.transition = "";
+            });
+
+            // Reset book transform
+            if (bookItem) {
+                bookItem.style.transform = "";
+                bookItem.style.cursor = "";
+            }
+
+            filterBar.classList.remove("hidden");
+            currentHovered = null;
+            selectedSlide = null;
+            isDetailOpen = false;
+            isAnimating = false;
+
+            // Scroll to center the selected book in viewport
+            if (scrollTarget) {
+                requestAnimationFrame(function () {
+                    var rect = scrollTarget.getBoundingClientRect();
+                    var scrollY = window.scrollY + rect.top - (window.innerHeight / 2) + (rect.height / 2);
+                    window.scrollTo({ top: scrollY, behavior: "smooth" });
+                });
+            }
+        }
+    }
 
     document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape" && isDetailOpen) {
-            closeDetail();
-        }
+        if (e.key === "Escape" && isDetailOpen && !isAnimating) closeDetail();
+    });
+
+    // Browser back button closes detail
+    window.addEventListener("popstate", function () {
+        if (isDetailOpen && !isAnimating) closeDetail();
     });
 
 })();

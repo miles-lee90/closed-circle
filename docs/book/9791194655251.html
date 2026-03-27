@@ -8,22 +8,30 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="../static/style.css?v=2026-03-232341UTC">
+    <link rel="stylesheet" href="../static/style.css?v=2026-03-271155UTC">
 </head>
 <body>
     <header>
         <nav>
-            <a href="../index.html" class="logo">
-                <img src="../static/logo.svg" alt="클로즈드 써클" class="logo-img">
-                <span class="logo-text">CLOSED CIRCLE</span>
-            </a>
             <div class="nav-links">
-                <a href="../books.html">신간</a>
-                <a href="../news.html">출판사 소식</a>
+                <a href="../news.html">소식</a>
                 <a href="../about.html">소개</a>
+            </div>
+            <a href="../index.html" class="nav-title">CLOSED CIRCLE</a>
+            <div class="nav-right">
+                <button class="nav-search-btn" id="search-toggle" aria-label="검색">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </button>
             </div>
         </nav>
     </header>
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="제목, 작가, 출판사 검색..." autocomplete="off">
+            <button class="search-close" id="search-close">&times;</button>
+        </div>
+        <div class="search-results" id="search-results"></div>
+    </div>
     <main>
         
 
@@ -39,7 +47,8 @@
             <p class="hero-author">미나토 가나에</p>
             
             
-            <p class="hero-desc">★★★★★
+            <div class="hero-desc-wrap">
+                <p class="hero-desc hero-desc-collapsed">★★★★★
 『고백』 『인간 표본』을 집필한
 밀리언셀러 작가 미나토 가나에가 던지는 묵직한 질문
 『모성』 ‘오리지널 커버 에디션’ 전격 출간!
@@ -95,6 +104,10 @@
 엄마이기 전에 딸이었던 엄마는 자신의 엄마와 딸 중 누구의 생명을 선택해야 옳았을까? 모성으로 포장된 엄마의 가식을 아는 딸은 어떻게 진정한 엄마의 사랑을 얻을 수 있을까? 딸을 자살로 내모는 엄마의 죄는 진정 그녀만의 잘못일까? 이 모든 질문에 대한 답은 마지막 페이지를 덮는 순간, 독자의 몫이 된다.
 저자는 화제의 데뷔작 『고백』을 뛰어넘는 후속작을 써야 한다는 강박에 시달려왔다고 말한다. 그리고 “이 책을 다 쓴다면, 작가를 그만둬도 좋다는 생각으로 썼다.”라고 말할 정도로, 작가의 운명을 걸고 이 책을 완성했다. 독자들은 마지막 페이지를 덮으며 인정할 수밖에 없을 것이다. 미나토 가나에가 이번에야말로 자신의 한계를 뛰어넘어 독자의 가슴에 지우지 못할 흔적을 남겼다고.
 접기</p>
+                
+                <button class="desc-toggle" onclick="this.previousElementSibling.classList.toggle('hero-desc-collapsed');this.textContent=this.textContent==='더보기'?'접기':'더보기';">더보기</button>
+                
+            </div>
             
             
             <div class="hero-tags">
@@ -165,7 +178,7 @@
     </main>
     <footer>
         <p>국내 출간 미스터리 소설 신작을 매일 업데이트합니다</p>
-        <p>마지막 업데이트: 2026-03-23 23:41 UTC</p>
+        <p>마지막 업데이트: 2026-03-27 11:55 UTC</p>
         <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank">알라딘</a></p>
     </footer>
     

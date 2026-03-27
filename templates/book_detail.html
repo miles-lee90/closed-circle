@@ -17,7 +17,12 @@
             <p class="hero-author">{{ book.author }}</p>
             {% set desc_text = book.summary or book.publisher_desc or book.description %}
             {% if desc_text %}
-            <p class="hero-desc">{{ desc_text }}</p>
+            <div class="hero-desc-wrap">
+                <p class="hero-desc hero-desc-collapsed">{{ desc_text }}</p>
+                {% if desc_text|length > 150 %}
+                <button class="desc-toggle" onclick="this.previousElementSibling.classList.toggle('hero-desc-collapsed');this.textContent=this.textContent==='더보기'?'접기':'더보기';">더보기</button>
+                {% endif %}
+            </div>
             {% endif %}
             {% if book.keywords %}
             <div class="hero-tags">

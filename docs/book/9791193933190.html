@@ -8,22 +8,30 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="../static/style.css?v=2026-03-232341UTC">
+    <link rel="stylesheet" href="../static/style.css?v=2026-03-271155UTC">
 </head>
 <body>
     <header>
         <nav>
-            <a href="../index.html" class="logo">
-                <img src="../static/logo.svg" alt="클로즈드 써클" class="logo-img">
-                <span class="logo-text">CLOSED CIRCLE</span>
-            </a>
             <div class="nav-links">
-                <a href="../books.html">신간</a>
-                <a href="../news.html">출판사 소식</a>
+                <a href="../news.html">소식</a>
                 <a href="../about.html">소개</a>
+            </div>
+            <a href="../index.html" class="nav-title">CLOSED CIRCLE</a>
+            <div class="nav-right">
+                <button class="nav-search-btn" id="search-toggle" aria-label="검색">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </button>
             </div>
         </nav>
     </header>
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="제목, 작가, 출판사 검색..." autocomplete="off">
+            <button class="search-close" id="search-close">&times;</button>
+        </div>
+        <div class="search-results" id="search-results"></div>
+    </div>
     <main>
         
 
@@ -39,7 +47,8 @@
             <p class="hero-author">호소베</p>
             
             
-            <p class="hero-desc">“불을 끄지 마세요, 아직 이야기가 끝나지 않았으니까!”
+            <div class="hero-desc-wrap">
+                <p class="hero-desc hero-desc-collapsed">“불을 끄지 마세요, 아직 이야기가 끝나지 않았으니까!”
 무로마치 시대부터 에도 시대까지 민간에 떠돌며 구전·변주되어온
 기이하고 괴이한, 그러나 어쩐지 있을 법한 ‘전승 괴담’을 엮다!
 이제 ‘의식(Ritual)’을 시작합니다
@@ -56,6 +65,10 @@
 닫히지 않는 결말, 영원히 지속되는 비일상
 “그 뒤로 어떻게 되었는지 아는 이는 아무도 없다.” 무책임해 보이는 이 마무리가 사실 이 책의 가장 잔혹한 매력이다. 결말이 나지 않았기에, 이야기 속 원혼들은 책 속에 갇히지 않고 우리의 상상력 속으로 탈출을 감행할 수 있다. 따라서 책을 덮어도 공포는 끝나지 않는다. 『방울벌레 이야기』가 허물어뜨린 일상과 비일상의 경계는 당신이 잠든 침대 밑, 혹은 불 꺼진 복도 끝에서 불쑥 고개를 내밀 테니까. 그렇다. 이 책은 삶의 밑바닥에서 길어 올린 투박한 목소리로 오늘날 독자에게 변치 않는 두려움을 건드린다. 그리고 그 여운은 일상과 비일상의 경계를 슬쩍 허물어뜨리며, 짜릿하고 섬뜩한 경험을 독자에게 선사할 것이다.
 접기</p>
+                
+                <button class="desc-toggle" onclick="this.previousElementSibling.classList.toggle('hero-desc-collapsed');this.textContent=this.textContent==='더보기'?'접기':'더보기';">더보기</button>
+                
+            </div>
             
             
             <div class="hero-tags">
@@ -126,7 +139,7 @@
     </main>
     <footer>
         <p>국내 출간 미스터리 소설 신작을 매일 업데이트합니다</p>
-        <p>마지막 업데이트: 2026-03-23 23:41 UTC</p>
+        <p>마지막 업데이트: 2026-03-27 11:55 UTC</p>
         <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank">알라딘</a></p>
     </footer>
     

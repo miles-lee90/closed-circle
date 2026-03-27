@@ -8,22 +8,30 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="../static/style.css?v=2026-03-232341UTC">
+    <link rel="stylesheet" href="../static/style.css?v=2026-03-271155UTC">
 </head>
 <body>
     <header>
         <nav>
-            <a href="../index.html" class="logo">
-                <img src="../static/logo.svg" alt="클로즈드 써클" class="logo-img">
-                <span class="logo-text">CLOSED CIRCLE</span>
-            </a>
             <div class="nav-links">
-                <a href="../books.html">신간</a>
-                <a href="../news.html">출판사 소식</a>
+                <a href="../news.html">소식</a>
                 <a href="../about.html">소개</a>
+            </div>
+            <a href="../index.html" class="nav-title">CLOSED CIRCLE</a>
+            <div class="nav-right">
+                <button class="nav-search-btn" id="search-toggle" aria-label="검색">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </button>
             </div>
         </nav>
     </header>
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="제목, 작가, 출판사 검색..." autocomplete="off">
+            <button class="search-close" id="search-close">&times;</button>
+        </div>
+        <div class="search-results" id="search-results"></div>
+    </div>
     <main>
         
 
@@ -39,7 +47,8 @@
             <p class="hero-author">전혜진</p>
             
             
-            <p class="hero-desc">연희가 마주한 가차 없는 혐오와 섬뜩하고 애처로운 괴담들
+            <div class="hero-desc-wrap">
+                <p class="hero-desc hero-desc-collapsed">연희가 마주한 가차 없는 혐오와 섬뜩하고 애처로운 괴담들
 『연희 이야기』는 한국 사회의 어두운 이면을 파고드는 다섯 편의 괴담과, 이를 관통하는 액자식 서사인 「연희 이야기」로 구성된 호러 연작소설이다. 작가는 이 작품을 통해 오컬트라는 소재 속에서 오늘날 여성들이 가정과 사회, 학교에서 겪고 있는 폭력과 차별 등으로 오갈 데 없는 현실을 적나라하게 고발한다.
 주인공인 ‘신연희’는 어린 시절, 가족을 앗아간 비극적인 교통사고에서 홀로 살아남았다는 이유로 친할머니에게 “집안을 망친 여우 새끼”라는 저주를 들으며 내쳐졌던 인물이다. 무당인 이모의 손에 거둬져 사량도에서 자라며 결국 신내림을 받게 된 그녀의 삶은, 부모에게 버림받았으나 끝내 가족을 구원하기 위해 저승을 넘나들었던 신화 속 ‘바리공주’ 이야기와 꼭 닮아있다.
 30년 만에 자신을 버렸던 큰오빠 원일의 연락을 받고 서울로 향한 연희는, 원일의 딸이자 자신의 조카인 연아가 원인 ...
@@ -54,6 +63,10 @@
 이 소설은 각 장의 작은 제목에 실린 귀신들의 이야기로 느슨하게 이어져 있고 연희로 모든 연결고리가 이어진다. 이때 귀신들의 이름은 바쁜 현대를 사는 우리에겐 이질감이 느껴지거나 낯선 이름이지만 구연동화처럼 듣고 공감하게 된다. 우리가 그들의 비극에 공감할 수 있는 이유는 무엇일까. 억울하게 죽은 자에게는 각자의 사연이 켜켜이 쌓여있다. 독자들은 어디서부터 꼬이게 된 것인지 읽어내려가며 한(恨)을 벗겨내는 살풀이를 함께하는 것이다.
 현시대를 살아가는 우리들에게 강력한 메시지를 전하는 이 소설에서 귀신이 아닌 인간에 의해 모든 악의 고리가 반복된다. 여성들은 살아서도 죽어서도 내몰린 삶을 반복한다. 이 작품은 소외된 자에 대한 아픔을 돌아보는데 끝나지 않는다. 연희 이야기는 표면적으로는 간을 빼먹는 막내딸 ‘여우누이전’이지만 연희에게 주어진 내면의 모티프는 홀로 가족을 구해내는 ‘바리공주 이야기’다. 숙명을 받아들이고 새로운 인물로 거듭나는 연희를 통해 비참한 삶일지라도 주어진 운명에서 앞으로 나아갈 이유들을 선사한다.
 접기</p>
+                
+                <button class="desc-toggle" onclick="this.previousElementSibling.classList.toggle('hero-desc-collapsed');this.textContent=this.textContent==='더보기'?'접기':'더보기';">더보기</button>
+                
+            </div>
             
             
             <div class="hero-tags">
@@ -124,7 +137,7 @@
     </main>
     <footer>
         <p>국내 출간 미스터리 소설 신작을 매일 업데이트합니다</p>
-        <p>마지막 업데이트: 2026-03-23 23:41 UTC</p>
+        <p>마지막 업데이트: 2026-03-27 11:55 UTC</p>
         <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank">알라딘</a></p>
     </footer>
     

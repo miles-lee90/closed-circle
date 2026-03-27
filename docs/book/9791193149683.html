@@ -8,22 +8,30 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="../static/style.css?v=2026-03-232341UTC">
+    <link rel="stylesheet" href="../static/style.css?v=2026-03-271155UTC">
 </head>
 <body>
     <header>
         <nav>
-            <a href="../index.html" class="logo">
-                <img src="../static/logo.svg" alt="클로즈드 써클" class="logo-img">
-                <span class="logo-text">CLOSED CIRCLE</span>
-            </a>
             <div class="nav-links">
-                <a href="../books.html">신간</a>
-                <a href="../news.html">출판사 소식</a>
+                <a href="../news.html">소식</a>
                 <a href="../about.html">소개</a>
+            </div>
+            <a href="../index.html" class="nav-title">CLOSED CIRCLE</a>
+            <div class="nav-right">
+                <button class="nav-search-btn" id="search-toggle" aria-label="검색">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </button>
             </div>
         </nav>
     </header>
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="제목, 작가, 출판사 검색..." autocomplete="off">
+            <button class="search-close" id="search-close">&times;</button>
+        </div>
+        <div class="search-results" id="search-results"></div>
+    </div>
     <main>
         
 
@@ -39,7 +47,8 @@
             <p class="hero-author">사카키바야시 메이</p>
             
             
-            <p class="hero-desc">출판사 소개
+            <div class="hero-desc-wrap">
+                <p class="hero-desc hero-desc-collapsed">출판사 소개
 출판사 소개
 블루홀식스(블루홀6)
 출판사 페이지
@@ -73,6 +82,10 @@
 일본 미스터리 소설계에 젊은 신예 작가가 등장한 것이다. 기발한 아이디어와 훌륭한 구성 능력으로 찬사를 받는 사사키바야시 메이는 1989년생으로 아이치현 출신에 나고야대학을 졸업했다. 2015년 단편작 「15초」로 제12회 ‘미스터리즈! 신인상’ 가작을 수상했다. ‘피해자가 죽기 직전의 15초’라는 하나의 상황 속에서 피해자와 범인의 독특한 공방을 그린 이 작품은 높은 평가를 받으며 일본 추리작가 협회가 매년 발행하는 앤솔러지 작품집에도 수록됐다. 2021년 같은 작품을 포함한 단편 미스터리 네 편이 수록된 『15초 후에 죽는다』로 데뷔했다.
 그리고 두 번째 작품이자 첫 장편 미스터리가 바로 『독이 든 화형 법정』이다. 『15초 후에 죽는다』는 요네자와 호노부, 노리즈키 린타로 등 선배 작가들에게 극찬을 받았고, 그로 인해 「15초」는 일본의 인기 드라마 시리즈인 ‘기묘한 이야기’에서 영상화되기도 했다. 일본에서 2024년 『독이 든 화형 법정』이 출간된 이후 결말이 주는 강한 여운에 자극을 받아 등장인물들의 향후 이야기가 궁금하다는 독자들의 요청이 쇄도하며 시리즈화를 요청하는 목소리가 나오고 있다고 한다. 이후 『독이 든 화형 법정』의 속편이 나오든 완전히 새로운 다른 작품이 나오든 신예 작가의 예측 불가능한 작품 활동을 지켜봐주기를 바란다.
 접기</p>
+                
+                <button class="desc-toggle" onclick="this.previousElementSibling.classList.toggle('hero-desc-collapsed');this.textContent=this.textContent==='더보기'?'접기':'더보기';">더보기</button>
+                
+            </div>
             
             
             <div class="hero-tags">
@@ -143,7 +156,7 @@
     </main>
     <footer>
         <p>국내 출간 미스터리 소설 신작을 매일 업데이트합니다</p>
-        <p>마지막 업데이트: 2026-03-23 23:41 UTC</p>
+        <p>마지막 업데이트: 2026-03-27 11:55 UTC</p>
         <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank">알라딘</a></p>
     </footer>
     

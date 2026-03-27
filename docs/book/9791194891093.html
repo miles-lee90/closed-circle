@@ -8,22 +8,30 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="../static/style.css?v=2026-03-232341UTC">
+    <link rel="stylesheet" href="../static/style.css?v=2026-03-271155UTC">
 </head>
 <body>
     <header>
         <nav>
-            <a href="../index.html" class="logo">
-                <img src="../static/logo.svg" alt="클로즈드 써클" class="logo-img">
-                <span class="logo-text">CLOSED CIRCLE</span>
-            </a>
             <div class="nav-links">
-                <a href="../books.html">신간</a>
-                <a href="../news.html">출판사 소식</a>
+                <a href="../news.html">소식</a>
                 <a href="../about.html">소개</a>
+            </div>
+            <a href="../index.html" class="nav-title">CLOSED CIRCLE</a>
+            <div class="nav-right">
+                <button class="nav-search-btn" id="search-toggle" aria-label="검색">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </button>
             </div>
         </nav>
     </header>
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="제목, 작가, 출판사 검색..." autocomplete="off">
+            <button class="search-close" id="search-close">&times;</button>
+        </div>
+        <div class="search-results" id="search-results"></div>
+    </div>
     <main>
         
 
@@ -39,7 +47,8 @@
             <p class="hero-author">전효원</p>
             
             
-            <p class="hero-desc">“당신은 어디에 있나요?”
+            <div class="hero-desc-wrap">
+                <p class="hero-desc hero-desc-collapsed">“당신은 어디에 있나요?”
 단숨에 우리를 가본 적 없는 세계로
 빨려 들어가게 할 생생한 이야기!
 마장동의 상인이 스마트폰으로 써 내려간,
@@ -69,6 +78,10 @@
 『니자이나리, 찾지 않는 이름들』은 차별의 시선에 갇혀 존재조차 희미해진 이들의 이름을 다시 불러주는 용기이기도 하다. 한국인보다 한국말 잘하는 &#39;쌈닭&#39; 부응옥란과 온실 속 화초 같았던 유정의 기묘한 공조는 출신과 계급을 넘어선 인간적 선의가 얼마나 강력한지를 보여준다.
 &#34;약자라고 피해자 역할만 하란 법은 없다&#34;는 작가의 말처럼, 부응옥란은 스스로 탐정이 되어 억울하게 지워진 존재들의 목소리를 세상 밖으로 끌어올린다. 소설은 우리를 구원하는 것이 거창한 정의가 아닌, 곁에 있는 존재를 잊지 않는 &#39;작은 선의&#39;임을 마장동 상인들의 투박한 손길을 통해 뭉클하게 전할 것이다.
 접기</p>
+                
+                <button class="desc-toggle" onclick="this.previousElementSibling.classList.toggle('hero-desc-collapsed');this.textContent=this.textContent==='더보기'?'접기':'더보기';">더보기</button>
+                
+            </div>
             
             
             <div class="hero-tags">
@@ -139,7 +152,7 @@
     </main>
     <footer>
         <p>국내 출간 미스터리 소설 신작을 매일 업데이트합니다</p>
-        <p>마지막 업데이트: 2026-03-23 23:41 UTC</p>
+        <p>마지막 업데이트: 2026-03-27 11:55 UTC</p>
         <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank">알라딘</a></p>
     </footer>
     
