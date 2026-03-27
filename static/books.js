@@ -1,6 +1,12 @@
 (function () {
     "use strict";
 
+    function escapeHtml(s) {
+        var div = document.createElement("div");
+        div.appendChild(document.createTextNode(s));
+        return div.innerHTML;
+    }
+
     var grid = document.getElementById("book-grid");
     var filterBar = document.getElementById("floating-filter");
     var filterBtns = filterBar.querySelectorAll(".floating-filter-btn");
@@ -180,13 +186,13 @@
         if (book.keywords && book.keywords.length) {
             keywordsHtml = '<div class="hero-tags">';
             book.keywords.forEach(function (kw) {
-                keywordsHtml += '<span class="hero-tag">' + kw + '</span>';
+                keywordsHtml += '<span class="hero-tag">' + escapeHtml(kw) + '</span>';
             });
             keywordsHtml += '</div>';
         }
 
         var descHtml = book.desc
-            ? '<div class="hero-desc-wrap"><p class="hero-desc hero-desc-collapsed">' + book.desc + '</p>' +
+            ? '<div class="hero-desc-wrap"><p class="hero-desc hero-desc-collapsed">' + escapeHtml(book.desc) + '</p>' +
               (book.desc.length > 150 ? '<button class="desc-toggle">더보기</button>' : '') + '</div>'
             : '';
 
@@ -196,18 +202,18 @@
             '<div class="detail-info-panel">' +
                 '<div class="hero-info">' +
                     nationalityLabel +
-                    '<h1 class="hero-title">' + book.title + '</h1>' +
-                    '<p class="hero-author">' + book.author + '</p>' +
+                    '<h1 class="hero-title">' + escapeHtml(book.title) + '</h1>' +
+                    '<p class="hero-author">' + escapeHtml(book.author) + '</p>' +
                     descHtml +
                     keywordsHtml +
                     '<div class="hero-meta">' +
-                        '<span class="hero-meta-item">' + book.publisher + '</span>' +
+                        '<span class="hero-meta-item">' + escapeHtml(book.publisher) + '</span>' +
                         '<span class="hero-meta-sep">·</span>' +
-                        '<span class="hero-meta-item">' + book.pubDate + '</span>' +
+                        '<span class="hero-meta-item">' + escapeHtml(book.pubDate) + '</span>' +
                         '<span class="hero-meta-sep">·</span>' +
                         '<span class="hero-meta-item">' + priceStr + '</span>' +
                         '<span class="hero-meta-sep">·</span>' +
-                        '<a href="' + book.link + '" target="_blank" rel="noopener" class="hero-meta-link">알라딘</a>' +
+                        '<a href="' + escapeHtml(book.link) + '" target="_blank" rel="noopener" class="hero-meta-link">알라딘</a>' +
                     '</div>' +
                 '</div>' +
             '</div>';

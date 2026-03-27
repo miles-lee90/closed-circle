@@ -131,7 +131,7 @@ def build():
 
     with ThreadPoolExecutor(max_workers=10) as pool:
         results = list(pool.map(check_spine, books))
-        pool.map(check_back_cover, books)
+        list(pool.map(check_back_cover, books))
     books = [b for b, ok in zip(books, results) if ok]
     print(f"Verified spine images: {len(books)} books")
     books = sort_books_jp_first(books)

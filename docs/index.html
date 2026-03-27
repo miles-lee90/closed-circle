@@ -8,7 +8,7 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="static/style.css?v=2026-03-271155UTC">
+    <link rel="stylesheet" href="static/style.css?v=2026-03-271627UTC">
 </head>
 <body>
     <header>
@@ -1413,7 +1413,7 @@
     </main>
     <footer>
         <p>국내 출간 미스터리 소설 신작을 매일 업데이트합니다</p>
-        <p>마지막 업데이트: 2026-03-27 11:55 UTC</p>
+        <p>마지막 업데이트: 2026-03-27 16:27 UTC</p>
         <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank">알라딘</a></p>
     </footer>
     
@@ -2185,6 +2185,12 @@ var BOOKS = [
 <script src="static/books.js"></script>
 <script>
 (function () {
+    function escapeHtml(s) {
+        var div = document.createElement("div");
+        div.appendChild(document.createTextNode(s));
+        return div.innerHTML;
+    }
+
     var overlay = document.getElementById("search-overlay");
     var input = document.getElementById("search-input");
     var results = document.getElementById("search-results");
@@ -2228,8 +2234,8 @@ var BOOKS = [
             return '<a href="book/' + b.isbn + '.html" class="search-result-item">' +
                 '<img class="search-result-cover" src="' + b.coverUrl + '" alt="">' +
                 '<div class="search-result-info">' +
-                    '<div class="search-result-title">' + b.title + '</div>' +
-                    '<div class="search-result-meta">' + b.author + ' · ' + b.publisher + '</div>' +
+                    '<div class="search-result-title">' + escapeHtml(b.title) + '</div>' +
+                    '<div class="search-result-meta">' + escapeHtml(b.author) + ' · ' + escapeHtml(b.publisher) + '</div>' +
                 '</div></a>';
         }).join("");
     });

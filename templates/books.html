@@ -83,6 +83,12 @@ var BOOKS = [
 <script src="static/books.js"></script>
 <script>
 (function () {
+    function escapeHtml(s) {
+        var div = document.createElement("div");
+        div.appendChild(document.createTextNode(s));
+        return div.innerHTML;
+    }
+
     var overlay = document.getElementById("search-overlay");
     var input = document.getElementById("search-input");
     var results = document.getElementById("search-results");
@@ -126,8 +132,8 @@ var BOOKS = [
             return '<a href="book/' + b.isbn + '.html" class="search-result-item">' +
                 '<img class="search-result-cover" src="' + b.coverUrl + '" alt="">' +
                 '<div class="search-result-info">' +
-                    '<div class="search-result-title">' + b.title + '</div>' +
-                    '<div class="search-result-meta">' + b.author + ' · ' + b.publisher + '</div>' +
+                    '<div class="search-result-title">' + escapeHtml(b.title) + '</div>' +
+                    '<div class="search-result-meta">' + escapeHtml(b.author) + ' · ' + escapeHtml(b.publisher) + '</div>' +
                 '</div></a>';
         }).join("");
     });
