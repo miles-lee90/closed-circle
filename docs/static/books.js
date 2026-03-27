@@ -91,8 +91,8 @@
     var isDetailOpen = false;
     var isAnimating = false;
     var selectedSlide = null;
-    var wasDragging = false;
     var dragCleanup = null;
+    var currentRotX = 3, currentRotY = -35;
 
     grid.addEventListener("click", function () {
         if (!currentHovered || isAnimating || isDetailOpen) return;
@@ -232,7 +232,7 @@
         }
 
         // Drag rotation on the book (mouse + touch)
-        var rotY = -35, rotX = 3;
+        var rotY = currentRotY = -35, rotX = currentRotX = 3;
         var dragging = false, lastX, lastY;
         bookItem.style.cursor = "grab";
 
@@ -242,11 +242,11 @@
         }
         function onDragMove(x, y) {
             if (!dragging) return;
-            wasDragging = true;
             rotY += (x - lastX) * 0.5;
             rotX -= (y - lastY) * 0.3;
             rotX = Math.max(-40, Math.min(40, rotX));
             lastX = x; lastY = y;
+            currentRotX = rotX; currentRotY = rotY;
             bookItem.style.transform = "scale(1) rotateX(" + rotX + "deg) rotateY(" + rotY + "deg)";
         }
         function onDragEnd() {
@@ -291,8 +291,7 @@
         if (bookItem) {
             var duration = 700;
             var startTime = null;
-            // Read current transform values (approximate)
-            var start = { scale: 1, rx: 3, ry: -35, rz: 0 };
+            var start = { scale: 1, rx: currentRotX, ry: currentRotY, rz: 0 };
             var end = { scale: 1.33, rx: -90, ry: -180, rz: 90 };
 
             function frame(ts) {

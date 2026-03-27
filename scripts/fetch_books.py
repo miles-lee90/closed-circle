@@ -74,7 +74,7 @@ def parse_aladin_item(item: dict, nationality: str = None, author_overrides: dic
         "cover_url": cover_url,
         "spine_url": spine_url,
         "back_cover_url": back_cover_url,
-        "link": item.get("link", ""),
+        "link": item.get("link", "").replace("&amp;", "&"),
         "price": item.get("priceStandard", 0),
         "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
@@ -283,10 +283,10 @@ def main():
         print(f"  Size info fetched for {len(needs_size)} books")
 
     # Fetch publisher descriptions for books missing it
+    session = requests.Session()
     needs_desc = [b for b in merged if not b.get("publisher_desc")]
     if needs_desc:
         print(f"Fetching publisher descriptions for {len(needs_desc)} books...")
-        session = requests.Session()
         for i, book in enumerate(needs_desc):
             item_id = re.search(r"ItemId=(\d+)", book.get("link", ""))
             if item_id:
@@ -300,7 +300,7 @@ def main():
         print(f"  Publisher descriptions: {has_desc}/{len(merged)}")
 
     # Scrape back cover URLs from product pages
-    scrape_back_covers(merged, session if 'session' in dir() else None)
+    scrape_back_covers(merged, session)
 
     save_books(merged)
     print(f"Total books in database: {len(merged)}")
