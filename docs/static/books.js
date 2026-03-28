@@ -84,9 +84,32 @@
             slides.forEach(function (slide) {
                 var show = filter === "all" || slide.getAttribute("data-nationality") === filter;
                 slide.style.display = show ? "" : "none";
+                if (show && !slide.classList.contains("visible")) {
+                    slide.classList.add("visible");
+                }
             });
         });
     });
+
+    // ─── Entrance animation ───
+    var entranceDelay = 0;
+    var entranceObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting && !entry.target.classList.contains("visible")) {
+                entry.target.style.animationDelay = entranceDelay + "ms";
+                entry.target.classList.add("visible");
+                entranceDelay += 80;
+                entranceObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    slides.forEach(function (s) {
+        entranceObserver.observe(s);
+    });
+
+    // Reset delay after initial batch renders
+    setTimeout(function () { entranceDelay = 0; }, 2000);
 
     // ─── Detail View ───
     var isDetailOpen = false;

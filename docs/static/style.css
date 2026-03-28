@@ -937,6 +937,16 @@ main {
 .book-slide {
     transform-style: preserve-3d;
     transition: transform 0.5s ease, opacity 0.4s ease;
+    opacity: 0;
+}
+
+.book-slide.visible {
+    animation: dropIn 0.5s ease forwards;
+}
+
+@keyframes dropIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 
