@@ -14,16 +14,24 @@
     var detailContainer = document.getElementById("book-detail-container");
     var slides = grid.querySelectorAll(".book-slide");
 
-    // ─── Scroll-following perspective origin ───
+    // ─── Scroll-following perspective origin (rAF-throttled) ───
+    var perspTicking = false;
     function updatePerspOrigin() {
         var rect = perspWrapper.getBoundingClientRect();
         var viewCenterY = window.innerHeight / 2;
         var originY = viewCenterY - rect.top;
         originY = Math.max(0, Math.min(rect.height, originY));
         perspWrapper.style.perspectiveOrigin = "50% " + (originY / rect.height * 100) + "%";
+        perspTicking = false;
     }
-    window.addEventListener("scroll", updatePerspOrigin, { passive: true });
-    window.addEventListener("resize", updatePerspOrigin);
+    function onScrollResize() {
+        if (!perspTicking) {
+            perspTicking = true;
+            requestAnimationFrame(updatePerspOrigin);
+        }
+    }
+    window.addEventListener("scroll", onScrollResize, { passive: true });
+    window.addEventListener("resize", onScrollResize);
     updatePerspOrigin();
 
     // ─── Adjust faces based on spine image ratio ───
