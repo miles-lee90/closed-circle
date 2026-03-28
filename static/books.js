@@ -14,24 +14,16 @@
     var detailContainer = document.getElementById("book-detail-container");
     var slides = grid.querySelectorAll(".book-slide");
 
-    // ─── Scroll-following perspective origin (rAF-throttled) ───
-    var perspTicking = false;
+    // ─── Scroll-following perspective origin ───
     function updatePerspOrigin() {
         var rect = perspWrapper.getBoundingClientRect();
         var viewCenterY = window.innerHeight / 2;
         var originY = viewCenterY - rect.top;
         originY = Math.max(0, Math.min(rect.height, originY));
         perspWrapper.style.perspectiveOrigin = "50% " + (originY / rect.height * 100) + "%";
-        perspTicking = false;
     }
-    function onScrollResize() {
-        if (!perspTicking) {
-            perspTicking = true;
-            requestAnimationFrame(updatePerspOrigin);
-        }
-    }
-    window.addEventListener("scroll", onScrollResize, { passive: true });
-    window.addEventListener("resize", onScrollResize);
+    window.addEventListener("scroll", updatePerspOrigin, { passive: true });
+    window.addEventListener("resize", updatePerspOrigin);
     updatePerspOrigin();
 
     // ─── Adjust faces based on spine image ratio ───
@@ -44,8 +36,15 @@
             var bd = Math.round(bh * (spineImg.naturalWidth / spineImg.naturalHeight));
             var halfBd = Math.floor(bd / 2);
             var spineLeft = Math.floor((bw - bd) / 2);
+            var topY = Math.floor((bh - bd) / 2);
             var s = bookEl.querySelector(".book3d-spine");
             s.style.width = bd + "px"; s.style.left = spineLeft + "px";
+            var f = bookEl.querySelector(".book3d-fore");
+            if (f) { f.style.width = bd + "px"; f.style.left = spineLeft + "px"; }
+            var t = bookEl.querySelector(".book3d-top");
+            if (t) { t.style.height = bd + "px"; t.style.top = topY + "px"; }
+            var b = bookEl.querySelector(".book3d-bottom");
+            if (b) { b.style.height = bd + "px"; b.style.top = topY + "px"; }
             var fr = bookEl.querySelector(".book3d-front");
             if (fr) fr.style.transform = "translateZ(" + halfBd + "px)";
             var bk = bookEl.querySelector(".book3d-back");
@@ -84,32 +83,9 @@
             slides.forEach(function (slide) {
                 var show = filter === "all" || slide.getAttribute("data-nationality") === filter;
                 slide.style.display = show ? "" : "none";
-                if (show && !slide.classList.contains("visible")) {
-                    slide.classList.add("visible");
-                }
             });
         });
     });
-
-    // ─── Entrance animation ───
-    var entranceDelay = 0;
-    var entranceObserver = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-            if (entry.isIntersecting && !entry.target.classList.contains("visible")) {
-                entry.target.style.animationDelay = entranceDelay + "ms";
-                entry.target.classList.add("visible");
-                entranceDelay += 80;
-                entranceObserver.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
-
-    slides.forEach(function (s) {
-        entranceObserver.observe(s);
-    });
-
-    // Reset delay after initial batch renders
-    setTimeout(function () { entranceDelay = 0; }, 2000);
 
     // ─── Detail View ───
     var isDetailOpen = false;
@@ -130,43 +106,6 @@
     }
     function lerp(a, b, t) { return a + (b - a) * t; }
 
-    function createExtraFaces(bookItem) {
-        var bw = bookItem.offsetWidth;
-        var bh = bookItem.offsetHeight;
-        var spineImg = bookItem.querySelector(".book3d-spine img");
-        var bd = 35;
-        if (spineImg && spineImg.naturalWidth && spineImg.naturalHeight) {
-            bd = Math.round(bh * (spineImg.naturalWidth / spineImg.naturalHeight));
-        }
-        var halfBd = Math.floor(bd / 2);
-        var spineLeft = Math.floor((bw - bd) / 2);
-        var topY = Math.floor((bh - bd) / 2);
-
-        var fore = document.createElement("div");
-        fore.className = "book3d-face book3d-fore book3d-paper";
-        fore.setAttribute("data-extra-face", "true");
-        fore.style.cssText = "width:" + bd + "px;height:" + bh + "px;left:" + spineLeft + "px;transform:rotateY(90deg) translateZ(" + (bw / 2) + "px)";
-
-        var top = document.createElement("div");
-        top.className = "book3d-face book3d-top book3d-paper";
-        top.setAttribute("data-extra-face", "true");
-        top.style.cssText = "width:" + bw + "px;height:" + bd + "px;top:" + topY + "px;transform:rotateX(90deg) translateZ(" + (bh / 2) + "px)";
-
-        var bottom = document.createElement("div");
-        bottom.className = "book3d-face book3d-bottom book3d-paper";
-        bottom.setAttribute("data-extra-face", "true");
-        bottom.style.cssText = "width:" + bw + "px;height:" + bd + "px;top:" + topY + "px;transform:rotateX(-90deg) translateZ(" + (bh / 2) + "px)";
-
-        bookItem.appendChild(fore);
-        bookItem.appendChild(top);
-        bookItem.appendChild(bottom);
-    }
-
-    function removeExtraFaces(bookItem) {
-        var extras = bookItem.querySelectorAll("[data-extra-face]");
-        extras.forEach(function (el) { el.remove(); });
-    }
-
     function openDetail(idx, slide) {
         isAnimating = true;
         isDetailOpen = true;
@@ -174,7 +113,6 @@
         history.pushState({ detail: true }, "");
         var book = BOOKS[idx];
         var bookItem = slide.querySelector(".book-item");
-        createExtraFaces(bookItem);
         var allSlides = Array.from(slides);
         var selectedIdx = allSlides.indexOf(slide);
 
@@ -395,7 +333,6 @@
             if (bookItem) {
                 bookItem.style.transform = "";
                 bookItem.style.cursor = "";
-                removeExtraFaces(bookItem);
             }
 
             filterBar.classList.remove("hidden");

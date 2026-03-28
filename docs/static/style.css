@@ -760,24 +760,6 @@ main {
     object-fit: fill;
 }
 
-.book3d-spine {
-    position: relative;
-}
-
-.book3d-spine::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        to bottom,
-        rgba(255, 255, 255, 0.1) 0%,
-        transparent 35%,
-        transparent 65%,
-        rgba(0, 0, 0, 0.2) 100%
-    );
-    pointer-events: none;
-}
-
 /* 종이 텍스처 */
 .book3d-paper {
     background:
@@ -937,18 +919,15 @@ main {
 .book-slide {
     transform-style: preserve-3d;
     transition: transform 0.5s ease, opacity 0.4s ease;
-    opacity: 0;
 }
 
-.book-slide.visible {
-    animation: dropIn 0.5s ease forwards;
+.book-slide:first-child {
+    margin-top: 0;
 }
 
-@keyframes dropIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+.book-slide + .book-slide {
+    margin-top: -270px;
 }
-
 
 .book-slide.dismiss-up {
     transform: translateY(-500px);
@@ -963,13 +942,10 @@ main {
 /* 3D book */
 .book-item {
     transform: scale(1.33) rotateX(-90deg) rotateY(-180deg) rotateZ(90deg);
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
-    transition: transform 0.3s ease, filter 0.3s ease;
 }
 
 .book-slide.hovered .book-item {
-    transform: scale(1.38) rotateX(-90deg) rotateY(-180deg) rotateZ(85deg) translateX(-20px);
-    filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.7));
+    transform: scale(1.33) rotateX(-90deg) rotateY(-180deg) rotateZ(90deg) translateX(-35px);
 }
 
 .book-item .book3d-face {
@@ -1184,9 +1160,6 @@ body.detail-active .book-item {
         padding: 40px 0;
     }
 
-    .book-slide[style] {
-        margin-top: revert !important;
-    }
     .book-slide + .book-slide {
         margin-top: -200px;
     }
