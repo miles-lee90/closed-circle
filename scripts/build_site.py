@@ -153,9 +153,12 @@ def build():
     )
     featured_book = jp_books[0] if jp_books else None
 
-    # 모든 책에 키워드 추출
+    # 모든 책에 키워드 추출 + NEW 배지
+    from datetime import datetime, timedelta
+    cutoff = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
     for b in books:
         b["keywords"] = extract_keywords(b)
+        b["is_new"] = b.get("pub_date", "") >= cutoff
 
     if featured_book:
         featured_book = jp_books[0]
