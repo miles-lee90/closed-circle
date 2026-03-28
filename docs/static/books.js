@@ -14,16 +14,24 @@
     var detailContainer = document.getElementById("book-detail-container");
     var slides = grid.querySelectorAll(".book-slide");
 
-    // ─── Scroll-following perspective origin ───
+    // ─── Scroll-following perspective origin (rAF-throttled) ───
+    var perspTicking = false;
     function updatePerspOrigin() {
         var rect = perspWrapper.getBoundingClientRect();
         var viewCenterY = window.innerHeight / 2;
         var originY = viewCenterY - rect.top;
         originY = Math.max(0, Math.min(rect.height, originY));
         perspWrapper.style.perspectiveOrigin = "50% " + (originY / rect.height * 100) + "%";
+        perspTicking = false;
     }
-    window.addEventListener("scroll", updatePerspOrigin, { passive: true });
-    window.addEventListener("resize", updatePerspOrigin);
+    function onScrollResize() {
+        if (!perspTicking) {
+            perspTicking = true;
+            requestAnimationFrame(updatePerspOrigin);
+        }
+    }
+    window.addEventListener("scroll", onScrollResize, { passive: true });
+    window.addEventListener("resize", onScrollResize);
     updatePerspOrigin();
 
     // ─── Adjust faces based on spine image ratio ───
@@ -106,6 +114,35 @@
     }
     function lerp(a, b, t) { return a + (b - a) * t; }
 
+    function createExtraFaces(bookItem) {
+        var bw = bookItem.offsetWidth;
+        var bh = bookItem.offsetHeight;
+        var spineEl = bookItem.querySelector(".book3d-spine");
+        var bd = parseInt(spineEl.style.width) || Math.round(bh * 0.08);
+        var spineLeft = parseInt(spineEl.style.left) || Math.floor((bw - bd) / 2);
+        var topY = Math.floor((bh - bd) / 2);
+        var halfBw = Math.floor(bw / 2);
+        var halfBh = Math.floor(bh / 2);
+
+        var faces = [
+            { cls: "book3d-fore book3d-paper", css: "width:" + bd + "px;height:" + bh + "px;top:0;left:" + spineLeft + "px;transform:rotateY(90deg) translateZ(" + halfBw + "px)" },
+            { cls: "book3d-top book3d-paper", css: "width:" + bw + "px;height:" + bd + "px;top:" + topY + "px;transform:rotateX(90deg) translateZ(" + halfBh + "px)" },
+            { cls: "book3d-bottom book3d-paper", css: "width:" + bw + "px;height:" + bd + "px;top:" + topY + "px;transform:rotateX(-90deg) translateZ(" + halfBh + "px)" }
+        ];
+        faces.forEach(function (f) {
+            var el = document.createElement("div");
+            el.className = "book3d-face " + f.cls;
+            el.setAttribute("data-extra-face", "true");
+            el.style.cssText = f.css;
+            bookItem.appendChild(el);
+        });
+    }
+
+    function removeExtraFaces(bookItem) {
+        var extras = bookItem.querySelectorAll("[data-extra-face]");
+        extras.forEach(function (el) { el.remove(); });
+    }
+
     function openDetail(idx, slide) {
         isAnimating = true;
         isDetailOpen = true;
@@ -113,6 +150,7 @@
         history.pushState({ detail: true }, "");
         var book = BOOKS[idx];
         var bookItem = slide.querySelector(".book-item");
+        createExtraFaces(bookItem);
         var allSlides = Array.from(slides);
         var selectedIdx = allSlides.indexOf(slide);
 
@@ -331,6 +369,7 @@
 
             // Reset book transform
             if (bookItem) {
+                removeExtraFaces(bookItem);
                 bookItem.style.transform = "";
                 bookItem.style.cursor = "";
             }

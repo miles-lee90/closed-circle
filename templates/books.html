@@ -27,15 +27,6 @@
                     <img src="{{ book.spine_url }}" alt="책등" loading="lazy">
                     {% endif %}
                 </div>
-                <div class="book3d-face book3d-fore book3d-paper"
-                     style="width:{{ bd }}px;height:{{ bh }}px;left:{{ (bw - bd) // 2 }}px;transform:rotateY(90deg) translateZ({{ bw // 2 }}px)">
-                </div>
-                <div class="book3d-face book3d-top book3d-paper"
-                     style="width:{{ bw }}px;height:{{ bd }}px;top:{{ (bh - bd) // 2 }}px;transform:rotateX(90deg) translateZ({{ bh // 2 }}px)">
-                </div>
-                <div class="book3d-face book3d-bottom book3d-paper"
-                     style="width:{{ bw }}px;height:{{ bd }}px;top:{{ (bh - bd) // 2 }}px;transform:rotateX(-90deg) translateZ({{ bh // 2 }}px)">
-                </div>
             </div>
         </div>
         {% endfor %}
