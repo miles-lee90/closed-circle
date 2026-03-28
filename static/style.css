@@ -1100,6 +1100,74 @@ footer a:hover {
     color: var(--text-primary);
 }
 
+/* ─── Preview Button ─── */
+.preview-btn {
+    margin-top: 1.25rem;
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.preview-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* ─── Preview Overlay ─── */
+.preview-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.preview-overlay.active {
+    opacity: 1;
+}
+
+.preview-wrap {
+    position: relative;
+    width: 95vw;
+    height: 92vh;
+    max-width: 1200px;
+}
+
+.preview-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 2rem;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.preview-close:hover {
+    color: var(--text-primary);
+}
+
+.preview-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+    background: #fff;
+}
+
 /* ─── Empty State ─── */
 .empty {
     text-align: center;

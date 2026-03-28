@@ -217,6 +217,42 @@ def scrape_back_cover(item_id: str, session: requests.Session = None) -> str:
     return ""
 
 
+def scrape_preview_isbn(item_id: str, session: requests.Session = None) -> str:
+    """알라딘 상품 페이지에서 미리보기 ISBN을 스크래핑한다."""
+    try:
+        s = session or requests.Session()
+        s.headers.setdefault("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)")
+        url = f"https://www.aladin.co.kr/shop/wproduct.aspx?ItemId={item_id}"
+        resp = s.get(url, timeout=15)
+        match = re.search(r"wletslookViewer\.aspx\?ISBN=([A-Za-z0-9]+)", resp.text)
+        if match:
+            return match.group(1)
+    except Exception:
+        pass
+    return ""
+
+
+def scrape_preview_isbns(books: list[dict], session: requests.Session = None):
+    """미리보기 ISBN이 없는 책들의 미리보기 ISBN을 스크래핑한다."""
+    import time
+    needs = [b for b in books if not b.get("preview_isbn")]
+    if not needs:
+        return
+    print(f"Scraping preview ISBNs for {len(needs)} books...")
+    s = session or requests.Session()
+    for i, book in enumerate(needs):
+        item_id = re.search(r"ItemId=(\d+)", book.get("link", ""))
+        if item_id:
+            isbn = scrape_preview_isbn(item_id.group(1), s)
+            if isbn:
+                book["preview_isbn"] = isbn
+        if (i + 1) % 10 == 0:
+            print(f"  {i + 1}/{len(needs)} done")
+        time.sleep(0.5)
+    has_preview = sum(1 for b in books if b.get("preview_isbn"))
+    print(f"  Preview ISBNs: {has_preview}/{len(books)}")
+
+
 def scrape_back_covers(books: list[dict], session: requests.Session = None):
     """뒷표지 URL이 없는 책들의 뒷표지를 스크래핑한다."""
     import time
@@ -301,6 +337,9 @@ def main():
 
     # Scrape back cover URLs from product pages
     scrape_back_covers(merged, session)
+
+    # Scrape preview ISBNs from product pages
+    scrape_preview_isbns(merged, session)
 
     save_books(merged)
     print(f"Total books in database: {len(merged)}")

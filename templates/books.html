@@ -66,7 +66,8 @@ var BOOKS = [
         keywords: {{ (book.keywords or [])|tojson }},
         sizeW: {{ ((book.size_width or 128) * 2.2)|int }},
         sizeH: {{ ((book.size_height or 188) * 2.2)|int }},
-        sizeD: {{ ((book.size_depth or 16) * 2.2)|int }}
+        sizeD: {{ ((book.size_depth or 16) * 2.2)|int }},
+        previewIsbn: {{ (book.preview_isbn or '')|tojson }}
     }{{ "," if not loop.last }}
     {% endfor %}
 ];

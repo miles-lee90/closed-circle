@@ -253,6 +253,7 @@
                         '<span class="hero-meta-sep">·</span>' +
                         '<a href="' + escapeHtml(book.link) + '" target="_blank" rel="noopener" class="hero-meta-link">알라딘</a>' +
                     '</div>' +
+                    (book.previewIsbn ? '<button class="preview-btn" data-isbn="' + escapeHtml(book.previewIsbn) + '">미리보기</button>' : '') +
                 '</div>' +
             '</div>';
 
@@ -266,6 +267,33 @@
                 var desc = this.previousElementSibling;
                 desc.classList.toggle("hero-desc-collapsed");
                 this.textContent = desc.classList.contains("hero-desc-collapsed") ? "더보기" : "접기";
+            });
+        }
+
+        // 미리보기
+        var previewBtn = detailContainer.querySelector(".preview-btn");
+        if (previewBtn) {
+            previewBtn.addEventListener("click", function () {
+                var isbn = this.getAttribute("data-isbn");
+                var overlay = document.createElement("div");
+                overlay.className = "preview-overlay";
+                overlay.innerHTML =
+                    '<div class="preview-wrap">' +
+                        '<button class="preview-close">&times;</button>' +
+                        '<iframe src="https://www.aladin.co.kr/shop/book/wletslookViewer.aspx?ISBN=' + escapeHtml(isbn) + '" class="preview-iframe"></iframe>' +
+                    '</div>';
+                document.body.appendChild(overlay);
+                requestAnimationFrame(function () { overlay.classList.add("active"); });
+                overlay.querySelector(".preview-close").addEventListener("click", function () {
+                    overlay.classList.remove("active");
+                    setTimeout(function () { overlay.remove(); }, 300);
+                });
+                overlay.addEventListener("click", function (e) {
+                    if (e.target === overlay) {
+                        overlay.classList.remove("active");
+                        setTimeout(function () { overlay.remove(); }, 300);
+                    }
+                });
             });
         }
 
