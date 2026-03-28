@@ -921,13 +921,6 @@ main {
     transition: transform 0.5s ease, opacity 0.4s ease;
 }
 
-.book-slide:first-child {
-    margin-top: 0;
-}
-
-.book-slide + .book-slide {
-    margin-top: -270px;
-}
 
 .book-slide.dismiss-up {
     transform: translateY(-500px);
@@ -1160,6 +1153,9 @@ body.detail-active .book-item {
         padding: 40px 0;
     }
 
+    .book-slide[style] {
+        margin-top: revert !important;
+    }
     .book-slide + .book-slide {
         margin-top: -200px;
     }

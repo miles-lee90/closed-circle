@@ -8,7 +8,7 @@
         {% set bw = ((book.size_width or 128) * 2.2)|int %}
         {% set bh = ((book.size_height or 188) * 2.2)|int %}
         {% set bd = ((book.size_depth or 16) * 2.2)|int %}
-        <div class="book-slide" data-nationality="{{ book.nationality }}" data-idx="{{ loop.index0 }}">
+        <div class="book-slide" data-nationality="{{ book.nationality }}" data-idx="{{ loop.index0 }}"{% if not loop.first %} style="margin-top:-{{ (bh * 0.7)|int }}px"{% endif %}>
             <div class="book3d book-item"
                  style="width:{{ bw }}px;height:{{ bh }}px;">
                 <div class="book3d-face book3d-front"
