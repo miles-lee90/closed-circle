@@ -447,26 +447,25 @@
             detailContainer.innerHTML = "";
 
             var scrollTarget = selectedSlide;
-            var selectedIdx = scrollTarget ? Array.from(slides).indexOf(scrollTarget) : -1;
 
-            // Disable transitions on book-item and all slides before resetting
+            // Only book-item needs transition disabled (prevent euler→CSS pop)
             if (bookItem) {
                 bookItem.style.transition = "none";
                 removeExtraFaces(bookItem);
                 bookItem.style.transform = "";
                 bookItem.style.cursor = "";
             }
+
+            // Restore slides — CSS transition on .book-slide animates them back smoothly
             slides.forEach(function (s) {
-                s.style.transition = "none";
                 s.classList.remove("dismiss-up", "dismiss-down", "hovered");
+                s.style.visibility = "";
                 s.style.transform = "";
                 s.style.position = "";
                 s.style.top = "";
                 s.style.left = "";
                 s.style.margin = "";
                 s.style.zIndex = "";
-                // Only show slides near selected (avoid 44 GPU layers at once)
-                s.style.visibility = (Math.abs(Array.from(slides).indexOf(s) - selectedIdx) <= 5) ? "" : "hidden";
             });
 
             document.body.classList.remove("detail-active");
@@ -477,12 +476,9 @@
             isDetailOpen = false;
             isAnimating = false;
 
-            // Next frame: re-enable transitions, scroll to book
+            // Re-enable book-item transition next frame
             requestAnimationFrame(function () {
                 if (bookItem) bookItem.style.transition = "";
-                slides.forEach(function (s) {
-                    s.style.transition = "";
-                });
                 if (scrollTarget) {
                     var rect = scrollTarget.getBoundingClientRect();
                     var scrollY = window.scrollY + rect.top - (window.innerHeight / 2) + (rect.height / 2);
