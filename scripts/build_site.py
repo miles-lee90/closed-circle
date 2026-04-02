@@ -104,10 +104,8 @@ def build():
     books = filter_by_retention(books)
     news = filter_by_retention(news)
 
-    save_json(books, DATA_DIR / "books.json")
-    save_json(news, DATA_DIR / "publisher_news.json")
-
     # Only JP and KR, only books with spine images, verify spine exists
+    import sys
     from concurrent.futures import ThreadPoolExecutor
     books = [b for b in books if b.get("nationality") in ("JP", "KR") and b.get("spine_url")]
 
@@ -115,7 +113,8 @@ def build():
         try:
             r = requests.head(b["spine_url"], timeout=2)
             return r.status_code == 200
-        except Exception:
+        except Exception as e:
+            print(f"  WARNING: Spine check failed for {b.get('title', '?')}: {e}", file=sys.stderr)
             return False
 
     def check_back_cover(b):
@@ -126,7 +125,8 @@ def build():
             r = requests.head(url, timeout=2)
             if r.status_code != 200:
                 b["back_cover_url"] = ""
-        except Exception:
+        except Exception as e:
+            print(f"  WARNING: Back cover check failed for {b.get('title', '?')}: {e}", file=sys.stderr)
             b["back_cover_url"] = ""
 
     with ThreadPoolExecutor(max_workers=10) as pool:
@@ -154,8 +154,7 @@ def build():
     featured_book = jp_books[0] if jp_books else None
 
     # 모든 책에 키워드 추출 + NEW 배지
-    from datetime import datetime, timedelta
-    cutoff = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=7)).strftime("%Y-%m-%d")
     for b in books:
         b["keywords"] = extract_keywords(b)
         b["is_new"] = b.get("pub_date", "") >= cutoff
