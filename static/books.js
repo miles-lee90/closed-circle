@@ -16,42 +16,23 @@
 
     // ─── Scroll-following perspective origin (rAF-throttled) ───
     var perspTicking = false;
-    // Cache wrapper offset to avoid getBoundingClientRect in scroll handler
-    var wrapperTop = 0, wrapperHeight = 0;
-    function measureWrapper() {
-        wrapperTop = perspWrapper.offsetTop;
-        wrapperHeight = perspWrapper.offsetHeight;
-    }
-    measureWrapper();
-
     function updatePerspOrigin() {
-        var scrollY = window.scrollY || window.pageYOffset;
-        var viewCenterY = scrollY + window.innerHeight / 2;
-        var originY = viewCenterY - wrapperTop;
-        originY = Math.max(0, Math.min(wrapperHeight, originY));
-        perspWrapper.style.perspectiveOrigin = "50% " + (originY / wrapperHeight * 100) + "%";
+        var rect = perspWrapper.getBoundingClientRect();
+        var viewCenterY = window.innerHeight / 2;
+        var originY = viewCenterY - rect.top;
+        originY = Math.max(0, Math.min(rect.height, originY));
+        perspWrapper.style.perspectiveOrigin = "50% " + (originY / rect.height * 100) + "%";
         perspTicking = false;
     }
-    function onScroll() {
+    function onScrollResize() {
         if (!perspTicking) {
             perspTicking = true;
             requestAnimationFrame(updatePerspOrigin);
         }
     }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", function () {
-        measureWrapper();
-        updatePerspOrigin();
-    });
+    window.addEventListener("scroll", onScrollResize, { passive: true });
+    window.addEventListener("resize", onScrollResize);
     updatePerspOrigin();
-
-    // ─── Viewport culling via IntersectionObserver ───
-    var cullObserver = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-            entry.target.style.visibility = entry.isIntersecting ? "" : "hidden";
-        });
-    }, { rootMargin: "600px 0px" });
-    slides.forEach(function (s) { cullObserver.observe(s); });
 
     // ─── Adjust faces based on spine image ratio ───
     document.querySelectorAll(".book-item").forEach(function (bookEl) {
@@ -83,16 +64,13 @@
     // ─── Hover (on .book-slide wrappers) ───
     var currentHovered = null;
     var spinesList = grid.querySelectorAll(".book3d-spine");
-    var hoverTicking = false;
-    var hoverX = 0, hoverY = 0;
 
-    function updateHover() {
-        hoverTicking = false;
+    document.addEventListener("mousemove", function (e) {
         if (isDetailOpen) return;
-        var found = null;
+        var mx = e.clientX, my = e.clientY, found = null;
         for (var i = 0; i < spinesList.length; i++) {
             var rect = spinesList[i].getBoundingClientRect();
-            if (hoverX >= rect.left && hoverX <= rect.right && hoverY >= rect.top && hoverY <= rect.bottom) {
+            if (mx >= rect.left && mx <= rect.right && my >= rect.top && my <= rect.bottom) {
                 found = spinesList[i].closest(".book-slide");
                 break;
             }
@@ -101,15 +79,6 @@
             if (currentHovered) currentHovered.classList.remove("hovered");
             if (found) found.classList.add("hovered");
             currentHovered = found;
-        }
-    }
-
-    document.addEventListener("mousemove", function (e) {
-        hoverX = e.clientX;
-        hoverY = e.clientY;
-        if (!hoverTicking) {
-            hoverTicking = true;
-            requestAnimationFrame(updateHover);
         }
     });
 
@@ -291,6 +260,8 @@
             keywordsHtml += '</div>';
         }
 
+        var descHtml = '';
+
         var priceStr = book.price.toLocaleString() + '원';
 
         detailContainer.innerHTML =
@@ -460,6 +431,7 @@
             slides.forEach(function (s) {
                 s.classList.remove("dismiss-up", "dismiss-down", "hovered");
                 s.style.visibility = "";
+                s.style.display = "";
                 s.style.transform = "";
                 s.style.position = "";
                 s.style.top = "";
@@ -477,7 +449,6 @@
             }
 
             filterBar.classList.remove("hidden");
-            applyFilters();
             currentHovered = null;
             selectedSlide = null;
             isDetailOpen = false;

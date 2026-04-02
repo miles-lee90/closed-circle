@@ -685,6 +685,14 @@ main {
     background: var(--bg-glass);
     padding: 0.3rem 0.75rem;
     border-radius: 980px;
+}
+.hero-tag-clickable {
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.hero-tag-clickable:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-primary);
     color: var(--text-secondary);
 }
 
@@ -773,7 +781,7 @@ main {
         linear-gradient(135deg, #e8e0d4, #ddd5c8);
 }
 
-.book3d-fore.book3d-paper {
+.book3d-fore {
     background:
         repeating-linear-gradient(
             90deg,
@@ -782,7 +790,7 @@ main {
             transparent 1px,
             transparent 2px
         ),
-        linear-gradient(0deg, #e8e0d4, #ddd5c8);
+        linear-gradient(0deg, #e8e0d4, #ddd5c8) !important;
 }
 
 
@@ -894,6 +902,27 @@ main {
 .floating-filter-btn.active {
     background: rgba(255, 255, 255, 0.15);
     color: var(--text-primary);
+}
+.floating-filter-keyword {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border-radius: 16px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-left: 4px;
+}
+.keyword-filter-clear {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 0.875rem;
+    cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
 }
 
 /* ─── Book Stack (Stripe Press style) ─── */
