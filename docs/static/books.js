@@ -420,39 +420,68 @@
         if (isAnimating || !isDetailOpen) return;
         isAnimating = true;
 
+        var scrollTarget = selectedSlide;
+        var bookItem = selectedSlide ? selectedSlide.querySelector(".book-item") : null;
+
         // Fade out info panel
         var panel = detailContainer.querySelector(".detail-info-panel");
         if (panel) panel.classList.remove("visible");
+        if (dragCleanup) dragCleanup();
 
-        // Rotate book back + move slide back to stack position
-        var bookItem = selectedSlide ? selectedSlide.querySelector(".book-item") : null;
+        // Phase 1: Rotate book back + move slide back (700ms)
+        // At 300ms in, start Phase 2 (other books slide back)
+        var duration = 700;
+        var startTime = null;
+        var start = { scale: 1, rx: currentRotX, ry: currentRotY, rz: 0 };
+        var end = { scale: 1.33, rx: -90, ry: -180, rz: 90 };
+        var slidesRestored = false;
+
+        function restoreSlides() {
+            if (slidesRestored) return;
+            slidesRestored = true;
+            // Make slides visible (still at dismiss position)
+            slides.forEach(function (s) {
+                if (s === selectedSlide) return;
+                s.style.visibility = "";
+            });
+            // Next frame: remove dismiss classes → CSS transition slides them back
+            requestAnimationFrame(function () {
+                slides.forEach(function (s) {
+                    s.classList.remove("dismiss-up", "dismiss-down");
+                });
+            });
+        }
+
         if (bookItem) {
-            var duration = 700;
-            var startTime = null;
-            var start = { scale: 1, rx: currentRotX, ry: currentRotY, rz: 0 };
-            var end = { scale: 1.33, rx: -90, ry: -180, rz: 90 };
-
             function frame(ts) {
                 if (!startTime) startTime = ts;
-                var t = Math.min((ts - startTime) / duration, 1);
+                var elapsed = ts - startTime;
+                var t = Math.min(elapsed / duration, 1);
                 var et = easeInOutCubic(t);
+
                 bookItem.style.transform = "scale(" + lerp(start.scale, end.scale, et).toFixed(3) + ") rotateX(" + lerp(start.rx, end.rx, et).toFixed(1) + "deg) rotateY(" + lerp(start.ry, end.ry, et).toFixed(1) + "deg) rotateZ(" + lerp(start.rz, end.rz, et).toFixed(1) + "deg)";
                 selectedSlide.style.transform = "translate(" + (openDx * (1 - et)).toFixed(1) + "px, " + (openDy * (1 - et)).toFixed(1) + "px)";
-                if (t < 1) requestAnimationFrame(frame);
-                else finishClose();
+
+                // At 300ms, start bringing other books back
+                if (elapsed >= 300) restoreSlides();
+
+                if (t < 1) {
+                    requestAnimationFrame(frame);
+                } else {
+                    finishClose();
+                }
             }
             requestAnimationFrame(frame);
         } else {
+            restoreSlides();
             finishClose();
         }
 
         function finishClose() {
-            if (dragCleanup) dragCleanup();
             detailContainer.innerHTML = "";
+            restoreSlides();
 
-            var scrollTarget = selectedSlide;
-
-            // Book-item: disable transition, reset transform
+            // Reset book-item without transition pop
             if (bookItem) {
                 bookItem.style.transition = "none";
                 removeExtraFaces(bookItem);
@@ -460,25 +489,17 @@
                 bookItem.style.cursor = "";
             }
 
-            // Step 1: Make dismissed slides visible (still at ±500px, opacity 0)
-            slides.forEach(function (s) {
-                s.style.visibility = "";
-                s.style.transform = "";
-                s.style.position = "";
-                s.style.top = "";
-                s.style.left = "";
-                s.style.margin = "";
-                s.style.zIndex = "";
-            });
+            // Reset selected slide
+            if (selectedSlide) {
+                selectedSlide.style.transform = "";
+                selectedSlide.style.zIndex = "";
+                selectedSlide.classList.remove("hovered");
+            }
 
             document.body.classList.remove("detail-active");
             filterBar.classList.remove("hidden");
 
-            // Step 2: Next frame — remove dismiss classes so transition animates them back
             requestAnimationFrame(function () {
-                slides.forEach(function (s) {
-                    s.classList.remove("dismiss-up", "dismiss-down", "hovered");
-                });
                 if (bookItem) bookItem.style.transition = "";
                 applyFilters();
                 currentHovered = null;
@@ -487,11 +508,9 @@
                 isAnimating = false;
 
                 if (scrollTarget) {
-                    setTimeout(function () {
-                        var rect = scrollTarget.getBoundingClientRect();
-                        var scrollY = window.scrollY + rect.top - (window.innerHeight / 2) + (rect.height / 2);
-                        window.scrollTo({ top: scrollY, behavior: "smooth" });
-                    }, 500);
+                    var rect = scrollTarget.getBoundingClientRect();
+                    var scrollY = window.scrollY + rect.top - (window.innerHeight / 2) + (rect.height / 2);
+                    window.scrollTo({ top: scrollY, behavior: "smooth" });
                 }
             });
         }
