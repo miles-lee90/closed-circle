@@ -9,7 +9,7 @@ SAMPLE_ITEM = {
     "pubDate": "2026-03-15",
     "cover": "https://image.aladin.co.kr/product/12345/cover.jpg",
     "link": "https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=12345",
-    "priceSales": 14400,
+    "priceStandard": 14400,
 }
 
 

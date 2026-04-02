@@ -122,7 +122,7 @@ var BOOKS = [
         }
         results.innerHTML = matched.map(function (b) {
             return '<a href="book/' + b.isbn + '.html" class="search-result-item">' +
-                '<img class="search-result-cover" src="' + b.coverUrl + '" alt="">' +
+                '<img class="search-result-cover" src="' + escapeHtml(b.coverUrl) + '" alt="">' +
                 '<div class="search-result-info">' +
                     '<div class="search-result-title">' + escapeHtml(b.title) + '</div>' +
                     '<div class="search-result-meta">' + escapeHtml(b.author) + ' · ' + escapeHtml(b.publisher) + '</div>' +

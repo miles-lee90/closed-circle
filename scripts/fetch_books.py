@@ -156,7 +156,8 @@ def fetch_book_detail(ttb_key: str, isbn13: str) -> dict:
             "description": item.get("fulldescription", "") or item.get("description", ""),
             "story": item.get("story", ""),
         }
-    except Exception:
+    except Exception as e:
+        print(f"  WARNING: Failed to fetch detail for {isbn13}: {e}", file=sys.stderr)
         return {"size_height": 0, "size_width": 0, "size_depth": 0, "description": "", "story": ""}
 
 
@@ -194,7 +195,8 @@ def fetch_publisher_desc(item_id: str, session: requests.Session = None) -> str:
                     result = result[:cut].strip()
                     break
         return result
-    except Exception:
+    except Exception as e:
+        print(f"  WARNING: Failed to scrape publisher desc for {item_id}: {e}", file=sys.stderr)
         return ""
 
 
@@ -212,8 +214,8 @@ def scrape_back_cover(item_id: str, session: requests.Session = None) -> str:
             if found.startswith("//"):
                 found = "https:" + found
             return found
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"  WARNING: Failed to scrape back cover for {item_id}: {e}", file=sys.stderr)
     return ""
 
 
@@ -227,8 +229,8 @@ def scrape_preview_isbn(item_id: str, session: requests.Session = None) -> str:
         match = re.search(r"wletslookViewer\.aspx\?ISBN=([A-Za-z0-9]+)", resp.text)
         if match:
             return match.group(1)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"  WARNING: Failed to scrape preview ISBN for {item_id}: {e}", file=sys.stderr)
     return ""
 
 
