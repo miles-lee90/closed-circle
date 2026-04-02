@@ -687,14 +687,6 @@ main {
     border-radius: 980px;
     color: var(--text-secondary);
 }
-.hero-tag-clickable {
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-}
-.hero-tag-clickable:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: var(--text-primary);
-}
 
 .hero-meta {
     display: flex;
@@ -737,6 +729,7 @@ main {
 .book3d {
     position: relative;
     transform-style: preserve-3d;
+    transition: transform 0.1s ease-out;
 }
 
 .book3d-face {
@@ -901,27 +894,6 @@ main {
 .floating-filter-btn.active {
     background: rgba(255, 255, 255, 0.15);
     color: var(--text-primary);
-}
-.floating-filter-keyword {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 5px 10px;
-    border-radius: 16px;
-    background: var(--accent);
-    color: #fff;
-    font-size: 0.75rem;
-    font-weight: 500;
-    margin-left: 4px;
-}
-.keyword-filter-clear {
-    background: none;
-    border: none;
-    color: inherit;
-    font-size: 0.875rem;
-    cursor: pointer;
-    padding: 0 2px;
-    line-height: 1;
 }
 
 /* ─── Book Stack (Stripe Press style) ─── */
@@ -1282,8 +1254,6 @@ body.detail-active .book-item {
         padding: 1.5rem;
         background: var(--bg);
         border-top: 1px solid var(--border);
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
     }
 }
 
