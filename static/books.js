@@ -492,43 +492,25 @@
         if (isAnimating || !isDetailOpen) return;
         isAnimating = true;
 
-        // Fade out info
+        // Fade out detail view (info panel + selected book)
         var panel = detailContainer.querySelector(".detail-info-panel");
         if (panel) panel.classList.remove("visible");
-
-        // Rotate book back
-        var bookItem = selectedSlide ? selectedSlide.querySelector(".book-item") : null;
-        if (bookItem) {
-            var duration = 600;
-            var startTime = null;
-            var closeStartScale = 1, closeEndScale = 1.33;
-            var qCloseStart = eulerToQuat(currentRotX, currentRotY, 0);
-            var qCloseEnd = eulerToQuat(-90, -180, 90);
-
-            function frame(ts) {
-                if (!startTime) startTime = ts;
-                var t = Math.min((ts - startTime) / duration, 1);
-                var et = easeInOutCubic(t);
-                var sc = lerp(closeStartScale, closeEndScale, et);
-                var q = quatSlerp(qCloseStart, qCloseEnd, et);
-                var m = quatToMatrix3d(q);
-                bookItem.style.transform = scaleMatrix3d(m, sc);
-                if (t < 1) requestAnimationFrame(frame);
-                else finishClose();
-            }
-            requestAnimationFrame(frame);
-        } else {
-            finishClose();
+        if (selectedSlide) {
+            selectedSlide.style.transition = "opacity 0.2s ease";
+            selectedSlide.style.opacity = "0";
         }
 
-        function finishClose() {
+        // After fade, instantly restore stack
+        setTimeout(function () {
             if (dragCleanup) dragCleanup();
             detailContainer.innerHTML = "";
 
             var scrollTarget = selectedSlide;
             var selectedIdx = scrollTarget ? Array.from(slides).indexOf(scrollTarget) : -1;
+            var bookItem = scrollTarget ? scrollTarget.querySelector(".book-item") : null;
 
-            // Kill ALL transitions (slides + book-item) before any style changes
+            // Disable ALL transitions before resetting
+            grid.style.visibility = "hidden";
             if (bookItem) {
                 bookItem.style.transition = "none";
                 removeExtraFaces(bookItem);
@@ -538,44 +520,38 @@
             slides.forEach(function (s) {
                 s.style.transition = "none";
                 s.classList.remove("dismiss-up", "dismiss-down", "hovered");
+                s.style.opacity = "";
                 s.style.transform = "";
                 s.style.position = "";
                 s.style.top = "";
                 s.style.left = "";
                 s.style.margin = "";
                 s.style.zIndex = "";
-            });
-
-            // Flush styles so resets apply instantly (no transition)
-            void grid.offsetHeight;
-
-            // Show only ~8 slides near the selected book (by index, no getBoundingClientRect)
-            var nearRange = 5;
-            slides.forEach(function (s, i) {
-                s.style.visibility = (Math.abs(i - selectedIdx) <= nearRange) ? "" : "hidden";
+                s.style.visibility = "";
             });
 
             document.body.classList.remove("detail-active");
             filterBar.classList.remove("hidden");
-            applyFilters();
             currentHovered = null;
             selectedSlide = null;
             isDetailOpen = false;
-            isAnimating = false;
 
-            // Next frame: re-enable transitions + scroll
+            // Next frame: make grid visible, re-enable transitions, scroll
             requestAnimationFrame(function () {
+                grid.style.visibility = "";
+                applyFilters();
                 if (bookItem) bookItem.style.transition = "";
                 slides.forEach(function (s) {
                     s.style.transition = "";
                 });
+                isAnimating = false;
                 if (scrollTarget) {
                     var rect = scrollTarget.getBoundingClientRect();
                     var scrollY = window.scrollY + rect.top - (window.innerHeight / 2) + (rect.height / 2);
                     window.scrollTo({ top: scrollY, behavior: "smooth" });
                 }
             });
-        }
+        }, 250);
     }
 
     document.addEventListener("keydown", function (e) {
