@@ -15,24 +15,35 @@
     var slides = grid.querySelectorAll(".book-slide");
 
     // ─── Scroll-following perspective origin (rAF-throttled) ───
+    // Also culls off-screen books to reduce GPU compositing layers
     var perspTicking = false;
-    function updatePerspOrigin() {
+    var CULL_MARGIN = 600; // px beyond viewport to keep rendered
+
+    function updatePerspAndCull() {
         var rect = perspWrapper.getBoundingClientRect();
         var viewCenterY = window.innerHeight / 2;
         var originY = viewCenterY - rect.top;
         originY = Math.max(0, Math.min(rect.height, originY));
         perspWrapper.style.perspectiveOrigin = "50% " + (originY / rect.height * 100) + "%";
+
+        var vh = window.innerHeight;
+        for (var i = 0; i < slides.length; i++) {
+            var sr = slides[i].getBoundingClientRect();
+            var visible = sr.bottom > -CULL_MARGIN && sr.top < vh + CULL_MARGIN;
+            slides[i].style.visibility = visible ? "" : "hidden";
+        }
+
         perspTicking = false;
     }
     function onScrollResize() {
         if (!perspTicking) {
             perspTicking = true;
-            requestAnimationFrame(updatePerspOrigin);
+            requestAnimationFrame(updatePerspAndCull);
         }
     }
     window.addEventListener("scroll", onScrollResize, { passive: true });
     window.addEventListener("resize", onScrollResize);
-    updatePerspOrigin();
+    updatePerspAndCull();
 
     // ─── Adjust faces based on spine image ratio ───
     document.querySelectorAll(".book-item").forEach(function (bookEl) {
@@ -64,13 +75,16 @@
     // ─── Hover (on .book-slide wrappers) ───
     var currentHovered = null;
     var spinesList = grid.querySelectorAll(".book3d-spine");
+    var hoverTicking = false;
+    var hoverX = 0, hoverY = 0;
 
-    document.addEventListener("mousemove", function (e) {
+    function updateHover() {
+        hoverTicking = false;
         if (isDetailOpen) return;
-        var mx = e.clientX, my = e.clientY, found = null;
+        var found = null;
         for (var i = 0; i < spinesList.length; i++) {
             var rect = spinesList[i].getBoundingClientRect();
-            if (mx >= rect.left && mx <= rect.right && my >= rect.top && my <= rect.bottom) {
+            if (hoverX >= rect.left && hoverX <= rect.right && hoverY >= rect.top && hoverY <= rect.bottom) {
                 found = spinesList[i].closest(".book-slide");
                 break;
             }
@@ -79,6 +93,15 @@
             if (currentHovered) currentHovered.classList.remove("hovered");
             if (found) found.classList.add("hovered");
             currentHovered = found;
+        }
+    }
+
+    document.addEventListener("mousemove", function (e) {
+        hoverX = e.clientX;
+        hoverY = e.clientY;
+        if (!hoverTicking) {
+            hoverTicking = true;
+            requestAnimationFrame(updateHover);
         }
     });
 

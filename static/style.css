@@ -737,7 +737,6 @@ main {
 .book3d {
     position: relative;
     transform-style: preserve-3d;
-    transition: transform 0.1s ease-out;
 }
 
 .book3d-face {
@@ -947,7 +946,6 @@ main {
 /* Slide wrapper: screen-space movement (separate from 3D) */
 .book-slide {
     transform-style: preserve-3d;
-    transition: transform 0.5s ease, opacity 0.4s ease;
 }
 
 .book-slide:first-child {
@@ -956,6 +954,11 @@ main {
 
 .book-slide + .book-slide {
     margin-top: -270px;
+}
+
+.book-slide.dismiss-up,
+.book-slide.dismiss-down {
+    transition: transform 0.5s ease, opacity 0.4s ease;
 }
 
 .book-slide.dismiss-up {
