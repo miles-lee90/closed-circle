@@ -14,9 +14,8 @@
     var detailContainer = document.getElementById("book-detail-container");
     var slides = grid.querySelectorAll(".book-slide");
 
-    // ─── Scroll-following perspective origin (rAF-throttled) ───
+    // ─── Scroll-following perspective origin (rAF-throttled, no reflow) ───
     var perspTicking = false;
-    // Cache wrapper offset to avoid getBoundingClientRect in scroll handler
     var wrapperTop = 0, wrapperHeight = 0;
     function measureWrapper() {
         wrapperTop = perspWrapper.offsetTop;
@@ -80,7 +79,7 @@
         if (spineImg.complete) adjust(); else spineImg.addEventListener("load", adjust);
     });
 
-    // ─── Hover (on .book-slide wrappers) ───
+    // ─── Hover (rAF-throttled) ───
     var currentHovered = null;
     var spinesList = grid.querySelectorAll(".book3d-spine");
     var hoverTicking = false;
@@ -176,62 +175,6 @@
     }
     function lerp(a, b, t) { return a + (b - a) * t; }
 
-    // Quaternion helpers for smooth shortest-path rotation
-    function eulerToQuat(rx, ry, rz) {
-        var deg = Math.PI / 180;
-        var cx = Math.cos(rx * deg / 2), sx = Math.sin(rx * deg / 2);
-        var cy = Math.cos(ry * deg / 2), sy = Math.sin(ry * deg / 2);
-        var cz = Math.cos(rz * deg / 2), sz = Math.sin(rz * deg / 2);
-        return {
-            w: cx * cy * cz + sx * sy * sz,
-            x: sx * cy * cz - cx * sy * sz,
-            y: cx * sy * cz + sx * cy * sz,
-            z: cx * cy * sz - sx * sy * cz
-        };
-    }
-    function quatSlerp(a, b, t) {
-        var dot = a.w * b.w + a.x * b.x + a.y * b.y + a.z * b.z;
-        if (dot < 0) { b = { w: -b.w, x: -b.x, y: -b.y, z: -b.z }; dot = -dot; }
-        if (dot > 0.9995) {
-            return {
-                w: a.w + (b.w - a.w) * t,
-                x: a.x + (b.x - a.x) * t,
-                y: a.y + (b.y - a.y) * t,
-                z: a.z + (b.z - a.z) * t
-            };
-        }
-        var theta = Math.acos(Math.min(dot, 1));
-        var sinT = Math.sin(theta);
-        var wa = Math.sin((1 - t) * theta) / sinT;
-        var wb = Math.sin(t * theta) / sinT;
-        return {
-            w: wa * a.w + wb * b.w,
-            x: wa * a.x + wb * b.x,
-            y: wa * a.y + wb * b.y,
-            z: wa * a.z + wb * b.z
-        };
-    }
-    function quatToMatrix3d(q) {
-        var x = q.x, y = q.y, z = q.z, w = q.w;
-        var x2 = x + x, y2 = y + y, z2 = z + z;
-        var xx = x * x2, xy = x * y2, xz = x * z2;
-        var yy = y * y2, yz = y * z2, zz = z * z2;
-        var wx = w * x2, wy = w * y2, wz = w * z2;
-        return [
-            1 - (yy + zz), xy + wz, xz - wy, 0,
-            xy - wz, 1 - (xx + zz), yz + wx, 0,
-            xz + wy, yz - wx, 1 - (xx + yy), 0,
-            0, 0, 0, 1
-        ];
-    }
-    function scaleMatrix3d(m, s) {
-        return "matrix3d(" +
-            (m[0]*s)+","+(m[1]*s)+","+(m[2]*s)+",0,"+
-            (m[4]*s)+","+(m[5]*s)+","+(m[6]*s)+",0,"+
-            (m[8]*s)+","+(m[9]*s)+","+(m[10]*s)+",0,"+
-            "0,0,0,1)";
-    }
-
     function createExtraFaces(bookItem) {
         var bw = bookItem.offsetWidth;
         var bh = bookItem.offsetHeight;
@@ -269,7 +212,7 @@
         var book = BOOKS[idx];
         var bookItem = slide.querySelector(".book-item");
 
-        // Measure position BEFORE any DOM changes (no reflow during animation)
+        // Measure position BEFORE any DOM changes
         var slideRect = slide.getBoundingClientRect();
         var isMobile = window.innerWidth <= 768;
         var endLeft = isMobile
@@ -290,12 +233,8 @@
             s.classList.add(i < selectedIdx ? "dismiss-up" : "dismiss-down");
         });
 
-        // Phase 2: Wait for dismiss transition to end
-        var dismissDone = false;
-        function startRotation() {
-            if (dismissDone) return;
-            dismissDone = true;
-
+        // Phase 2: After dismiss, rotate + move
+        setTimeout(function () {
             allSlides.forEach(function (s) {
                 if (s !== slide) s.style.visibility = "hidden";
             });
@@ -305,9 +244,8 @@
             slide.style.zIndex = "200";
 
             var duration = 800;
-            var startScale = 1.33, endScale = 1;
-            var qStart = eulerToQuat(-90, -180, 90);
-            var qEnd = eulerToQuat(3, -35, 0);
+            var start = { scale: 1.33, rx: -90, ry: -180, rz: 90 };
+            var end = { scale: 1, rx: 3, ry: -35, rz: 0 };
             var startTime = null;
 
             function frame(ts) {
@@ -315,38 +253,25 @@
                 var t = Math.min((ts - startTime) / duration, 1);
                 var et = easeInOutCubic(t);
 
-                var sc = lerp(startScale, endScale, et);
-                var q = quatSlerp(qStart, qEnd, et);
-                var m = quatToMatrix3d(q);
-                bookItem.style.transform = scaleMatrix3d(m, sc);
+                var sc = lerp(start.scale, end.scale, et);
+                var rx = lerp(start.rx, end.rx, et);
+                var ry = lerp(start.ry, end.ry, et);
+                var rz = lerp(start.rz, end.rz, et);
 
+                bookItem.style.transform = "scale(" + sc.toFixed(3) + ") rotateX(" + rx.toFixed(1) + "deg) rotateY(" + ry.toFixed(1) + "deg) rotateZ(" + rz.toFixed(1) + "deg)";
                 slide.style.transform = "translate(" + (dx * et).toFixed(1) + "px, " + (dy * et).toFixed(1) + "px)";
 
                 if (t < 1) {
                     requestAnimationFrame(frame);
                 } else {
-                    // Stay in flow with translate — no fixed switch, no perspective jump
                     showInfo(book, bookItem);
                 }
             }
             requestAnimationFrame(frame);
-        }
-
-        // Use transitionend on a dismiss slide, with setTimeout fallback
-        var dismissTarget = allSlides[selectedIdx > 0 ? 0 : allSlides.length - 1];
-        if (dismissTarget && dismissTarget !== slide) {
-            dismissTarget.addEventListener("transitionend", function handler(e) {
-                if (e.propertyName !== "transform") return;
-                dismissTarget.removeEventListener("transitionend", handler);
-                startRotation();
-            });
-        }
-        // Fallback in case transitionend doesn't fire (no other slides, etc.)
-        setTimeout(startRotation, 550);
+        }, 500);
     }
 
     function showInfo(book, bookItem) {
-        // Build hero-feature layout (book left, info right)
         var nationalityLabel = book.nationality === "JP"
             ? '<span class="hero-label">일본 미스터리</span>'
             : '<span class="hero-label hero-label-kr">한국 미스터리</span>';
@@ -492,25 +417,39 @@
         if (isAnimating || !isDetailOpen) return;
         isAnimating = true;
 
-        // Fade out detail view (info panel + selected book)
+        // Fade out info panel
         var panel = detailContainer.querySelector(".detail-info-panel");
         if (panel) panel.classList.remove("visible");
-        if (selectedSlide) {
-            selectedSlide.style.transition = "opacity 0.2s ease";
-            selectedSlide.style.opacity = "0";
+
+        // Rotate book back to stack position
+        var bookItem = selectedSlide ? selectedSlide.querySelector(".book-item") : null;
+        if (bookItem) {
+            var duration = 700;
+            var startTime = null;
+            var start = { scale: 1, rx: currentRotX, ry: currentRotY, rz: 0 };
+            var end = { scale: 1.33, rx: -90, ry: -180, rz: 90 };
+
+            function frame(ts) {
+                if (!startTime) startTime = ts;
+                var t = Math.min((ts - startTime) / duration, 1);
+                var et = easeInOutCubic(t);
+                bookItem.style.transform = "scale(" + lerp(start.scale, end.scale, et).toFixed(3) + ") rotateX(" + lerp(start.rx, end.rx, et).toFixed(1) + "deg) rotateY(" + lerp(start.ry, end.ry, et).toFixed(1) + "deg) rotateZ(" + lerp(start.rz, end.rz, et).toFixed(1) + "deg)";
+                if (t < 1) requestAnimationFrame(frame);
+                else finishClose();
+            }
+            requestAnimationFrame(frame);
+        } else {
+            finishClose();
         }
 
-        // After fade, instantly restore stack
-        setTimeout(function () {
+        function finishClose() {
             if (dragCleanup) dragCleanup();
             detailContainer.innerHTML = "";
 
             var scrollTarget = selectedSlide;
             var selectedIdx = scrollTarget ? Array.from(slides).indexOf(scrollTarget) : -1;
-            var bookItem = scrollTarget ? scrollTarget.querySelector(".book-item") : null;
 
-            // Disable ALL transitions before resetting
-            grid.style.visibility = "hidden";
+            // Disable transitions on book-item and all slides before resetting
             if (bookItem) {
                 bookItem.style.transition = "none";
                 removeExtraFaces(bookItem);
@@ -520,45 +459,43 @@
             slides.forEach(function (s) {
                 s.style.transition = "none";
                 s.classList.remove("dismiss-up", "dismiss-down", "hovered");
-                s.style.opacity = "";
                 s.style.transform = "";
                 s.style.position = "";
                 s.style.top = "";
                 s.style.left = "";
                 s.style.margin = "";
                 s.style.zIndex = "";
-                s.style.visibility = "";
+                // Only show slides near selected (avoid 44 GPU layers at once)
+                s.style.visibility = (Math.abs(Array.from(slides).indexOf(s) - selectedIdx) <= 5) ? "" : "hidden";
             });
 
             document.body.classList.remove("detail-active");
             filterBar.classList.remove("hidden");
+            applyFilters();
             currentHovered = null;
             selectedSlide = null;
             isDetailOpen = false;
+            isAnimating = false;
 
-            // Next frame: make grid visible, re-enable transitions, scroll
+            // Next frame: re-enable transitions, scroll to book
             requestAnimationFrame(function () {
-                grid.style.visibility = "";
-                applyFilters();
                 if (bookItem) bookItem.style.transition = "";
                 slides.forEach(function (s) {
                     s.style.transition = "";
                 });
-                isAnimating = false;
                 if (scrollTarget) {
                     var rect = scrollTarget.getBoundingClientRect();
                     var scrollY = window.scrollY + rect.top - (window.innerHeight / 2) + (rect.height / 2);
                     window.scrollTo({ top: scrollY, behavior: "smooth" });
                 }
             });
-        }, 250);
+        }
     }
 
     document.addEventListener("keydown", function (e) {
         if (e.key === "Escape" && isDetailOpen && !isAnimating) closeDetail();
     });
 
-    // Browser back button closes detail
     window.addEventListener("popstate", function () {
         if (isDetailOpen && !isAnimating) closeDetail();
     });
