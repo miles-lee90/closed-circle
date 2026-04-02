@@ -1,4 +1,4 @@
-var CACHE_NAME = "cc-v2";
+var CACHE_NAME = "cc-v3";
 var STATIC_ASSETS = [
     "/closed-circle/",
     "/closed-circle/index.html",
@@ -53,11 +53,17 @@ self.addEventListener("fetch", function (e) {
         return;
     }
 
-    // Static assets: cache-first
+    // Static assets: stale-while-revalidate (serve cached, update in background)
     if (url.pathname.indexOf("/static/") !== -1) {
         e.respondWith(
-            caches.match(e.request).then(function (resp) {
-                return resp || fetch(e.request);
+            caches.open(CACHE_NAME).then(function (cache) {
+                return cache.match(e.request).then(function (cached) {
+                    var fetchPromise = fetch(e.request).then(function (netResp) {
+                        if (netResp.ok) cache.put(e.request, netResp.clone());
+                        return netResp;
+                    }).catch(function () { return cached; });
+                    return cached || fetchPromise;
+                });
             })
         );
         return;

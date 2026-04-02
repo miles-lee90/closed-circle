@@ -75,7 +75,7 @@ var BOOKS = [
     {% endfor %}
 ];
 </script>
-<script src="static/books.js"></script>
+<script src="static/books.js?v={{ updated_at|replace(' ', '')|replace(':', '') }}"></script>
 <script>
 (function () {
     function escapeHtml(s) {

@@ -16,23 +16,42 @@
 
     // ─── Scroll-following perspective origin (rAF-throttled) ───
     var perspTicking = false;
+    // Cache wrapper offset to avoid getBoundingClientRect in scroll handler
+    var wrapperTop = 0, wrapperHeight = 0;
+    function measureWrapper() {
+        wrapperTop = perspWrapper.offsetTop;
+        wrapperHeight = perspWrapper.offsetHeight;
+    }
+    measureWrapper();
+
     function updatePerspOrigin() {
-        var rect = perspWrapper.getBoundingClientRect();
-        var viewCenterY = window.innerHeight / 2;
-        var originY = viewCenterY - rect.top;
-        originY = Math.max(0, Math.min(rect.height, originY));
-        perspWrapper.style.perspectiveOrigin = "50% " + (originY / rect.height * 100) + "%";
+        var scrollY = window.scrollY || window.pageYOffset;
+        var viewCenterY = scrollY + window.innerHeight / 2;
+        var originY = viewCenterY - wrapperTop;
+        originY = Math.max(0, Math.min(wrapperHeight, originY));
+        perspWrapper.style.perspectiveOrigin = "50% " + (originY / wrapperHeight * 100) + "%";
         perspTicking = false;
     }
-    function onScrollResize() {
+    function onScroll() {
         if (!perspTicking) {
             perspTicking = true;
             requestAnimationFrame(updatePerspOrigin);
         }
     }
-    window.addEventListener("scroll", onScrollResize, { passive: true });
-    window.addEventListener("resize", onScrollResize);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", function () {
+        measureWrapper();
+        updatePerspOrigin();
+    });
     updatePerspOrigin();
+
+    // ─── Viewport culling via IntersectionObserver ───
+    var cullObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            entry.target.style.visibility = entry.isIntersecting ? "" : "hidden";
+        });
+    }, { rootMargin: "600px 0px" });
+    slides.forEach(function (s) { cullObserver.observe(s); });
 
     // ─── Adjust faces based on spine image ratio ───
     document.querySelectorAll(".book-item").forEach(function (bookEl) {
@@ -64,13 +83,16 @@
     // ─── Hover (on .book-slide wrappers) ───
     var currentHovered = null;
     var spinesList = grid.querySelectorAll(".book3d-spine");
+    var hoverTicking = false;
+    var hoverX = 0, hoverY = 0;
 
-    document.addEventListener("mousemove", function (e) {
+    function updateHover() {
+        hoverTicking = false;
         if (isDetailOpen) return;
-        var mx = e.clientX, my = e.clientY, found = null;
+        var found = null;
         for (var i = 0; i < spinesList.length; i++) {
             var rect = spinesList[i].getBoundingClientRect();
-            if (mx >= rect.left && mx <= rect.right && my >= rect.top && my <= rect.bottom) {
+            if (hoverX >= rect.left && hoverX <= rect.right && hoverY >= rect.top && hoverY <= rect.bottom) {
                 found = spinesList[i].closest(".book-slide");
                 break;
             }
@@ -79,6 +101,15 @@
             if (currentHovered) currentHovered.classList.remove("hovered");
             if (found) found.classList.add("hovered");
             currentHovered = found;
+        }
+    }
+
+    document.addEventListener("mousemove", function (e) {
+        hoverX = e.clientX;
+        hoverY = e.clientY;
+        if (!hoverTicking) {
+            hoverTicking = true;
+            requestAnimationFrame(updateHover);
         }
     });
 
@@ -145,6 +176,62 @@
     }
     function lerp(a, b, t) { return a + (b - a) * t; }
 
+    // Quaternion helpers for smooth shortest-path rotation
+    function eulerToQuat(rx, ry, rz) {
+        var deg = Math.PI / 180;
+        var cx = Math.cos(rx * deg / 2), sx = Math.sin(rx * deg / 2);
+        var cy = Math.cos(ry * deg / 2), sy = Math.sin(ry * deg / 2);
+        var cz = Math.cos(rz * deg / 2), sz = Math.sin(rz * deg / 2);
+        return {
+            w: cx * cy * cz + sx * sy * sz,
+            x: sx * cy * cz - cx * sy * sz,
+            y: cx * sy * cz + sx * cy * sz,
+            z: cx * cy * sz - sx * sy * cz
+        };
+    }
+    function quatSlerp(a, b, t) {
+        var dot = a.w * b.w + a.x * b.x + a.y * b.y + a.z * b.z;
+        if (dot < 0) { b = { w: -b.w, x: -b.x, y: -b.y, z: -b.z }; dot = -dot; }
+        if (dot > 0.9995) {
+            return {
+                w: a.w + (b.w - a.w) * t,
+                x: a.x + (b.x - a.x) * t,
+                y: a.y + (b.y - a.y) * t,
+                z: a.z + (b.z - a.z) * t
+            };
+        }
+        var theta = Math.acos(Math.min(dot, 1));
+        var sinT = Math.sin(theta);
+        var wa = Math.sin((1 - t) * theta) / sinT;
+        var wb = Math.sin(t * theta) / sinT;
+        return {
+            w: wa * a.w + wb * b.w,
+            x: wa * a.x + wb * b.x,
+            y: wa * a.y + wb * b.y,
+            z: wa * a.z + wb * b.z
+        };
+    }
+    function quatToMatrix3d(q) {
+        var x = q.x, y = q.y, z = q.z, w = q.w;
+        var x2 = x + x, y2 = y + y, z2 = z + z;
+        var xx = x * x2, xy = x * y2, xz = x * z2;
+        var yy = y * y2, yz = y * z2, zz = z * z2;
+        var wx = w * x2, wy = w * y2, wz = w * z2;
+        return [
+            1 - (yy + zz), xy + wz, xz - wy, 0,
+            xy - wz, 1 - (xx + zz), yz + wx, 0,
+            xz + wy, yz - wx, 1 - (xx + yy), 0,
+            0, 0, 0, 1
+        ];
+    }
+    function scaleMatrix3d(m, s) {
+        return "matrix3d(" +
+            (m[0]*s)+","+(m[1]*s)+","+(m[2]*s)+",0,"+
+            (m[4]*s)+","+(m[5]*s)+","+(m[6]*s)+",0,"+
+            (m[8]*s)+","+(m[9]*s)+","+(m[10]*s)+",0,"+
+            "0,0,0,1)";
+    }
+
     function createExtraFaces(bookItem) {
         var bw = bookItem.offsetWidth;
         var bh = bookItem.offsetHeight;
@@ -181,20 +268,34 @@
         history.pushState({ detail: true }, "");
         var book = BOOKS[idx];
         var bookItem = slide.querySelector(".book-item");
+
+        // Measure position BEFORE any DOM changes (no reflow during animation)
+        var slideRect = slide.getBoundingClientRect();
+        var isMobile = window.innerWidth <= 768;
+        var endLeft = isMobile
+            ? Math.round((window.innerWidth - bookItem.offsetWidth) / 2)
+            : Math.round(window.innerWidth * 0.22);
+        var endTop = isMobile ? 80 : 160;
+        var dx = endLeft - slideRect.left;
+        var dy = endTop - slideRect.top;
+
         createExtraFaces(bookItem);
         var allSlides = Array.from(slides);
         var selectedIdx = allSlides.indexOf(slide);
 
-        // Phase 1: Dismiss other books (wrapper translateY, no 3D interference)
+        // Phase 1: Dismiss other books
         filterBar.classList.add("hidden");
         allSlides.forEach(function (s, i) {
             if (s === slide) return;
             s.classList.add(i < selectedIdx ? "dismiss-up" : "dismiss-down");
         });
 
-        // Phase 2: After dismiss, rotate + move simultaneously
-        setTimeout(function () {
-            // Hide dismissed
+        // Phase 2: Wait for dismiss transition to end
+        var dismissDone = false;
+        function startRotation() {
+            if (dismissDone) return;
+            dismissDone = true;
+
             allSlides.forEach(function (s) {
                 if (s !== slide) s.style.visibility = "hidden";
             });
@@ -203,21 +304,10 @@
             slide.style.transition = "none";
             slide.style.zIndex = "200";
 
-            var endLeft = Math.round(window.innerWidth * 0.22);
-            var endTop = 160;
-
-            // Measure slide's pure box position (remove 3D transform temporarily)
-            var saved = bookItem.style.transform;
-            bookItem.style.transform = "none";
-            var boxRect = slide.getBoundingClientRect();
-            bookItem.style.transform = saved;
-
-            var dx = endLeft - boxRect.left;
-            var dy = endTop - boxRect.top;
-
-            var duration = 1000;
-            var start = { scale: 1.33, rx: -90, ry: -180, rz: 90 };
-            var end = { scale: 1, rx: 3, ry: -35, rz: 0 };
+            var duration = 800;
+            var startScale = 1.33, endScale = 1;
+            var qStart = eulerToQuat(-90, -180, 90);
+            var qEnd = eulerToQuat(3, -35, 0);
             var startTime = null;
 
             function frame(ts) {
@@ -225,12 +315,10 @@
                 var t = Math.min((ts - startTime) / duration, 1);
                 var et = easeInOutCubic(t);
 
-                var sc = lerp(start.scale, end.scale, et);
-                var rx = lerp(start.rx, end.rx, et);
-                var ry = lerp(start.ry, end.ry, et);
-                var rz = lerp(start.rz, end.rz, et);
-
-                bookItem.style.transform = "scale(" + sc.toFixed(3) + ") rotateX(" + rx.toFixed(1) + "deg) rotateY(" + ry.toFixed(1) + "deg) rotateZ(" + rz.toFixed(1) + "deg)";
+                var sc = lerp(startScale, endScale, et);
+                var q = quatSlerp(qStart, qEnd, et);
+                var m = quatToMatrix3d(q);
+                bookItem.style.transform = scaleMatrix3d(m, sc);
 
                 slide.style.transform = "translate(" + (dx * et).toFixed(1) + "px, " + (dy * et).toFixed(1) + "px)";
 
@@ -242,7 +330,19 @@
                 }
             }
             requestAnimationFrame(frame);
-        }, 500);
+        }
+
+        // Use transitionend on a dismiss slide, with setTimeout fallback
+        var dismissTarget = allSlides[selectedIdx > 0 ? 0 : allSlides.length - 1];
+        if (dismissTarget && dismissTarget !== slide) {
+            dismissTarget.addEventListener("transitionend", function handler(e) {
+                if (e.propertyName !== "transform") return;
+                dismissTarget.removeEventListener("transitionend", handler);
+                startRotation();
+            });
+        }
+        // Fallback in case transitionend doesn't fire (no other slides, etc.)
+        setTimeout(startRotation, 550);
     }
 
     function showInfo(book, bookItem) {
@@ -392,75 +492,66 @@
         if (isAnimating || !isDetailOpen) return;
         isAnimating = true;
 
-        // Fade out info
+        // Fade out detail view (info panel + selected book)
         var panel = detailContainer.querySelector(".detail-info-panel");
         if (panel) panel.classList.remove("visible");
-
-        // Rotate book back
-        var bookItem = selectedSlide ? selectedSlide.querySelector(".book-item") : null;
-        if (bookItem) {
-            var duration = 700;
-            var startTime = null;
-            var start = { scale: 1, rx: currentRotX, ry: currentRotY, rz: 0 };
-            var end = { scale: 1.33, rx: -90, ry: -180, rz: 90 };
-
-            function frame(ts) {
-                if (!startTime) startTime = ts;
-                var t = Math.min((ts - startTime) / duration, 1);
-                var et = easeInOutCubic(t);
-                bookItem.style.transform = "scale(" + lerp(start.scale, end.scale, et).toFixed(3) + ") rotateX(" + lerp(start.rx, end.rx, et).toFixed(1) + "deg) rotateY(" + lerp(start.ry, end.ry, et).toFixed(1) + "deg) rotateZ(" + lerp(start.rz, end.rz, et).toFixed(1) + "deg)";
-                if (t < 1) requestAnimationFrame(frame);
-                else finishClose();
-            }
-            requestAnimationFrame(frame);
-        } else {
-            finishClose();
+        if (selectedSlide) {
+            selectedSlide.style.transition = "opacity 0.2s ease";
+            selectedSlide.style.opacity = "0";
         }
 
-        function finishClose() {
+        // After fade, instantly restore stack
+        setTimeout(function () {
             if (dragCleanup) dragCleanup();
             detailContainer.innerHTML = "";
-            document.body.classList.remove("detail-active");
 
-            // Remember which slide was selected
             var scrollTarget = selectedSlide;
+            var selectedIdx = scrollTarget ? Array.from(slides).indexOf(scrollTarget) : -1;
+            var bookItem = scrollTarget ? scrollTarget.querySelector(".book-item") : null;
 
-            // Restore all slides
+            // Disable ALL transitions before resetting
+            grid.style.visibility = "hidden";
+            if (bookItem) {
+                bookItem.style.transition = "none";
+                removeExtraFaces(bookItem);
+                bookItem.style.transform = "";
+                bookItem.style.cursor = "";
+            }
             slides.forEach(function (s) {
+                s.style.transition = "none";
                 s.classList.remove("dismiss-up", "dismiss-down", "hovered");
-                s.style.visibility = "";
+                s.style.opacity = "";
                 s.style.transform = "";
                 s.style.position = "";
                 s.style.top = "";
                 s.style.left = "";
                 s.style.margin = "";
                 s.style.zIndex = "";
-                s.style.transition = "";
+                s.style.visibility = "";
             });
 
-            // Reset book transform
-            if (bookItem) {
-                removeExtraFaces(bookItem);
-                bookItem.style.transform = "";
-                bookItem.style.cursor = "";
-            }
-
+            document.body.classList.remove("detail-active");
             filterBar.classList.remove("hidden");
-            applyFilters();
             currentHovered = null;
             selectedSlide = null;
             isDetailOpen = false;
-            isAnimating = false;
 
-            // Scroll to center the selected book in viewport
-            if (scrollTarget) {
-                requestAnimationFrame(function () {
+            // Next frame: make grid visible, re-enable transitions, scroll
+            requestAnimationFrame(function () {
+                grid.style.visibility = "";
+                applyFilters();
+                if (bookItem) bookItem.style.transition = "";
+                slides.forEach(function (s) {
+                    s.style.transition = "";
+                });
+                isAnimating = false;
+                if (scrollTarget) {
                     var rect = scrollTarget.getBoundingClientRect();
                     var scrollY = window.scrollY + rect.top - (window.innerHeight / 2) + (rect.height / 2);
                     window.scrollTo({ top: scrollY, behavior: "smooth" });
-                });
-            }
-        }
+                }
+            });
+        }, 250);
     }
 
     document.addEventListener("keydown", function (e) {

@@ -23,7 +23,7 @@ def test_books_html_has_books_js_array():
 
 def test_books_html_loads_books_js():
     html = (DOCS_DIR / "index.html").read_text(encoding="utf-8")
-    assert 'src="static/books.js"' in html
+    assert 'src="static/books.js?' in html
 
 
 def test_books_html_has_data_idx_on_spines():
