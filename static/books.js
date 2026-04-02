@@ -15,35 +15,43 @@
     var slides = grid.querySelectorAll(".book-slide");
 
     // ─── Scroll-following perspective origin (rAF-throttled) ───
-    // Also culls off-screen books to reduce GPU compositing layers
     var perspTicking = false;
-    var CULL_MARGIN = 600; // px beyond viewport to keep rendered
+    // Cache wrapper offset to avoid getBoundingClientRect in scroll handler
+    var wrapperTop = 0, wrapperHeight = 0;
+    function measureWrapper() {
+        wrapperTop = perspWrapper.offsetTop;
+        wrapperHeight = perspWrapper.offsetHeight;
+    }
+    measureWrapper();
 
-    function updatePerspAndCull() {
-        var rect = perspWrapper.getBoundingClientRect();
-        var viewCenterY = window.innerHeight / 2;
-        var originY = viewCenterY - rect.top;
-        originY = Math.max(0, Math.min(rect.height, originY));
-        perspWrapper.style.perspectiveOrigin = "50% " + (originY / rect.height * 100) + "%";
-
-        var vh = window.innerHeight;
-        for (var i = 0; i < slides.length; i++) {
-            var sr = slides[i].getBoundingClientRect();
-            var visible = sr.bottom > -CULL_MARGIN && sr.top < vh + CULL_MARGIN;
-            slides[i].style.visibility = visible ? "" : "hidden";
-        }
-
+    function updatePerspOrigin() {
+        var scrollY = window.scrollY || window.pageYOffset;
+        var viewCenterY = scrollY + window.innerHeight / 2;
+        var originY = viewCenterY - wrapperTop;
+        originY = Math.max(0, Math.min(wrapperHeight, originY));
+        perspWrapper.style.perspectiveOrigin = "50% " + (originY / wrapperHeight * 100) + "%";
         perspTicking = false;
     }
-    function onScrollResize() {
+    function onScroll() {
         if (!perspTicking) {
             perspTicking = true;
-            requestAnimationFrame(updatePerspAndCull);
+            requestAnimationFrame(updatePerspOrigin);
         }
     }
-    window.addEventListener("scroll", onScrollResize, { passive: true });
-    window.addEventListener("resize", onScrollResize);
-    updatePerspAndCull();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", function () {
+        measureWrapper();
+        updatePerspOrigin();
+    });
+    updatePerspOrigin();
+
+    // ─── Viewport culling via IntersectionObserver ───
+    var cullObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            entry.target.style.visibility = entry.isIntersecting ? "" : "hidden";
+        });
+    }, { rootMargin: "600px 0px" });
+    slides.forEach(function (s) { cullObserver.observe(s); });
 
     // ─── Adjust faces based on spine image ratio ───
     document.querySelectorAll(".book-item").forEach(function (bookEl) {
