@@ -532,20 +532,14 @@
                 bookItem.style.cursor = "";
             }
 
-            // Remember which slide was selected
             var scrollTarget = selectedSlide;
+            var vh = window.innerHeight;
 
-            // Restore all slides without triggering reverse transitions:
-            // 1. Force no transition while resetting
+            // Frame 1: Reset all slides with transition disabled,
+            // but only show slides near the viewport (manual cull)
             slides.forEach(function (s) {
                 s.style.transition = "none";
-            });
-
-            // 2. Force style flush, then reset in a single batch
-            void grid.offsetHeight;
-            slides.forEach(function (s) {
                 s.classList.remove("dismiss-up", "dismiss-down", "hovered");
-                s.style.visibility = "";
                 s.style.transform = "";
                 s.style.position = "";
                 s.style.top = "";
@@ -553,12 +547,13 @@
                 s.style.margin = "";
                 s.style.zIndex = "";
             });
+            // Force flush so class/style changes apply without transition
+            void grid.offsetHeight;
 
-            // 3. Re-enable transitions next frame
-            requestAnimationFrame(function () {
-                slides.forEach(function (s) {
-                    s.style.transition = "";
-                });
+            // Only make viewport-adjacent slides visible (avoid 44 GPU layers at once)
+            slides.forEach(function (s) {
+                var r = s.getBoundingClientRect();
+                s.style.visibility = (r.bottom > -600 && r.top < vh + 600) ? "" : "hidden";
             });
 
             document.body.classList.remove("detail-active");
@@ -569,14 +564,17 @@
             isDetailOpen = false;
             isAnimating = false;
 
-            // Scroll to center the selected book in viewport
-            if (scrollTarget) {
-                requestAnimationFrame(function () {
-                    var rect = scrollTarget.getBoundingClientRect();
-                    var scrollY = window.scrollY + rect.top - (window.innerHeight / 2) + (rect.height / 2);
-                    window.scrollTo({ top: scrollY, behavior: "smooth" });
+            // Frame 2: Re-enable transitions + scroll
+            requestAnimationFrame(function () {
+                slides.forEach(function (s) {
+                    s.style.transition = "";
                 });
-            }
+                if (scrollTarget) {
+                    var rect = scrollTarget.getBoundingClientRect();
+                    var scrollY = window.scrollY + rect.top - (vh / 2) + (rect.height / 2);
+                    window.scrollTo({ top: scrollY, behavior: "smooth" });
+                }
+            });
         }
     }
 
