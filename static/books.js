@@ -474,8 +474,8 @@
                 bookItem.style.transform = "scale(" + lerp(start.scale, end.scale, et).toFixed(3) + ") rotateX(" + lerp(start.rx, end.rx, et).toFixed(1) + "deg) rotateY(" + lerp(start.ry, end.ry, et).toFixed(1) + "deg) rotateZ(" + lerp(start.rz, end.rz, et).toFixed(1) + "deg)";
                 selectedSlide.style.transform = "translate(" + (openDx * (1 - et)).toFixed(1) + "px, " + (openDy * (1 - et)).toFixed(1) + "px)";
 
-                // At 300ms, start bringing other books back
-                if (elapsed >= 300) restoreSlides();
+                // At 550ms (book almost back), start bringing other books back
+                if (elapsed >= 550) restoreSlides();
 
                 if (t < 1) {
                     requestAnimationFrame(frame);
