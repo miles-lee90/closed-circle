@@ -452,7 +452,7 @@
 
             var scrollTarget = selectedSlide;
 
-            // Only book-item needs transition disabled (prevent euler→CSS pop)
+            // Book-item: disable transition, reset transform
             if (bookItem) {
                 bookItem.style.transition = "none";
                 removeExtraFaces(bookItem);
@@ -460,9 +460,8 @@
                 bookItem.style.cursor = "";
             }
 
-            // Restore slides — CSS transition on .book-slide animates them back smoothly
+            // Step 1: Make dismissed slides visible (still at ±500px, opacity 0)
             slides.forEach(function (s) {
-                s.classList.remove("dismiss-up", "dismiss-down", "hovered");
                 s.style.visibility = "";
                 s.style.transform = "";
                 s.style.position = "";
@@ -474,19 +473,25 @@
 
             document.body.classList.remove("detail-active");
             filterBar.classList.remove("hidden");
-            applyFilters();
-            currentHovered = null;
-            selectedSlide = null;
-            isDetailOpen = false;
-            isAnimating = false;
 
-            // Re-enable book-item transition next frame
+            // Step 2: Next frame — remove dismiss classes so transition animates them back
             requestAnimationFrame(function () {
+                slides.forEach(function (s) {
+                    s.classList.remove("dismiss-up", "dismiss-down", "hovered");
+                });
                 if (bookItem) bookItem.style.transition = "";
+                applyFilters();
+                currentHovered = null;
+                selectedSlide = null;
+                isDetailOpen = false;
+                isAnimating = false;
+
                 if (scrollTarget) {
-                    var rect = scrollTarget.getBoundingClientRect();
-                    var scrollY = window.scrollY + rect.top - (window.innerHeight / 2) + (rect.height / 2);
-                    window.scrollTo({ top: scrollY, behavior: "smooth" });
+                    setTimeout(function () {
+                        var rect = scrollTarget.getBoundingClientRect();
+                        var scrollY = window.scrollY + rect.top - (window.innerHeight / 2) + (rect.height / 2);
+                        window.scrollTo({ top: scrollY, behavior: "smooth" });
+                    }, 500);
                 }
             });
         }
