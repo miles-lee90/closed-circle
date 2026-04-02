@@ -525,18 +525,16 @@
             if (dragCleanup) dragCleanup();
             detailContainer.innerHTML = "";
 
-            // Reset book transform and remove extra faces
+            var scrollTarget = selectedSlide;
+            var selectedIdx = scrollTarget ? Array.from(slides).indexOf(scrollTarget) : -1;
+
+            // Kill ALL transitions (slides + book-item) before any style changes
             if (bookItem) {
+                bookItem.style.transition = "none";
                 removeExtraFaces(bookItem);
                 bookItem.style.transform = "";
                 bookItem.style.cursor = "";
             }
-
-            var scrollTarget = selectedSlide;
-            var vh = window.innerHeight;
-
-            // Frame 1: Reset all slides with transition disabled,
-            // but only show slides near the viewport (manual cull)
             slides.forEach(function (s) {
                 s.style.transition = "none";
                 s.classList.remove("dismiss-up", "dismiss-down", "hovered");
@@ -547,13 +545,14 @@
                 s.style.margin = "";
                 s.style.zIndex = "";
             });
-            // Force flush so class/style changes apply without transition
+
+            // Flush styles so resets apply instantly (no transition)
             void grid.offsetHeight;
 
-            // Only make viewport-adjacent slides visible (avoid 44 GPU layers at once)
-            slides.forEach(function (s) {
-                var r = s.getBoundingClientRect();
-                s.style.visibility = (r.bottom > -600 && r.top < vh + 600) ? "" : "hidden";
+            // Show only ~8 slides near the selected book (by index, no getBoundingClientRect)
+            var nearRange = 5;
+            slides.forEach(function (s, i) {
+                s.style.visibility = (Math.abs(i - selectedIdx) <= nearRange) ? "" : "hidden";
             });
 
             document.body.classList.remove("detail-active");
@@ -564,14 +563,15 @@
             isDetailOpen = false;
             isAnimating = false;
 
-            // Frame 2: Re-enable transitions + scroll
+            // Next frame: re-enable transitions + scroll
             requestAnimationFrame(function () {
+                if (bookItem) bookItem.style.transition = "";
                 slides.forEach(function (s) {
                     s.style.transition = "";
                 });
                 if (scrollTarget) {
                     var rect = scrollTarget.getBoundingClientRect();
-                    var scrollY = window.scrollY + rect.top - (vh / 2) + (rect.height / 2);
+                    var scrollY = window.scrollY + rect.top - (window.innerHeight / 2) + (rect.height / 2);
                     window.scrollTo({ top: scrollY, behavior: "smooth" });
                 }
             });
