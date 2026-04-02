@@ -499,7 +499,7 @@
         // Rotate book back
         var bookItem = selectedSlide ? selectedSlide.querySelector(".book-item") : null;
         if (bookItem) {
-            var duration = 700;
+            var duration = 600;
             var startTime = null;
             var closeStartScale = 1, closeEndScale = 1.33;
             var qCloseStart = eulerToQuat(currentRotX, currentRotY, 0);
@@ -524,12 +524,25 @@
         function finishClose() {
             if (dragCleanup) dragCleanup();
             detailContainer.innerHTML = "";
-            document.body.classList.remove("detail-active");
+
+            // Reset book transform and remove extra faces
+            if (bookItem) {
+                removeExtraFaces(bookItem);
+                bookItem.style.transform = "";
+                bookItem.style.cursor = "";
+            }
 
             // Remember which slide was selected
             var scrollTarget = selectedSlide;
 
-            // Restore all slides
+            // Restore all slides without triggering reverse transitions:
+            // 1. Force no transition while resetting
+            slides.forEach(function (s) {
+                s.style.transition = "none";
+            });
+
+            // 2. Force style flush, then reset in a single batch
+            void grid.offsetHeight;
             slides.forEach(function (s) {
                 s.classList.remove("dismiss-up", "dismiss-down", "hovered");
                 s.style.visibility = "";
@@ -539,16 +552,16 @@
                 s.style.left = "";
                 s.style.margin = "";
                 s.style.zIndex = "";
-                s.style.transition = "";
             });
 
-            // Reset book transform
-            if (bookItem) {
-                removeExtraFaces(bookItem);
-                bookItem.style.transform = "";
-                bookItem.style.cursor = "";
-            }
+            // 3. Re-enable transitions next frame
+            requestAnimationFrame(function () {
+                slides.forEach(function (s) {
+                    s.style.transition = "";
+                });
+            });
 
+            document.body.classList.remove("detail-active");
             filterBar.classList.remove("hidden");
             applyFilters();
             currentHovered = null;
