@@ -162,6 +162,7 @@
     var selectedSlide = null;
     var dragCleanup = null;
     var currentRotX = 3, currentRotY = -35;
+    var openDx = 0, openDy = 0;
 
     grid.addEventListener("click", function () {
         if (!currentHovered || isAnimating || isDetailOpen) return;
@@ -221,6 +222,8 @@
         var endTop = isMobile ? 80 : 160;
         var dx = endLeft - slideRect.left;
         var dy = endTop - slideRect.top;
+        openDx = dx;
+        openDy = dy;
 
         createExtraFaces(bookItem);
         var allSlides = Array.from(slides);
@@ -421,7 +424,7 @@
         var panel = detailContainer.querySelector(".detail-info-panel");
         if (panel) panel.classList.remove("visible");
 
-        // Rotate book back to stack position
+        // Rotate book back + move slide back to stack position
         var bookItem = selectedSlide ? selectedSlide.querySelector(".book-item") : null;
         if (bookItem) {
             var duration = 700;
@@ -434,6 +437,7 @@
                 var t = Math.min((ts - startTime) / duration, 1);
                 var et = easeInOutCubic(t);
                 bookItem.style.transform = "scale(" + lerp(start.scale, end.scale, et).toFixed(3) + ") rotateX(" + lerp(start.rx, end.rx, et).toFixed(1) + "deg) rotateY(" + lerp(start.ry, end.ry, et).toFixed(1) + "deg) rotateZ(" + lerp(start.rz, end.rz, et).toFixed(1) + "deg)";
+                selectedSlide.style.transform = "translate(" + (openDx * (1 - et)).toFixed(1) + "px, " + (openDy * (1 - et)).toFixed(1) + "px)";
                 if (t < 1) requestAnimationFrame(frame);
                 else finishClose();
             }
