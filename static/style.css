@@ -773,7 +773,7 @@ main {
         linear-gradient(135deg, #e8e0d4, #ddd5c8);
 }
 
-.book3d-fore {
+.book3d-fore.book3d-paper {
     background:
         repeating-linear-gradient(
             90deg,
@@ -782,7 +782,7 @@ main {
             transparent 1px,
             transparent 2px
         ),
-        linear-gradient(0deg, #e8e0d4, #ddd5c8) !important;
+        linear-gradient(0deg, #e8e0d4, #ddd5c8);
 }
 
 

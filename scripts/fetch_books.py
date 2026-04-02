@@ -4,6 +4,7 @@ import json
 import os
 import re
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -105,7 +106,7 @@ def fetch_from_aladin(ttb_key: str, category_id: int, max_results: int = 50) -> 
                 if attempt == 2:
                     print(f"  WARNING: Failed after 3 attempts: {e}", file=sys.stderr)
                     return all_items
-                import time; time.sleep(5)
+                time.sleep(5)
         data = resp.json()
         items = data.get("item", [])
         if not items:
@@ -236,7 +237,6 @@ def scrape_preview_isbn(item_id: str, session: requests.Session = None) -> str:
 
 def scrape_preview_isbns(books: list[dict], session: requests.Session = None):
     """미리보기 ISBN이 없는 책들의 미리보기 ISBN을 스크래핑한다."""
-    import time
     needs = [b for b in books if not b.get("preview_isbn")]
     if not needs:
         return
@@ -257,7 +257,6 @@ def scrape_preview_isbns(books: list[dict], session: requests.Session = None):
 
 def scrape_back_covers(books: list[dict], session: requests.Session = None):
     """뒷표지 URL이 없는 책들의 뒷표지를 스크래핑한다."""
-    import time
     needs = [b for b in books if not b.get("back_cover_url")]
     if not needs:
         return
@@ -308,7 +307,6 @@ def main():
     merged = merge_books(existing, all_new)
 
     # Fetch size info for books missing it
-    import time
     needs_size = [b for b in merged if not b.get("size_height")]
     if needs_size:
         print(f"Fetching size info for {len(needs_size)} books...")

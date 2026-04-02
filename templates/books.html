@@ -24,7 +24,7 @@
                 <div class="book3d-face book3d-spine"
                      style="width:{{ bd }}px;height:{{ bh }}px;left:{{ (bw - bd) // 2 }}px;transform:rotateY(-90deg) translateZ({{ bw // 2 }}px)">
                     {% if book.spine_url %}
-                    <img src="{{ book.spine_url }}" alt="책등" loading="lazy">
+                    <img src="{{ book.spine_url }}" alt="{{ book.title }} 책등" loading="lazy">
                     {% endif %}
                 </div>
             </div>
@@ -108,9 +108,12 @@ var BOOKS = [
         if (e.key === "Escape" && overlay.classList.contains("active")) close();
     });
 
+    var debounceTimer;
     input.addEventListener("input", function () {
+        clearTimeout(debounceTimer);
         var q = input.value.trim().toLowerCase();
         if (!q) { results.innerHTML = ""; return; }
+        debounceTimer = setTimeout(function () {
         var matched = BOOKS.filter(function (b) {
             return b.title.toLowerCase().indexOf(q) !== -1 ||
                    b.author.toLowerCase().indexOf(q) !== -1 ||
@@ -128,6 +131,7 @@ var BOOKS = [
                     '<div class="search-result-meta">' + escapeHtml(b.author) + ' · ' + escapeHtml(b.publisher) + '</div>' +
                 '</div></a>';
         }).join("");
+        }, 150);
     });
 })();
 </script>
