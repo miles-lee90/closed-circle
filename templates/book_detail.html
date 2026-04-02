@@ -1,5 +1,19 @@
 {% extends "base.html" %}
 {% block title %}{{ book.title }} - Closed Circle{% endblock %}
+{% block meta_description %}{{ book.title }} - {{ book.author }} · {{ book.publisher }}{% endblock %}
+{% block og_meta %}
+<meta property="og:type" content="book">
+<meta property="og:title" content="{{ book.title }} - Closed Circle">
+<meta property="og:description" content="{{ book.author }} · {{ book.publisher }}{% if book.publisher_desc or book.description %} · {{ (book.publisher_desc or book.description)[:200] }}{% endif %}">
+<meta property="og:url" content="https://miles-lee90.github.io/closed-circle/book/{{ book.isbn13 }}.html">
+<meta property="og:image" content="{{ book.cover_url }}">
+<meta property="og:site_name" content="Closed Circle">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ book.title }}">
+<meta name="twitter:description" content="{{ book.author }} · {{ book.publisher }}">
+<meta name="twitter:image" content="{{ book.cover_url }}">
+{% endblock %}
 
 {% block content %}
 {% set bw = ((book.size_width or 128) * 2.2)|int %}

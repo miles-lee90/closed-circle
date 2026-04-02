@@ -83,17 +83,48 @@
     });
 
     // ─── Filter ───
+    var activeKeywordFilter = null;
+    var keywordLabel = document.getElementById("keyword-filter-label");
+    var keywordText = keywordLabel ? keywordLabel.querySelector(".keyword-filter-text") : null;
+    var keywordClear = keywordLabel ? keywordLabel.querySelector(".keyword-filter-clear") : null;
+
+    function applyFilters() {
+        var activeBtn = filterBar.querySelector(".floating-filter-btn.active");
+        var natFilter = activeBtn ? activeBtn.getAttribute("data-filter") : "all";
+        slides.forEach(function (slide) {
+            var natOk = natFilter === "all" || slide.getAttribute("data-nationality") === natFilter;
+            var kwOk = true;
+            if (activeKeywordFilter) {
+                var idx = parseInt(slide.getAttribute("data-idx"));
+                var book = BOOKS[idx];
+                kwOk = book.keywords && book.keywords.indexOf(activeKeywordFilter) !== -1;
+            }
+            slide.style.display = (natOk && kwOk) ? "" : "none";
+        });
+        if (keywordLabel) {
+            if (activeKeywordFilter) {
+                keywordText.textContent = activeKeywordFilter;
+                keywordLabel.style.display = "";
+            } else {
+                keywordLabel.style.display = "none";
+            }
+        }
+    }
+
     filterBtns.forEach(function (btn) {
         btn.addEventListener("click", function () {
             filterBtns.forEach(function (b) { b.classList.remove("active"); });
             btn.classList.add("active");
-            var filter = btn.getAttribute("data-filter");
-            slides.forEach(function (slide) {
-                var show = filter === "all" || slide.getAttribute("data-nationality") === filter;
-                slide.style.display = show ? "" : "none";
-            });
+            applyFilters();
         });
     });
+
+    if (keywordClear) {
+        keywordClear.addEventListener("click", function () {
+            activeKeywordFilter = null;
+            applyFilters();
+        });
+    }
 
     // ─── Detail View ───
     var isDetailOpen = false;
@@ -224,7 +255,7 @@
         if (book.keywords && book.keywords.length) {
             keywordsHtml = '<div class="hero-tags">';
             book.keywords.forEach(function (kw) {
-                keywordsHtml += '<span class="hero-tag">' + escapeHtml(kw) + '</span>';
+                keywordsHtml += '<span class="hero-tag hero-tag-clickable" data-keyword="' + escapeHtml(kw) + '">' + escapeHtml(kw) + '</span>';
             });
             keywordsHtml += '</div>';
         }
@@ -296,6 +327,14 @@
                 });
             });
         }
+
+        // Keyword tag click → filter
+        detailContainer.addEventListener("click", function (e) {
+            var tag = e.target.closest(".hero-tag-clickable");
+            if (!tag) return;
+            activeKeywordFilter = tag.getAttribute("data-keyword");
+            closeDetail();
+        });
 
         // Drag rotation on the book (mouse + touch)
         var rotY = currentRotY = -35, rotX = currentRotX = 3;
@@ -385,7 +424,6 @@
             slides.forEach(function (s) {
                 s.classList.remove("dismiss-up", "dismiss-down", "hovered");
                 s.style.visibility = "";
-                s.style.display = "";
                 s.style.transform = "";
                 s.style.position = "";
                 s.style.top = "";
@@ -403,6 +441,7 @@
             }
 
             filterBar.classList.remove("hidden");
+            applyFilters();
             currentHovered = null;
             selectedSlide = null;
             isDetailOpen = false;

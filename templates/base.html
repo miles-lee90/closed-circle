@@ -4,7 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Closed Circle{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}{{ site_description }}{% endblock %}">
+    {% block og_meta %}
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ site_title }}">
+    <meta property="og:description" content="{{ site_description }}">
+    <meta property="og:url" content="https://miles-lee90.github.io/closed-circle/">
+    {% if featured_book %}
+    <meta property="og:image" content="{{ featured_book.cover_url }}">
+    {% endif %}
+    <meta property="og:site_name" content="Closed Circle">
+    <meta property="og:locale" content="ko_KR">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ site_title }}">
+    <meta name="twitter:description" content="{{ site_description }}">
+    {% if featured_book %}
+    <meta name="twitter:image" content="{{ featured_book.cover_url }}">
+    {% endif %}
+    {% endblock %}
     <link rel="icon" type="image/svg+xml" href="{{ base_path }}static/favicon.svg">
+    <link rel="manifest" href="{{ base_path }}manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,5 +64,10 @@
         <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank" rel="noopener">알라딘</a></p>
     </footer>
     {% block scripts %}{% endblock %}
+    <script>
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("{{ base_path }}sw.js").catch(function () {});
+    }
+    </script>
 </body>
 </html>

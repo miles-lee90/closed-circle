@@ -39,6 +39,10 @@
     <button class="floating-filter-btn active" data-filter="all">전체</button>
     <button class="floating-filter-btn" data-filter="JP">JP</button>
     <button class="floating-filter-btn" data-filter="KR">KR</button>
+    <span class="floating-filter-keyword" id="keyword-filter-label" style="display:none">
+        <span class="keyword-filter-text"></span>
+        <button class="keyword-filter-clear" aria-label="필터 해제">&times;</button>
+    </span>
 </div>
 
 {% if not books %}

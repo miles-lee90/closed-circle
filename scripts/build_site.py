@@ -206,6 +206,13 @@ def build():
         shutil.copytree(STATIC_DIR, static_dest)
         print("Copied static assets")
 
+    # Copy SW and manifest to docs root (must be at site root for scope)
+    for fname in ("sw.js", "manifest.json"):
+        src = STATIC_DIR / fname
+        if src.exists():
+            shutil.copy2(src, DOCS_DIR / fname)
+    print("Copied PWA files to docs root")
+
     print(f"Site built: {len(books)} books, {len(news)} news items")
 
 
