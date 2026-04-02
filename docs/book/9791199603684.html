@@ -30,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../static/style.css?v=2026-04-021017UTC">
+    <link rel="stylesheet" href="../static/style.css?v=2026-04-021018UTC">
 </head>
 <body>
     <header>
@@ -155,7 +155,7 @@
     </main>
     <footer>
         <p>국내 출간 미스터리 소설 신작을 매일 업데이트합니다</p>
-        <p>마지막 업데이트: 2026-04-02 10:17 UTC</p>
+        <p>마지막 업데이트: 2026-04-02 10:18 UTC</p>
         <p>도서 정보 제공: <a href="https://www.aladin.co.kr" target="_blank" rel="noopener">알라딘</a></p>
     </footer>
     
@@ -222,7 +222,12 @@
 
     <script>
     if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("../sw.js").catch(function () {});
+        navigator.serviceWorker.getRegistrations().then(function (regs) {
+            regs.forEach(function (r) { r.unregister(); });
+        });
+        caches.keys().then(function (names) {
+            names.forEach(function (n) { caches.delete(n); });
+        });
     }
     </script>
 </body>
