@@ -1,0 +1,27 @@
+{
+    "name": "클로즈드 써클",
+    "short_name": "Closed Circle",
+    "description": "국내 출간 미스터리 소설 신작을 매일 업데이트합니다",
+    "start_url": "/closed-circle/",
+    "scope": "/closed-circle/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "icons": [
+        {
+            "src": "/closed-circle/static/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/closed-circle/static/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "/closed-circle/static/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
+}

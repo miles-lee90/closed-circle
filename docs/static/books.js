@@ -83,17 +83,48 @@
     });
 
     // ─── Filter ───
+    var activeKeywordFilter = null;
+    var keywordLabel = document.getElementById("keyword-filter-label");
+    var keywordText = keywordLabel ? keywordLabel.querySelector(".keyword-filter-text") : null;
+    var keywordClear = keywordLabel ? keywordLabel.querySelector(".keyword-filter-clear") : null;
+
+    function applyFilters() {
+        var activeBtn = filterBar.querySelector(".floating-filter-btn.active");
+        var natFilter = activeBtn ? activeBtn.getAttribute("data-filter") : "all";
+        slides.forEach(function (slide) {
+            var natOk = natFilter === "all" || slide.getAttribute("data-nationality") === natFilter;
+            var kwOk = true;
+            if (activeKeywordFilter) {
+                var idx = parseInt(slide.getAttribute("data-idx"));
+                var book = BOOKS[idx];
+                kwOk = book.keywords && book.keywords.indexOf(activeKeywordFilter) !== -1;
+            }
+            slide.style.display = (natOk && kwOk) ? "" : "none";
+        });
+        if (keywordLabel) {
+            if (activeKeywordFilter) {
+                keywordText.textContent = activeKeywordFilter;
+                keywordLabel.style.display = "";
+            } else {
+                keywordLabel.style.display = "none";
+            }
+        }
+    }
+
     filterBtns.forEach(function (btn) {
         btn.addEventListener("click", function () {
             filterBtns.forEach(function (b) { b.classList.remove("active"); });
             btn.classList.add("active");
-            var filter = btn.getAttribute("data-filter");
-            slides.forEach(function (slide) {
-                var show = filter === "all" || slide.getAttribute("data-nationality") === filter;
-                slide.style.display = show ? "" : "none";
-            });
+            applyFilters();
         });
     });
+
+    if (keywordClear) {
+        keywordClear.addEventListener("click", function () {
+            activeKeywordFilter = null;
+            applyFilters();
+        });
+    }
 
     // ─── Detail View ───
     var isDetailOpen = false;
@@ -224,15 +255,10 @@
         if (book.keywords && book.keywords.length) {
             keywordsHtml = '<div class="hero-tags">';
             book.keywords.forEach(function (kw) {
-                keywordsHtml += '<span class="hero-tag">' + escapeHtml(kw) + '</span>';
+                keywordsHtml += '<span class="hero-tag hero-tag-clickable" data-keyword="' + escapeHtml(kw) + '">' + escapeHtml(kw) + '</span>';
             });
             keywordsHtml += '</div>';
         }
-
-        var descHtml = book.desc
-            ? '<div class="hero-desc-wrap"><p class="hero-desc hero-desc-collapsed">' + escapeHtml(book.desc) + '</p>' +
-              (book.desc.length > 150 ? '<button class="desc-toggle">더보기</button>' : '') + '</div>'
-            : '';
 
         var priceStr = book.price.toLocaleString() + '원';
 
@@ -242,7 +268,7 @@
                     nationalityLabel +
                     '<h1 class="hero-title">' + escapeHtml(book.title) + '</h1>' +
                     '<p class="hero-author">' + escapeHtml(book.author) + '</p>' +
-                    descHtml +
+                    '<div class="hero-desc-slot"></div>' +
                     keywordsHtml +
                     '<div class="hero-meta">' +
                         '<span class="hero-meta-item">' + escapeHtml(book.publisher) + '</span>' +
@@ -260,14 +286,24 @@
         var panel = detailContainer.querySelector(".detail-info-panel");
         requestAnimationFrame(function () { panel.classList.add("visible"); });
 
-        // 더보기
-        var toggleBtn = detailContainer.querySelector(".desc-toggle");
-        if (toggleBtn) {
-            toggleBtn.addEventListener("click", function () {
-                var desc = this.previousElementSibling;
-                desc.classList.toggle("hero-desc-collapsed");
-                this.textContent = desc.classList.contains("hero-desc-collapsed") ? "더보기" : "접기";
-            });
+        // Lazy-load description
+        var descSlot = detailContainer.querySelector(".hero-desc-slot");
+        if (descSlot && book.isbn) {
+            fetch("data/descs.json").then(function (r) { return r.json(); }).then(function (descs) {
+                var desc = descs[book.isbn];
+                if (!desc || !descSlot.parentNode) return;
+                descSlot.innerHTML =
+                    '<div class="hero-desc-wrap"><p class="hero-desc hero-desc-collapsed">' + escapeHtml(desc) + '</p>' +
+                    (desc.length > 150 ? '<button class="desc-toggle">더보기</button>' : '') + '</div>';
+                var toggleBtn = descSlot.querySelector(".desc-toggle");
+                if (toggleBtn) {
+                    toggleBtn.addEventListener("click", function () {
+                        var p = this.previousElementSibling;
+                        p.classList.toggle("hero-desc-collapsed");
+                        this.textContent = p.classList.contains("hero-desc-collapsed") ? "더보기" : "접기";
+                    });
+                }
+            }).catch(function () {});
         }
 
         // 미리보기
@@ -296,6 +332,14 @@
                 });
             });
         }
+
+        // Keyword tag click → filter
+        detailContainer.addEventListener("click", function (e) {
+            var tag = e.target.closest(".hero-tag-clickable");
+            if (!tag) return;
+            activeKeywordFilter = tag.getAttribute("data-keyword");
+            closeDetail();
+        });
 
         // Drag rotation on the book (mouse + touch)
         var rotY = currentRotY = -35, rotX = currentRotX = 3;
@@ -385,7 +429,6 @@
             slides.forEach(function (s) {
                 s.classList.remove("dismiss-up", "dismiss-down", "hovered");
                 s.style.visibility = "";
-                s.style.display = "";
                 s.style.transform = "";
                 s.style.position = "";
                 s.style.top = "";
@@ -403,6 +446,7 @@
             }
 
             filterBar.classList.remove("hidden");
+            applyFilters();
             currentHovered = null;
             selectedSlide = null;
             isDetailOpen = false;

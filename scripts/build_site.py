@@ -189,6 +189,18 @@ def build():
         (DOCS_DIR / output_name).write_text(html, encoding="utf-8")
         print(f"Built {output_name}")
 
+    # desc 데이터를 별도 JSON으로 분리 (index.html 경량화)
+    descs = {}
+    for b in books:
+        desc = b.get("summary") or b.get("publisher_desc") or b.get("description") or ""
+        if desc:
+            descs[b["isbn13"]] = desc
+    data_dest = DOCS_DIR / "data"
+    data_dest.mkdir(parents=True, exist_ok=True)
+    with open(data_dest / "descs.json", "w", encoding="utf-8") as f:
+        json.dump(descs, f, ensure_ascii=False)
+    print(f"Built descs.json ({len(descs)} entries)")
+
     # 각 책 상세 페이지 생성
     book_dir = DOCS_DIR / "book"
     book_dir.mkdir(parents=True, exist_ok=True)

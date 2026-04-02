@@ -260,11 +260,6 @@
             keywordsHtml += '</div>';
         }
 
-        var descHtml = book.desc
-            ? '<div class="hero-desc-wrap"><p class="hero-desc hero-desc-collapsed">' + escapeHtml(book.desc) + '</p>' +
-              (book.desc.length > 150 ? '<button class="desc-toggle">더보기</button>' : '') + '</div>'
-            : '';
-
         var priceStr = book.price.toLocaleString() + '원';
 
         detailContainer.innerHTML =
@@ -273,7 +268,7 @@
                     nationalityLabel +
                     '<h1 class="hero-title">' + escapeHtml(book.title) + '</h1>' +
                     '<p class="hero-author">' + escapeHtml(book.author) + '</p>' +
-                    descHtml +
+                    '<div class="hero-desc-slot"></div>' +
                     keywordsHtml +
                     '<div class="hero-meta">' +
                         '<span class="hero-meta-item">' + escapeHtml(book.publisher) + '</span>' +
@@ -291,14 +286,24 @@
         var panel = detailContainer.querySelector(".detail-info-panel");
         requestAnimationFrame(function () { panel.classList.add("visible"); });
 
-        // 더보기
-        var toggleBtn = detailContainer.querySelector(".desc-toggle");
-        if (toggleBtn) {
-            toggleBtn.addEventListener("click", function () {
-                var desc = this.previousElementSibling;
-                desc.classList.toggle("hero-desc-collapsed");
-                this.textContent = desc.classList.contains("hero-desc-collapsed") ? "더보기" : "접기";
-            });
+        // Lazy-load description
+        var descSlot = detailContainer.querySelector(".hero-desc-slot");
+        if (descSlot && book.isbn) {
+            fetch("data/descs.json").then(function (r) { return r.json(); }).then(function (descs) {
+                var desc = descs[book.isbn];
+                if (!desc || !descSlot.parentNode) return;
+                descSlot.innerHTML =
+                    '<div class="hero-desc-wrap"><p class="hero-desc hero-desc-collapsed">' + escapeHtml(desc) + '</p>' +
+                    (desc.length > 150 ? '<button class="desc-toggle">더보기</button>' : '') + '</div>';
+                var toggleBtn = descSlot.querySelector(".desc-toggle");
+                if (toggleBtn) {
+                    toggleBtn.addEventListener("click", function () {
+                        var p = this.previousElementSibling;
+                        p.classList.toggle("hero-desc-collapsed");
+                        this.textContent = p.classList.contains("hero-desc-collapsed") ? "더보기" : "접기";
+                    });
+                }
+            }).catch(function () {});
         }
 
         // 미리보기
