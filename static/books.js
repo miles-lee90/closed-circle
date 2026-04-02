@@ -428,6 +428,18 @@
         if (panel) panel.classList.remove("visible");
         if (dragCleanup) dragCleanup();
 
+        // Scroll to book's stack position instantly (so animation lands centered)
+        var slideTop = scrollTarget.offsetTop;
+        var slideHeight = scrollTarget.offsetHeight;
+        window.scrollTo(0, slideTop - (window.innerHeight / 2) + (slideHeight / 2));
+        // After scroll, recalculate where the slide visually is now
+        var afterRect = scrollTarget.getBoundingClientRect();
+        // The slide should animate from current visual position to (afterRect without translate)
+        // Current visual = afterRect (which includes the translate)
+        // Target = afterRect.left - openDx, afterRect.top - openDy (the flow position)
+        // So we still animate translate from (openDx, openDy) to (0, 0)
+        // But now the flow position is centered in viewport, so (0,0) = centered
+
         // Phase 1: Rotate book back + move slide back (700ms)
         // At 300ms in, start Phase 2 (other books slide back)
         var duration = 700;
@@ -506,12 +518,6 @@
                 selectedSlide = null;
                 isDetailOpen = false;
                 isAnimating = false;
-
-                if (scrollTarget) {
-                    var rect = scrollTarget.getBoundingClientRect();
-                    var scrollY = window.scrollY + rect.top - (window.innerHeight / 2) + (rect.height / 2);
-                    window.scrollTo({ top: scrollY, behavior: "smooth" });
-                }
             });
         }
     }
