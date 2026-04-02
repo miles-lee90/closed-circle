@@ -268,20 +268,34 @@
         history.pushState({ detail: true }, "");
         var book = BOOKS[idx];
         var bookItem = slide.querySelector(".book-item");
+
+        // Measure position BEFORE any DOM changes (no reflow during animation)
+        var slideRect = slide.getBoundingClientRect();
+        var isMobile = window.innerWidth <= 768;
+        var endLeft = isMobile
+            ? Math.round((window.innerWidth - bookItem.offsetWidth) / 2)
+            : Math.round(window.innerWidth * 0.22);
+        var endTop = isMobile ? 80 : 160;
+        var dx = endLeft - slideRect.left;
+        var dy = endTop - slideRect.top;
+
         createExtraFaces(bookItem);
         var allSlides = Array.from(slides);
         var selectedIdx = allSlides.indexOf(slide);
 
-        // Phase 1: Dismiss other books (wrapper translateY, no 3D interference)
+        // Phase 1: Dismiss other books
         filterBar.classList.add("hidden");
         allSlides.forEach(function (s, i) {
             if (s === slide) return;
             s.classList.add(i < selectedIdx ? "dismiss-up" : "dismiss-down");
         });
 
-        // Phase 2: After dismiss, rotate + move simultaneously
-        setTimeout(function () {
-            // Hide dismissed
+        // Phase 2: Wait for dismiss transition to end
+        var dismissDone = false;
+        function startRotation() {
+            if (dismissDone) return;
+            dismissDone = true;
+
             allSlides.forEach(function (s) {
                 if (s !== slide) s.style.visibility = "hidden";
             });
@@ -290,22 +304,7 @@
             slide.style.transition = "none";
             slide.style.zIndex = "200";
 
-            var isMobile = window.innerWidth <= 768;
-            var endLeft = isMobile
-                ? Math.round((window.innerWidth - bookItem.offsetWidth) / 2)
-                : Math.round(window.innerWidth * 0.22);
-            var endTop = isMobile ? 80 : 160;
-
-            // Measure slide's pure box position (remove 3D transform temporarily)
-            var saved = bookItem.style.transform;
-            bookItem.style.transform = "none";
-            var boxRect = slide.getBoundingClientRect();
-            bookItem.style.transform = saved;
-
-            var dx = endLeft - boxRect.left;
-            var dy = endTop - boxRect.top;
-
-            var duration = 1000;
+            var duration = 800;
             var startScale = 1.33, endScale = 1;
             var qStart = eulerToQuat(-90, -180, 90);
             var qEnd = eulerToQuat(3, -35, 0);
@@ -331,7 +330,19 @@
                 }
             }
             requestAnimationFrame(frame);
-        }, 500);
+        }
+
+        // Use transitionend on a dismiss slide, with setTimeout fallback
+        var dismissTarget = allSlides[selectedIdx > 0 ? 0 : allSlides.length - 1];
+        if (dismissTarget && dismissTarget !== slide) {
+            dismissTarget.addEventListener("transitionend", function handler(e) {
+                if (e.propertyName !== "transform") return;
+                dismissTarget.removeEventListener("transitionend", handler);
+                startRotation();
+            });
+        }
+        // Fallback in case transitionend doesn't fire (no other slides, etc.)
+        setTimeout(startRotation, 550);
     }
 
     function showInfo(book, bookItem) {
