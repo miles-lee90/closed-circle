@@ -1286,6 +1286,8 @@ body.detail-active .book-item {
         padding: 1.5rem;
         background: var(--bg);
         border-top: 1px solid var(--border);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 }
 

@@ -176,6 +176,62 @@
     }
     function lerp(a, b, t) { return a + (b - a) * t; }
 
+    // Quaternion helpers for smooth shortest-path rotation
+    function eulerToQuat(rx, ry, rz) {
+        var deg = Math.PI / 180;
+        var cx = Math.cos(rx * deg / 2), sx = Math.sin(rx * deg / 2);
+        var cy = Math.cos(ry * deg / 2), sy = Math.sin(ry * deg / 2);
+        var cz = Math.cos(rz * deg / 2), sz = Math.sin(rz * deg / 2);
+        return {
+            w: cx * cy * cz + sx * sy * sz,
+            x: sx * cy * cz - cx * sy * sz,
+            y: cx * sy * cz + sx * cy * sz,
+            z: cx * cy * sz - sx * sy * cz
+        };
+    }
+    function quatSlerp(a, b, t) {
+        var dot = a.w * b.w + a.x * b.x + a.y * b.y + a.z * b.z;
+        if (dot < 0) { b = { w: -b.w, x: -b.x, y: -b.y, z: -b.z }; dot = -dot; }
+        if (dot > 0.9995) {
+            return {
+                w: a.w + (b.w - a.w) * t,
+                x: a.x + (b.x - a.x) * t,
+                y: a.y + (b.y - a.y) * t,
+                z: a.z + (b.z - a.z) * t
+            };
+        }
+        var theta = Math.acos(Math.min(dot, 1));
+        var sinT = Math.sin(theta);
+        var wa = Math.sin((1 - t) * theta) / sinT;
+        var wb = Math.sin(t * theta) / sinT;
+        return {
+            w: wa * a.w + wb * b.w,
+            x: wa * a.x + wb * b.x,
+            y: wa * a.y + wb * b.y,
+            z: wa * a.z + wb * b.z
+        };
+    }
+    function quatToMatrix3d(q) {
+        var x = q.x, y = q.y, z = q.z, w = q.w;
+        var x2 = x + x, y2 = y + y, z2 = z + z;
+        var xx = x * x2, xy = x * y2, xz = x * z2;
+        var yy = y * y2, yz = y * z2, zz = z * z2;
+        var wx = w * x2, wy = w * y2, wz = w * z2;
+        return [
+            1 - (yy + zz), xy + wz, xz - wy, 0,
+            xy - wz, 1 - (xx + zz), yz + wx, 0,
+            xz + wy, yz - wx, 1 - (xx + yy), 0,
+            0, 0, 0, 1
+        ];
+    }
+    function scaleMatrix3d(m, s) {
+        return "matrix3d(" +
+            (m[0]*s)+","+(m[1]*s)+","+(m[2]*s)+",0,"+
+            (m[4]*s)+","+(m[5]*s)+","+(m[6]*s)+",0,"+
+            (m[8]*s)+","+(m[9]*s)+","+(m[10]*s)+",0,"+
+            "0,0,0,1)";
+    }
+
     function createExtraFaces(bookItem) {
         var bw = bookItem.offsetWidth;
         var bh = bookItem.offsetHeight;
@@ -234,8 +290,11 @@
             slide.style.transition = "none";
             slide.style.zIndex = "200";
 
-            var endLeft = Math.round(window.innerWidth * 0.22);
-            var endTop = 160;
+            var isMobile = window.innerWidth <= 768;
+            var endLeft = isMobile
+                ? Math.round((window.innerWidth - bookItem.offsetWidth) / 2)
+                : Math.round(window.innerWidth * 0.22);
+            var endTop = isMobile ? 80 : 160;
 
             // Measure slide's pure box position (remove 3D transform temporarily)
             var saved = bookItem.style.transform;
@@ -247,8 +306,9 @@
             var dy = endTop - boxRect.top;
 
             var duration = 1000;
-            var start = { scale: 1.33, rx: -90, ry: -180, rz: 90 };
-            var end = { scale: 1, rx: 3, ry: -35, rz: 0 };
+            var startScale = 1.33, endScale = 1;
+            var qStart = eulerToQuat(-90, -180, 90);
+            var qEnd = eulerToQuat(3, -35, 0);
             var startTime = null;
 
             function frame(ts) {
@@ -256,12 +316,10 @@
                 var t = Math.min((ts - startTime) / duration, 1);
                 var et = easeInOutCubic(t);
 
-                var sc = lerp(start.scale, end.scale, et);
-                var rx = lerp(start.rx, end.rx, et);
-                var ry = lerp(start.ry, end.ry, et);
-                var rz = lerp(start.rz, end.rz, et);
-
-                bookItem.style.transform = "scale(" + sc.toFixed(3) + ") rotateX(" + rx.toFixed(1) + "deg) rotateY(" + ry.toFixed(1) + "deg) rotateZ(" + rz.toFixed(1) + "deg)";
+                var sc = lerp(startScale, endScale, et);
+                var q = quatSlerp(qStart, qEnd, et);
+                var m = quatToMatrix3d(q);
+                bookItem.style.transform = scaleMatrix3d(m, sc);
 
                 slide.style.transform = "translate(" + (dx * et).toFixed(1) + "px, " + (dy * et).toFixed(1) + "px)";
 
@@ -432,14 +490,18 @@
         if (bookItem) {
             var duration = 700;
             var startTime = null;
-            var start = { scale: 1, rx: currentRotX, ry: currentRotY, rz: 0 };
-            var end = { scale: 1.33, rx: -90, ry: -180, rz: 90 };
+            var closeStartScale = 1, closeEndScale = 1.33;
+            var qCloseStart = eulerToQuat(currentRotX, currentRotY, 0);
+            var qCloseEnd = eulerToQuat(-90, -180, 90);
 
             function frame(ts) {
                 if (!startTime) startTime = ts;
                 var t = Math.min((ts - startTime) / duration, 1);
                 var et = easeInOutCubic(t);
-                bookItem.style.transform = "scale(" + lerp(start.scale, end.scale, et).toFixed(3) + ") rotateX(" + lerp(start.rx, end.rx, et).toFixed(1) + "deg) rotateY(" + lerp(start.ry, end.ry, et).toFixed(1) + "deg) rotateZ(" + lerp(start.rz, end.rz, et).toFixed(1) + "deg)";
+                var sc = lerp(closeStartScale, closeEndScale, et);
+                var q = quatSlerp(qCloseStart, qCloseEnd, et);
+                var m = quatToMatrix3d(q);
+                bookItem.style.transform = scaleMatrix3d(m, sc);
                 if (t < 1) requestAnimationFrame(frame);
                 else finishClose();
             }
